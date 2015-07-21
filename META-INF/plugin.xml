@@ -1,8 +1,8 @@
 <idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>com.alekseyzhelo.evilislands.mobplugin</id>
+  <name>Mob plugin</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="alekseyzhelo@yandex.ru" url="http://gipatgroup.org">GipatGroup</vendor>
 
   <description><![CDATA[
       Enter short description for your plugin here.<br>
@@ -25,7 +25,7 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <fileTypeFactory implementation="com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileTypeFactory"/>
   </extensions>
 
   <application-components>

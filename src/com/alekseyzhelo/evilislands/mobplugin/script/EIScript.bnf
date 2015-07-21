@@ -1,0 +1,36 @@
+{
+  parserClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Simple"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.alekseyzhelo.evilislands.mobplugin.script.psi"
+  psiImplPackage="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl"
+
+  elementTypeHolderClass="com.alekseyzhelo.evilislands.mobplugin.script.ScriptTypes"
+  elementTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptElementType"
+  tokenTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTokenType"
+
+  psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.SimplePsiImplUtil"
+}
+
+meta comma_separated_list ::= <<param>> ( ',' <<param>> ) *
+
+scriptFile ::= globalVars declarations scripts worldscript
+
+globalVars ::= GLOBALVARS '(' globalVarsDefs ')'
+
+globalVarsDefs ::=  <<comma_separated_list (globalVarDef)>>?
+
+globalVarDef ::= ident ':' type
+
+declarations ::= <<comma_separated_list (scriptDeclaration)>>?
+
+scriptDeclaration ::= DECLARESCRIPT ident formalParams
+
+formalParams ::= '(' formalParameterList ')'
+
+formalParameterList ::= <<comma_separated_list (formalParameter)>>?
+
+formalParameter ::= ident ':' type
