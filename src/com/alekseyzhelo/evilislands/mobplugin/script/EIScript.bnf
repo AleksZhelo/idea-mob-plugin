@@ -3,34 +3,74 @@
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="Simple"
+  psiClassPrefix="EI"
   psiImplClassSuffix="Impl"
   psiPackage="com.alekseyzhelo.evilislands.mobplugin.script.psi"
   psiImplPackage="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl"
 
-  elementTypeHolderClass="com.alekseyzhelo.evilislands.mobplugin.script.ScriptTypes"
+  elementTypeHolderClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes"
   elementTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptElementType"
   tokenTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTokenType"
 
-  psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.SimplePsiImplUtil"
+  psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIPsiImplUtil"
 }
 
-meta comma_separated_list ::= <<param>> ( ',' <<param>> ) *
+scriptFile ::= globalVars declarations scripts worldScript
 
-scriptFile ::= globalVars declarations scripts worldscript
+meta comma_separated_list ::= <<param>> ( COMA <<param>> ) *
 
-globalVars ::= GLOBALVARS '(' globalVarsDefs ')'
+globalVars ::= GLOBALVARS LPAREN globalVarsDefs RPAREN
 
-globalVarsDefs ::=  <<comma_separated_list (globalVarDef)>>?
+declarations ::= scriptDeclaration*
 
-globalVarDef ::= ident ':' type
+scripts ::= scriptImplementation*
 
-declarations ::= <<comma_separated_list (scriptDeclaration)>>?
+worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
 
-scriptDeclaration ::= DECLARESCRIPT ident formalParams
+globalVarsDefs ::=  globalVarDef*
 
-formalParams ::= '(' formalParameterList ')'
+globalVarDef ::= IDENTIFIER COLON type
 
-formalParameterList ::= <<comma_separated_list (formalParameter)>>?
+scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
 
-formalParameter ::= ident ':' type
+scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
+
+scriptBody ::= scriptBlock*
+
+scriptBlock ::= scriptIfBlock scriptThenBlock
+
+scriptIfBlock ::= IF LPAREN ifConjunction RPAREN
+
+ifConjunction ::= functionCall*
+
+scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN
+
+scriptThenBody ::= scriptExpression*
+
+scriptExpression ::= functionCall
+          | assignment
+          | forBlock
+
+forBlock ::= FOR LPAREN IDENTIFIER COMA IDENTIFIER RPAREN LPAREN scriptThenBody RPAREN
+
+formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
+
+formalParameter ::= IDENTIFIER COLON type
+
+params ::= LPAREN expression* RPAREN
+
+expression ::= FLOATNUMBER
+          | CHARACTER_STRING
+          | variable
+          | functionCall
+
+variable ::= IDENTIFIER
+
+functionCall ::= IDENTIFIER params
+
+assignment ::= IDENTIFIER EQUALS expression
+
+type ::= FLOAT
+          | STRING
+          | OBJECT
+          | GROUP

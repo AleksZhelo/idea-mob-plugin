@@ -37,6 +37,7 @@ idea/dynamic.xml
 
 # IntelliJ
 /out/
+/gen/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.file;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
