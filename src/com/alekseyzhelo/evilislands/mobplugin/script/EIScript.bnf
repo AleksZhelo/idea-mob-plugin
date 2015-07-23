@@ -11,15 +11,15 @@
   elementTypeHolderClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes"
   elementTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptElementType"
   tokenTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTokenType"
-
-  psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIPsiImplUtil"
 }
 
 scriptFile ::= globalVars declarations scripts worldScript
 
-meta comma_separated_list ::= <<param>> ( COMA <<param>> ) *
+private meta comma_separated_list ::= <<param>> ( COMA <<param>> ) *
 
-globalVars ::= GLOBALVARS LPAREN globalVarsDefs RPAREN
+private ignored ::= (COMMENT)
+
+globalVars ::= GLOBALVARS LPAREN RPAREN | GLOBALVARS LPAREN globalVarsDefs RPAREN
 
 declarations ::= scriptDeclaration*
 
@@ -27,7 +27,7 @@ scripts ::= scriptImplementation*
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
 
-globalVarsDefs ::=  globalVarDef*
+globalVarsDefs ::= <<comma_separated_list (globalVarDef)>>
 
 globalVarDef ::= IDENTIFIER COLON type
 
@@ -35,7 +35,7 @@ scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
 
 scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
 
-scriptBody ::= scriptBlock*
+scriptBody ::= scriptBlock+
 
 scriptBlock ::= scriptIfBlock scriptThenBlock
 
@@ -47,22 +47,17 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN
 
 scriptThenBody ::= scriptExpression*
 
-scriptExpression ::= functionCall
-          | assignment
-          | forBlock
+scriptExpression ::= assignment | functionCall | forBlock
 
 forBlock ::= FOR LPAREN IDENTIFIER COMA IDENTIFIER RPAREN LPAREN scriptThenBody RPAREN
 
-formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
+formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
 
 formalParameter ::= IDENTIFIER COLON type
 
-params ::= LPAREN expression* RPAREN
+params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN
 
-expression ::= FLOATNUMBER
-          | CHARACTER_STRING
-          | variable
-          | functionCall
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variable
 
 variable ::= IDENTIFIER
 
@@ -70,7 +65,4 @@ functionCall ::= IDENTIFIER params
 
 assignment ::= IDENTIFIER EQUALS expression
 
-type ::= FLOAT
-          | STRING
-          | OBJECT
-          | GROUP
+type ::= FLOAT | STRING | OBJECT | GROUP

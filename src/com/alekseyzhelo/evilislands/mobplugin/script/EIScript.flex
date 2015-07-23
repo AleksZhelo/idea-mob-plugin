@@ -11,7 +11,8 @@ import com.intellij.psi.TokenType;
 %implements FlexLexer
 %unicode
 %caseless
-//%line
+%debug
+//%line //why doesn't this work?
 //%column
 %function advance
 %type IElementType
@@ -54,11 +55,12 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     {GROUP}                                      { return ScriptTypes.GROUP; }
     {GLOBALVARS}                                 { return ScriptTypes.GLOBALVARS; }
     {DECLARESCRIPT}                              { return ScriptTypes.DECLARESCRIPT; }
+    {WORLDSCRIPT}                                { return ScriptTypes.WORLDSCRIPT; }
+    //^{SCRIPT}|{WHITE_SPACE}{SCRIPT}              { return ScriptTypes.SCRIPT; }
     {SCRIPT}                                     { return ScriptTypes.SCRIPT; }
     {IF}                                         { return ScriptTypes.IF; }
     {THEN}                                       { return ScriptTypes.THEN; }
     {FOR}                                        { return ScriptTypes.FOR; }
-    {WORLDSCRIPT}                                { return ScriptTypes.WORLDSCRIPT; }
     {IDENTIFIER}                                 { return ScriptTypes.IDENTIFIER; }
     {FLOATNUMBER}                                { return ScriptTypes.FLOATNUMBER; }
     "="                                          { return ScriptTypes.EQUALS; }
@@ -68,10 +70,14 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     //"}"                                          { return ScriptTypes.RBRACE; }
     ","                                          { return ScriptTypes.COMA; }
     ":"                                          { return ScriptTypes.COLON; }
-    {END_OF_LINE_COMMENT}                        { /* ignore */  }
-    {WHITE_SPACE}                                { /* ignore */  }
+    {END_OF_LINE_COMMENT}                        { return ScriptTypes.COMMENT;  }
+    {WHITE_SPACE}                                { return TokenType.WHITE_SPACE;  }
+    {LINE_TERMINATOR}                            { /* ignore */  }
 
     \"                                           { yybegin(STRING); string.setLength(0); }
+
+    //.                                            { System.out.println(yytext()); }
+    // .                                            {  }
 }
 
 <STRING> {
@@ -92,8 +98,9 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
                                            string.append( val ); }*/ // what to do with this? needed?
 
     /* error cases */
-    \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
-    {LINE_TERMINATOR}              { throw new RuntimeException("Unterminated string at end of line"); }
+   // \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
+   // {LINE_TERMINATOR}              { throw new RuntimeException("Unterminated string at end of line"); }
 }
 
-.                                            { return TokenType.BAD_CHARACTER; }
+//.                                { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
+.                                  { /* ignore */ } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
