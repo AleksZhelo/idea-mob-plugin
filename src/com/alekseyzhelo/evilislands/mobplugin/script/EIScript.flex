@@ -26,7 +26,7 @@ import com.intellij.psi.TokenType;
 
 LINE_TERMINATOR = \r|\n|\r\n
 INPUT_CHARACTER = [^\r\n]
-STRING_CHARACTER = [^\r\n\"\\]
+STRING_CHARACTER = [^\r\n\"]
 WHITE_SPACE=[\ \t\f]
 END_OF_LINE_COMMENT="//" {INPUT_CHARACTER}* {LINE_TERMINATOR}?
 FLOAT="float"

@@ -1,7 +1,7 @@
 {
   parserClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParser"
 
-  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+  extends="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement"
 
   psiClassPrefix="EI"
   psiImplClassSuffix="Impl"
@@ -11,9 +11,11 @@
   elementTypeHolderClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes"
   elementTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptElementType"
   tokenTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTokenType"
+
+  psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptPsiImplUtil"
 }
 
-scriptFile ::= globalVars declarations scripts worldScript
+scriptFile ::= globalVars? declarations? scripts? worldScript?
 
 private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
 
@@ -27,9 +29,10 @@ scripts ::= scriptImplementation*
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
 
-globalVarsDefs ::= <<comma_separated_list (globalVarDef)>>
+globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
-globalVarDef ::= IDENTIFIER COLON type
+globalVar ::= IDENTIFIER COLON type {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement" methods=[getName setName getNameIdentifier]}
 
 scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
 
@@ -57,9 +60,10 @@ formalParameter ::= IDENTIFIER COLON type
 
 params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN
 
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variable
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
-variable ::= IDENTIFIER
+variableAccess ::= IDENTIFIER  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement" methods=[getName setName getNameIdentifier]}
 
 functionCall ::= IDENTIFIER params
 

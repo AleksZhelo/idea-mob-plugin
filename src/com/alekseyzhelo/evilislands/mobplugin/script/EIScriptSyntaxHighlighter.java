@@ -90,7 +90,7 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return NUMBER_KEYS;
         } else if (tokenType.equals(ScriptTypes.IDENTIFIER)) {
             return IDENTIFIER_KEYS;
-        }  else if (tokenType.equals(ScriptTypes.VARIABLE)) {
+        }  else if (tokenType.equals(ScriptTypes.VARIABLE_ACCESS)) {
             return VARIABLE_KEYS;
         } else if (tokenType.equals(ScriptTypes.COMMENT)) {
             return COMMENT_KEYS;
