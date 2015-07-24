@@ -27,6 +27,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <fileTypeFactory implementation="com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileTypeFactory"/>
     <lang.parserDefinition language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition"/>
+    <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptSyntaxHighlighterFactory"/>
   </extensions>
 
   <application-components>

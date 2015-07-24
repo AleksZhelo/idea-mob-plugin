@@ -11,7 +11,7 @@ import com.intellij.psi.TokenType;
 %implements FlexLexer
 %unicode
 %caseless
-%debug
+//%debug
 //%line //why doesn't this work?
 //%column
 %function advance
@@ -74,14 +74,14 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     {WHITE_SPACE}                                { return TokenType.WHITE_SPACE;  }
     {LINE_TERMINATOR}                            { /* ignore */  }
 
-    \"                                           { yybegin(STRING); string.setLength(0); }
+    \"                                           { yybegin(STRING); string.setLength(0); return ScriptTypes.CHARACTER_STRING; }
 
     //.                                            { System.out.println(yytext()); }
     // .                                            {  }
 }
 
 <STRING> {
-    \"                             { yybegin(YYINITIAL); return ScriptTypes.CHARACTER_STRING; }
+    \"                             { yybegin(YYINITIAL); }
 
     {STRING_CHARACTER}+            { string.append( yytext() ); }
 
@@ -102,5 +102,4 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
    // {LINE_TERMINATOR}              { throw new RuntimeException("Unterminated string at end of line"); }
 }
 
-//.                                { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
-.                                  { /* ignore */ } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
+.                                  { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
