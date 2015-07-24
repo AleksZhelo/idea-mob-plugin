@@ -15,7 +15,7 @@
 
 scriptFile ::= globalVars declarations scripts worldScript
 
-private meta comma_separated_list ::= <<param>> ( COMA <<param>> ) *
+private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
 
 private ignored ::= (COMMENT)
 
@@ -49,7 +49,7 @@ scriptThenBody ::= scriptExpression*
 
 scriptExpression ::= assignment | functionCall | forBlock
 
-forBlock ::= FOR LPAREN IDENTIFIER COMA IDENTIFIER RPAREN LPAREN scriptThenBody RPAREN
+forBlock ::= FOR LPAREN IDENTIFIER COMMA IDENTIFIER RPAREN LPAREN scriptThenBody RPAREN
 
 formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
 

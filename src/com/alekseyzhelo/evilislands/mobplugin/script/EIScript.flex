@@ -16,8 +16,7 @@ import com.intellij.psi.TokenType;
 //%column
 %function advance
 %type IElementType
-%eof{
-    // return;
+%eof{  return;
 %eof}
 
 %{
@@ -47,7 +46,7 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
 %state STRING
 
 %%
-
+// apparently it is very important to not ignore any characters from the input
 <YYINITIAL> {
     {FLOAT}                                      { return ScriptTypes.FLOAT; }
     {STRING}                                     { return ScriptTypes.STRING; }
@@ -68,38 +67,39 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     ")"                                          { return ScriptTypes.RPAREN; }
     //"{"                                          { return ScriptTypes.LBRACE; }
     //"}"                                          { return ScriptTypes.RBRACE; }
-    ","                                          { return ScriptTypes.COMA; }
+    ","                                          { return ScriptTypes.COMMA; }
     ":"                                          { return ScriptTypes.COLON; }
     {END_OF_LINE_COMMENT}                        { return ScriptTypes.COMMENT;  }
     {WHITE_SPACE}                                { return TokenType.WHITE_SPACE;  }
-    {LINE_TERMINATOR}                            { /* ignore */  }
+    {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE;  }
 
-    \"                                           { yybegin(STRING); string.setLength(0); return ScriptTypes.CHARACTER_STRING; }
+    //\"                    { yybegin(STRING); string.setLength(0);  }
+    \"{STRING_CHARACTER}+\"                      { return ScriptTypes.CHARACTER_STRING; }
 
     //.                                            { System.out.println(yytext()); }
     // .                                            {  }
 }
 
-<STRING> {
-    \"                             { yybegin(YYINITIAL); }
+//<STRING> {
+//    \"                             { yybegin(YYINITIAL); return ScriptTypes.CHARACTER_STRING; }
+//
+//    {STRING_CHARACTER}+            { string.append( yytext() ); }
+//
+//    /* escape sequences */
+//    "\\b"                          { string.append( '\b' ); }
+//    "\\t"                          { string.append( '\t' ); }
+//    "\\n"                          { string.append( '\n' ); }
+//    "\\f"                          { string.append( '\f' ); }
+//    "\\r"                          { string.append( '\r' ); }
+//    "\\\""                         { string.append( '\"' ); }
+//    "\\'"                          { string.append( '\'' ); }
+//    "\\\\"                         { string.append( '\\' ); }
+//    /*  \\[0-3]?{OctDigit}?{OctDigit}  { char val = (char) Integer.parseInt(yytext().substring(1),8);
+//                                           string.append( val ); }*/ // what to do with this? needed?
+//
+//    /* error cases */
+//   // \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
+//   // {LINE_TERMINATOR}              { throw new RuntimeException("Unterminated string at end of line"); }
+//}
 
-    {STRING_CHARACTER}+            { string.append( yytext() ); }
-
-    /* escape sequences */
-    "\\b"                          { string.append( '\b' ); }
-    "\\t"                          { string.append( '\t' ); }
-    "\\n"                          { string.append( '\n' ); }
-    "\\f"                          { string.append( '\f' ); }
-    "\\r"                          { string.append( '\r' ); }
-    "\\\""                         { string.append( '\"' ); }
-    "\\'"                          { string.append( '\'' ); }
-    "\\\\"                         { string.append( '\\' ); }
-    /*  \\[0-3]?{OctDigit}?{OctDigit}  { char val = (char) Integer.parseInt(yytext().substring(1),8);
-                                           string.append( val ); }*/ // what to do with this? needed?
-
-    /* error cases */
-   // \\.                            { throw new RuntimeException("Illegal escape sequence \""+yytext()+"\""); }
-   // {LINE_TERMINATOR}              { throw new RuntimeException("Unterminated string at end of line"); }
-}
-
-.                                  { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
+.                                    { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? FUCK
