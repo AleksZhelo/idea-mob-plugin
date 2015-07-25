@@ -24,18 +24,12 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
-import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.Function;
-import com.intellij.util.containers.ContainerUtil;
 import com.intellij.util.indexing.FileBasedIndex;
-import gnu.trove.THashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,6 +120,26 @@ public class EIScriptResolveUtil {
         return null;
     }
 
+    @NotNull
+    public static List<EIFormalParameter> findFormalParameters(@Nullable ScriptFile file) {
+        if (file == null) {
+            return Collections.emptyList();
+        }
+        final EIDeclarations declarations = PsiTreeUtil.getChildOfType(file, EIDeclarations.class);
+        if(declarations == null) {
+            return Collections.emptyList();
+        }
+        final EIScriptDeclaration[] scriptDeclarations = PsiTreeUtil.getChildrenOfType(declarations, EIScriptDeclaration.class);
+        if (scriptDeclarations == null) {
+            return Collections.emptyList();
+        }
+        List<EIFormalParameter> formalParameters = new ArrayList<>();
+        for(EIScriptDeclaration declaration : scriptDeclarations) {
+            formalParameters.addAll(declaration.getFormalParameterList());
+        }
+        return formalParameters;
+    }
+
     public static List<EIVariableAccess> findVariableAccesses(ScriptFile scriptFile) {
         List<EIVariableAccess> result = null;
         if (scriptFile != null) {
@@ -139,7 +153,7 @@ public class EIScriptResolveUtil {
 
     // TODO use
     @Nullable
-    public static PsiComment findDocumentation(ScriptNamedElement element) {
+    public static PsiComment findDocumentation(ScriptNamedElementMixin element) {
         final PsiElement candidate = UsefulPsiTreeUtil.getPrevSiblingSkipWhiteSpaces(element, true);
         if (candidate instanceof PsiComment) {
             return (PsiComment) candidate;

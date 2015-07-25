@@ -1,15 +1,15 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class ScriptNamedElementImpl extends ScriptPsiElementImpl implements ScriptNamedElement {
-    public ScriptNamedElementImpl(@NotNull ASTNode node) {
+public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl implements ScriptNamedElementMixin {
+    public ScriptNamedElementMixinImpl(@NotNull ASTNode node) {
         super(node);
     }
 

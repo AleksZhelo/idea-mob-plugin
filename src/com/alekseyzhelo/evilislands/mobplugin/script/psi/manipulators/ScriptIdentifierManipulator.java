@@ -19,9 +19,9 @@ public class ScriptIdentifierManipulator extends AbstractElementManipulator<EISc
         PsiFile file = element.getContainingFile();
         newContent = StringUtil.escapeSlashes(newContent);
         String newText = oldText.substring(0, range.getStartOffset()) + newContent + oldText.substring(range.getEndOffset());
-        PsiElement fromText = EIScriptElementFactory.createGlobalVar(file.getProject(), newText);
-        if (fromText.getFirstChild() instanceof EIScriptIdentifier) {
-            return (EIScriptIdentifier) element.replace(fromText.getFirstChild());
+        EIScriptIdentifier fromText = EIScriptElementFactory.createIdentifierFromText(file.getProject(), newText);
+        if (fromText != null) {
+            return (EIScriptIdentifier) element.replace(fromText);
         }
         return element;
     }
