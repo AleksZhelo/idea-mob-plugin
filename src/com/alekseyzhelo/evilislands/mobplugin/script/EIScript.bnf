@@ -68,7 +68,7 @@ expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 variableAccess ::= scriptReference {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-functionCall ::= scriptIdentifier params
+functionCall ::= scriptReference params
 
 assignment ::= scriptReference EQUALS expression
 
