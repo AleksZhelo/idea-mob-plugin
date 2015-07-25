@@ -30,6 +30,7 @@
         <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptColorSettingsPage"/>
         <psi.referenceContributor implementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.GlobalVariableReferenceContributor"/>
+        <lang.refactoringSupport language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptRefactoringSupportProvider"/>
     </extensions>
 
     <application-components>

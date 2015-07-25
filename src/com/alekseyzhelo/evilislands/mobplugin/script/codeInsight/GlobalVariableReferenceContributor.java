@@ -3,7 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.patterns.PlatformPatterns;
+import com.intellij.patterns.PsiElementPattern;
 import com.intellij.psi.*;
+import com.intellij.psi.search.PsiReferenceProcessor;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
