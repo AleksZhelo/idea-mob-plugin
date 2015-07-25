@@ -1,39 +1,55 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.GlobalVariableReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiLiteralExpression;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.filters.ElementFilter;
+import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.scope.processor.FilterScopeProcessor;
+import org.picocontainer.defaults.SimpleReference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EIScriptPsiImplUtil {
-    public static String getName(ScriptNamedElement element) {
-        ASTNode keyNode = element.getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
-            return keyNode.getText();
-        } else {
-            return null;
-        }
-    }
 
-    public static PsiElement setName(ScriptNamedElement element, String newName) {
-        ASTNode keyNode = element.getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
-            EIGlobalVar globalVar = EIScriptElementFactory.createGlobalVar(element.getProject(), newName);
-            ASTNode newKeyNode = globalVar.getFirstChild().getNode();
-            element.getNode().replaceChild(keyNode, newKeyNode);
-        }
-        return element;
-    }
 
-    public static PsiElement getNameIdentifier(ScriptNamedElement element) {
-        ASTNode keyNode = element.getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
-            return keyNode.getPsi();
-        } else {
-            return null;
+//    public static PsiReference[] getReferences(EIGlobalVar variable) {
+//        List<PsiReference> references = new ArrayList<>();
+//        ScriptFile file = (ScriptFile) variable.getContainingFile();
+//        List<EIVariableAccess> accesses = EIScriptUtil.findVariableAccesses(file);
+//        for (EIVariableAccess access : accesses) {
+//            String text = (String) access.getNameIdentifier().getText();
+//            if (text != null && text.equals(variable.getName())) {
+//                references.add(
+//                        new GlobalVariableReference(access.getNameIdentifier(), new TextRange(0, text.length()))
+//                );
+//            }
+//        }
+//
+//        return references.toArray(new PsiReference[references.size()]);
+//    }
+
+    public static PsiReference getReference(EIVariableAccess variable) {
+        List<PsiReference> references = new ArrayList<>();
+        ScriptFile file = (ScriptFile) variable.getContainingFile();
+        List<EIGlobalVar> globals = EIScriptUtil.findGlobalVars(file);
+        for (EIGlobalVar global : globals) {
+            String text = (String) global.getName();
+            if (text != null && text.equals(variable.getName())) {
+                references.add(
+                        new GlobalVariableReference(variable.getNameIdentifier(), new TextRange(0, text.length()))
+                );
+            }
         }
+
+        return references.size() == 1 ? references.get(0) : null;
     }
 
     // UNUSED

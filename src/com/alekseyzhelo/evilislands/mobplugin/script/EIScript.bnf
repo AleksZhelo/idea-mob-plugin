@@ -1,7 +1,8 @@
 {
   parserClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParser"
 
-  extends="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement"
+  extends="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiElementImpl"
 
   psiClassPrefix="EI"
   psiImplClassSuffix="Impl"
@@ -29,14 +30,16 @@ scripts ::= scriptImplementation*
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
 
-globalVarsDefs ::= <<comma_separated_list (globalVar)>>
+private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
-globalVar ::= IDENTIFIER COLON type {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement" methods=[getName setName getNameIdentifier]}
+globalVar ::= scriptIdentifier COLON type {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement"}
 
-scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
+scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement"}
 
-scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
+scriptImplementation ::= SCRIPT scriptIdentifier LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement"} // TODO implements own interface?
 
 scriptBody ::= scriptBlock+
 
@@ -52,21 +55,23 @@ scriptThenBody ::= scriptExpression*
 
 scriptExpression ::= assignment | functionCall | forBlock
 
-forBlock ::= FOR LPAREN IDENTIFIER COMMA IDENTIFIER RPAREN LPAREN scriptThenBody RPAREN
+forBlock ::= FOR LPAREN scriptIdentifier COMMA scriptIdentifier RPAREN LPAREN scriptThenBody RPAREN
 
 formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
 
-formalParameter ::= IDENTIFIER COLON type
+formalParameter ::= scriptIdentifier COLON type
 
 params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN
 
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
-variableAccess ::= IDENTIFIER  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement" methods=[getName setName getNameIdentifier]}
+variableAccess ::= scriptIdentifier {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElement" methods=[getName setName getNameIdentifier getReference]}
 
-functionCall ::= IDENTIFIER params
+functionCall ::= scriptIdentifier params
 
-assignment ::= IDENTIFIER EQUALS expression
+assignment ::= scriptIdentifier EQUALS expression
+
+scriptIdentifier ::= IDENTIFIER
 
 type ::= FLOAT | STRING | OBJECT | GROUP

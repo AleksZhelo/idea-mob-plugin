@@ -88,7 +88,7 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return STRING_KEYS;
         } else if (tokenType.equals(ScriptTypes.FLOATNUMBER)) {
             return NUMBER_KEYS;
-        } else if (tokenType.equals(ScriptTypes.IDENTIFIER)) {
+        } else if (tokenType.equals(ScriptTypes.SCRIPT_IDENTIFIER)) {
             return IDENTIFIER_KEYS;
         }  else if (tokenType.equals(ScriptTypes.VARIABLE_ACCESS)) {
             return VARIABLE_KEYS;

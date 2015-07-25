@@ -1,9 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi;
 
-import com.intellij.psi.PsiElement;
-
 /**
  * Created by Aleks on 25-07-2015.
  */
-public interface ScriptPsiElement extends PsiElement {
+public interface ScriptImplementationMixin extends ScriptPsiElement {
+
 }
