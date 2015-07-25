@@ -1,9 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.GlobalVariableReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -39,7 +39,7 @@ public class EIScriptPsiImplUtil {
     public static PsiReference getReference(EIVariableAccess variable) {
         List<PsiReference> references = new ArrayList<>();
         ScriptFile file = (ScriptFile) variable.getContainingFile();
-        List<EIGlobalVar> globals = EIScriptUtil.findGlobalVars(file);
+        List<EIGlobalVar> globals = EIScriptResolveUtil.findGlobalVars(file);
         for (EIGlobalVar global : globals) {
             String text = (String) global.getName();
             if (text != null && text.equals(variable.getName())) {

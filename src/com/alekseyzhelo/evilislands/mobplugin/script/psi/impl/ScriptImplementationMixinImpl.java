@@ -14,7 +14,4 @@ public class ScriptImplementationMixinImpl extends ScriptNamedElementImpl
         super(node);
     }
 
-    public EIScriptDeclaration getScriptDeclaration() {
-
-    }
 }
