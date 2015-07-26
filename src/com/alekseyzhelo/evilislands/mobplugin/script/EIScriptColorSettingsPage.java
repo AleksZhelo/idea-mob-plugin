@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
@@ -21,6 +22,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("String", EIScriptSyntaxHighlighter.STRING),
             new AttributesDescriptor("Number", EIScriptSyntaxHighlighter.NUMBER),
             new AttributesDescriptor("Identifier", EIScriptSyntaxHighlighter.IDENTIFIER),
+            new AttributesDescriptor("Function call", DefaultLanguageHighlighterColors.FUNCTION_CALL),
             new AttributesDescriptor("Variable", EIScriptSyntaxHighlighter.VARIABLE),
             new AttributesDescriptor("Comment", EIScriptSyntaxHighlighter.COMMENT),
     };

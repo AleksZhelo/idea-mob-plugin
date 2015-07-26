@@ -159,7 +159,7 @@ FixWorldTime( Time : float )
 Follow( UnitA : object , UnitB : object )
 AddMob( FileNameMob : string )
 Dummy1() //For( GlobalVariable : object , grp : group ) ( Command )
-Dummy2() //ForIf( цикл )
+Dummy2() //ForIf( С†РёРєР» )
 GetAIClass( Unit : object ) : float
 GetBSZValue( x : float , y : float ) : float
 GetDiplomacy( nDiplomacyGroupA : float , nDiplomacyGroupB : float ) : float
