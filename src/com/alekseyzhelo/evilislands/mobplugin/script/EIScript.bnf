@@ -16,11 +16,21 @@
   psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptPsiImplUtil"
 }
 
-scriptFile ::= globalVars? declarations? scripts? worldScript?
+// TODO analyze correctness and complexity
 
+//utility---------------
+//                     |
+//                    \|/
+scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldScript?
+
+// utility
 private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
 
 private ignored ::= (COMMENT)
+
+functionDeclaration ::= scriptIdentifier formalParams COLON type | scriptIdentifier formalParams{mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+// utility end
 
 globalVars ::= GLOBALVARS LPAREN RPAREN | GLOBALVARS LPAREN globalVarsDefs RPAREN
 
