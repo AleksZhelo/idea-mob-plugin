@@ -24,6 +24,7 @@ private ignored ::= (COMMENT)
 
 globalVars ::= GLOBALVARS LPAREN RPAREN | GLOBALVARS LPAREN globalVarsDefs RPAREN
 
+// apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
 declarations ::= scriptDeclaration*
 
 scripts ::= scriptImplementation*
@@ -41,7 +42,7 @@ scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {mixin="com.al
 scriptImplementation ::= SCRIPT scriptReference LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"} // TODO implements own interface?
 
-scriptBody ::= scriptBlock+
+private scriptBody ::= scriptBlock+
 
 scriptBlock ::= scriptIfBlock scriptThenBlock
 

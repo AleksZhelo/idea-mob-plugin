@@ -15,6 +15,9 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
 
     public String getName() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        if(keyNode == null) {
+            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
+        }
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -23,17 +26,32 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
     }
 
     public PsiElement setName(String newName) {
+        boolean nameIsReference = false;
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        if(keyNode == null) {
+            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
+            nameIsReference = true;
+        }
         if (keyNode != null) {
             EIScriptIdentifier identifier = EIScriptElementFactory.createIdentifierFromText(getProject(), newName);
             ASTNode newKeyNode = identifier.getNode();
-            getNode().replaceChild(keyNode, newKeyNode);
+            if(!nameIsReference) {
+                getNode().replaceChild(keyNode, newKeyNode);
+            } else {
+                keyNode.replaceChild(
+                        keyNode.findChildByType(ScriptTypes.SCRIPT_IDENTIFIER),
+                        newKeyNode
+                );
+            }
         }
         return this;
     }
 
     public PsiElement getNameIdentifier() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        if(keyNode == null) {
+            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
+        }
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {

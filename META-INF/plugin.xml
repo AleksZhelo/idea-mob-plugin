@@ -33,6 +33,7 @@
         <lang.elementManipulator forClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier"
                                  implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.manipulators.ScriptIdentifierManipulator"/>
         <lang.findUsagesProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.SimpleScriptFindUsagesProvider"/>
+        <lang.foldingBuilder language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptSimpleFoldingBuilder"/>
     </extensions>
 
     <application-components>
