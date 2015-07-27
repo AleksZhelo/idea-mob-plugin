@@ -38,6 +38,7 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
             if(!nameIsReference) {
                 getNode().replaceChild(keyNode, newKeyNode);
             } else {
+                //noinspection ConstantConditions
                 keyNode.replaceChild(
                         keyNode.findChildByType(ScriptTypes.SCRIPT_IDENTIFIER),
                         newKeyNode
@@ -51,6 +52,9 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if(keyNode == null) {
             keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
+            if (keyNode != null) {
+                keyNode = keyNode.findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+            }
         }
         if (keyNode != null) {
             return keyNode.getPsi();

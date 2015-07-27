@@ -80,7 +80,15 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
-        return element.getText();
+        if(element instanceof PsiNamedElement) {
+            if(((PsiNamedElement) element).getName() != null) {
+                return ((PsiNamedElement) element).getName();
+            } else {
+                return element.getText();
+            }
+        } else {
+            return element.getText();
+        }
 //        if (element instanceof PsiNamedElement) {
 //            return ((SimpleProperty) element).getKey() + ":" + ((SimpleProperty) element).getValue();
 //        } else {

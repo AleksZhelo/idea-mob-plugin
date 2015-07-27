@@ -1,9 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptResolver;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
@@ -11,6 +8,7 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.psi.infos.CandidateInfo;
 import com.intellij.psi.scope.PsiScopeProcessor;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -86,9 +84,6 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
     @Override
     public boolean isReferenceTo(PsiElement element) {
         // TODO
-        if(element instanceof ScriptPsiReference){
-            return false;
-        }
         if(element instanceof ScriptNamedElementMixin) {
             String name = ((ScriptNamedElementMixin) element).getName();
             if(name != null && name.equals(getText())) {
@@ -147,5 +142,4 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         }
         return result;
     }
-
 }
