@@ -47,7 +47,7 @@ public class EIScriptResolver implements ResolveCache.AbstractResolver<ScriptPsi
     @Override
     public List<? extends PsiElement> resolve(@NotNull ScriptPsiReference reference, boolean incompleteCode) {
         final List<PsiElement> result = new ArrayList<PsiElement>();
-        PsiTreeUtil.treeWalkUp(new ResolveScopeProcessor(result, reference.getCanonicalText()), reference, null, new ResolveState());
+        PsiTreeUtil.treeWalkUp(new ResolveScopeProcessor(result, reference.getCanonicalText()), reference, reference.getContainingFile(), new ResolveState());
         if (!result.isEmpty()) {
             return result;
         }

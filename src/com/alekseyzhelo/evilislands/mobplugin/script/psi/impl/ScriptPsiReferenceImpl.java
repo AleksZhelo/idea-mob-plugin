@@ -86,7 +86,9 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         // TODO
         if(element instanceof ScriptNamedElementMixin) {
             String name = ((ScriptNamedElementMixin) element).getName();
-            if(name != null && name.equals(getText())) {
+            if(name != null
+                    && name.equals(getText())
+                    && element.getContainingFile().equals(getContainingFile())) {
                 return true;
             }
         }

@@ -1,9 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.codeInspection.ProblemHighlightType;
@@ -22,6 +19,16 @@ import java.util.Locale;
 public class EIScriptAnnotator implements Annotator {
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
+        if (element instanceof EIScriptReference) {
+            if(element.getParent() instanceof EIScriptImplementation) {
+                EIScriptReference reference = (EIScriptReference) element;
+                if(reference.resolve() == null) {
+                    TextRange range = new TextRange(reference.getTextRange().getStartOffset(),
+                            reference.getTextRange().getEndOffset());
+                    holder.createErrorAnnotation(range, "Script not declared").setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                }
+            }
+        }
         if (element instanceof EIFunctionCall) {
             EIFunctionCall functionCall = (EIFunctionCall) element;
             PsiElement nameElement = element.getFirstChild();
