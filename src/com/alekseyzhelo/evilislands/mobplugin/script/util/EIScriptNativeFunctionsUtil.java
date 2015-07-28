@@ -29,14 +29,14 @@ public class EIScriptNativeFunctionsUtil {
         if (functionNameToPsi == null || functionNameToDoc == null) {
             initData(project);
         }
-        return functionNameToPsi.get(functionName);
+        return functionName != null ? functionNameToPsi.get(functionName.toLowerCase(Locale.ENGLISH)) : null;
     }
 
     public static String getFunctionDoc(Project project, String functionName) {
         if (functionNameToPsi == null || functionNameToDoc == null) {
             initData(project);
         }
-        return functionNameToDoc.get(functionName);
+        return functionName != null ? functionNameToDoc.get(functionName.toLowerCase(Locale.ENGLISH)) : null;
     }
 
     // TODO unfuck this method

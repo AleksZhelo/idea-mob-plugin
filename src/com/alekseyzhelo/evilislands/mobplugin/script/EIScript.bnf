@@ -49,8 +49,8 @@ globalVar ::= scriptIdentifier COLON type {mixin="com.alekseyzhelo.evilislands.m
 scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-scriptImplementation ::= SCRIPT scriptReference LPAREN scriptBody RPAREN // {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
-  // implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"} // TODO implements own interface?
+scriptImplementation ::= SCRIPT scriptReference LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"} // TODO implements own interface?
 
 private scriptBody ::= scriptBlock+
 
@@ -77,13 +77,11 @@ params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN
 
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
-variableAccess ::= scriptReference {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+variableAccess ::= scriptReference
 
 functionCall ::= scriptReference params
 
-assignment ::= scriptReference EQUALS expression  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+assignment ::= scriptReference EQUALS expression
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin"}

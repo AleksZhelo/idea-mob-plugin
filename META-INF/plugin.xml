@@ -35,6 +35,7 @@
         <lang.findUsagesProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.SimpleScriptFindUsagesProvider"/>
         <lang.foldingBuilder language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptSimpleFoldingBuilder"/>
         <annotator language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptAnnotator"/>
+        <lang.documentationProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptDocumentationProvider"/>
     </extensions>
 
     <application-components>

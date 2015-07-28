@@ -42,9 +42,9 @@ public class EIScriptPsiImplUtil {
         List<EIGlobalVar> globals = EIScriptResolveUtil.findGlobalVars(file);
         for (EIGlobalVar global : globals) {
             String text = (String) global.getName();
-            if (text != null && text.equals(variable.getName())) {
+            if (text != null && text.equals(variable.getText())) {
                 references.add(
-                        new GlobalVariableReference(variable.getNameIdentifier(), new TextRange(0, text.length()))
+                        new GlobalVariableReference(variable, new TextRange(0, text.length()))
                 );
             }
         }
