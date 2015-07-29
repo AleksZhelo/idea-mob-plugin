@@ -2,7 +2,11 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
+import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
@@ -14,6 +18,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +26,8 @@ import java.util.List;
  */
 public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         implements ScriptPsiReference {
+
+    private static LookupElement[] functionLookupElements;
 
     public ScriptPsiReferenceImpl(ASTNode node) {
         super(node);
@@ -98,7 +105,13 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
     @NotNull
     @Override
     public Object[] getVariants() {
-        // TODO
+        if(getParent() instanceof  EIFunctionCall) {
+            if(functionLookupElements == null) {
+                List<LookupElement> elements = initFunctionLookup(getProject());
+                functionLookupElements = elements.toArray(new LookupElement[elements.size()]);
+            }
+            return functionLookupElements;
+        }
         return new Object[0];
     }
 
@@ -143,5 +156,14 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
             result[i] = new CandidateInfo(elements.get(i), EmptySubstitutor.getInstance());
         }
         return result;
+    }
+
+    private List<LookupElement> initFunctionLookup(Project project) {
+        List<String> functions = EIScriptNativeFunctionsUtil.getAllFunctions(project);
+        List<LookupElement> lookupElements = new ArrayList<>(functions.size());
+        for(String functionName : functions) {
+            lookupElements.add(LookupElementBuilder.create(functionName).withCaseSensitivity(false));
+        }
+        return lookupElements;
     }
 }

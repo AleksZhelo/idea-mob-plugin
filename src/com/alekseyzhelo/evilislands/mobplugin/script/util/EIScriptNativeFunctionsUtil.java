@@ -12,16 +12,14 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Aleks on 26-07-2015.
  */
 public class EIScriptNativeFunctionsUtil {
 
+    private static List<String> functionNames;
     private static Map<String, EIFunctionDeclaration> functionNameToPsi;
     private static Map<String, String> functionNameToDoc;
 
@@ -30,6 +28,14 @@ public class EIScriptNativeFunctionsUtil {
             initData(project);
         }
         return functionName != null ? functionNameToPsi.get(functionName.toLowerCase(Locale.ENGLISH)) : null;
+    }
+
+    public static List<String> getAllFunctions(Project project) {
+        if (functionNames == null) {
+            initData(project);
+        }
+
+        return Collections.unmodifiableList(functionNames);
     }
 
     public static String getFunctionDoc(Project project, String functionName) {
@@ -57,10 +63,12 @@ public class EIScriptNativeFunctionsUtil {
                     createFileFromText("declarations.eiscript", ScriptFileType.INSTANCE, declarations);
             functionNameToPsi = new HashMap<>();
             functionNameToDoc = new HashMap<>();
+            functionNames = new ArrayList<>();
             EIFunctionDeclaration[] functionDeclarations = PsiTreeUtil.getChildrenOfType(file, EIFunctionDeclaration.class);
             int functionNumber = 0;
             if(functionDeclarations != null) {
                 for (EIFunctionDeclaration declaration : functionDeclarations) {
+                    functionNames.add(declaration.getName());
                     functionNameToPsi.put(declaration.getName().toLowerCase(Locale.ENGLISH), declaration);
                     functionNameToDoc.put(declaration.getName().toLowerCase(Locale.ENGLISH), documentation.get(functionNumber++));
                 }
