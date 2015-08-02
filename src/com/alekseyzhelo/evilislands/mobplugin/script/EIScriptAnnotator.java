@@ -1,8 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -17,15 +17,20 @@ import java.util.Locale;
 
 // TODO finish, proper
 public class EIScriptAnnotator implements Annotator {
+
+    public static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function";
+    public static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
+    public static final String SCRIPT_NOT_DECLARED_ERROR = "Script not declared";
+
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof EIScriptReference) {
-            if(element.getParent() instanceof EIScriptImplementation) {
+            if (element.getParent() instanceof EIScriptImplementation) {
                 EIScriptReference reference = (EIScriptReference) element;
-                if(reference.resolve() == null) {
+                if (reference.resolve() == null) {
                     TextRange range = new TextRange(reference.getTextRange().getStartOffset(),
                             reference.getTextRange().getEndOffset());
-                    holder.createErrorAnnotation(range, "Script not declared").setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+                    holder.createErrorAnnotation(range, SCRIPT_NOT_DECLARED_ERROR).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
                 }
             }
         }
@@ -36,23 +41,48 @@ public class EIScriptAnnotator implements Annotator {
             if (name != null) {
                 Project project = element.getProject();
                 EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(project, name.toLowerCase(Locale.ENGLISH));
-                if (function != null) {
-                    annotateAsFunctionCall(holder, nameElement);
+                if (element.getParent() instanceof EIScriptIfBlock) {
+                    handleFunctionCallInIfBlock(holder, nameElement, function);
                 } else {
-                    EIScriptDeclaration scriptDeclaration = EIScriptResolveUtil.findScriptDeclaration((ScriptFile) element.getContainingFile(), name);
-                    if (scriptDeclaration != null) {
-                        // annotateAsFunctionCall(holder, nameElement);
-                    } else {
-                        TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
-                                nameElement.getTextRange().getEndOffset());
-                        holder.createErrorAnnotation(range, "Unresolved function").setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
-                    }
+                    handleFunctionOrScriptCall(element, holder, nameElement, name, function);
                 }
             }
         }
     }
 
-    private void annotateAsFunctionCall(@NotNull AnnotationHolder holder, PsiElement nameElement) {
+    private void handleFunctionCallInIfBlock(@NotNull AnnotationHolder holder, PsiElement nameElement, EIFunctionDeclaration function) {
+        if (function == null) {
+            markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
+        } else {
+            if (function.getType() == null || function.getType().getTypeToken() != EIType.FLOAT) {
+                markAsError(holder, nameElement, NOT_ALLOWED_IN_SCRIPT_IF_ERROR);
+            } else {
+                annotateAsFunctionCall(holder, nameElement);
+            }
+        }
+    }
+
+    private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, String name, EIFunctionDeclaration function) {
+        if (function != null) {
+            annotateAsFunctionCall(holder, nameElement);
+        } else {
+            EIScriptDeclaration scriptDeclaration = EIScriptResolveUtil.findScriptDeclaration((ScriptFile) element.getContainingFile(), name);
+            if (scriptDeclaration != null) {
+                // TODO
+                // annotateAsFunctionCall(holder, nameElement);
+            } else {
+                markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
+            }
+        }
+    }
+
+    private void markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
+        TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
+                nameElement.getTextRange().getEndOffset());
+        holder.createErrorAnnotation(range, errorString).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+    }
+
+    private void annotateAsFunctionCall(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement) {
         TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
                 nameElement.getTextRange().getEndOffset());
         Annotation annotation = holder.createInfoAnnotation(range, null);

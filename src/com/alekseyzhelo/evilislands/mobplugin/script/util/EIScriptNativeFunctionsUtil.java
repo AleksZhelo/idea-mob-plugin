@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Aleks on 26-07-2015.
@@ -30,12 +31,36 @@ public class EIScriptNativeFunctionsUtil {
         return functionName != null ? functionNameToPsi.get(functionName.toLowerCase(Locale.ENGLISH)) : null;
     }
 
-    public static List<String> getAllFunctions(Project project) {
+    public static List<String> getAllFunctionNames(Project project) {
         if (functionNames == null) {
             initData(project);
         }
 
         return Collections.unmodifiableList(functionNames);
+    }
+
+    public static List<EIFunctionDeclaration> getAllFunctions(Project project) {
+        if (functionNameToPsi == null) {
+            initData(project);
+        }
+
+        return new ArrayList<>(functionNameToPsi.values());
+    }
+
+    public static List<EIFunctionDeclaration> getAllFunctions(Project project, final EIType type) {
+        if (functionNameToPsi == null) {
+            initData(project);
+        }
+
+        return new ArrayList<>(functionNameToPsi.values()).stream()
+                .filter(x -> {
+                    if (type != EIType.VOID) {
+                        return x.getType() != null && x.getType().getTypeToken() == type;
+                    } else {
+                        return x.getType() == null || x.getType().getTypeToken() == EIType.VOID;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     public static String getFunctionDoc(Project project, String functionName) {
@@ -58,7 +83,7 @@ public class EIScriptNativeFunctionsUtil {
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        if(declarations != null && documentation != null) {
+        if (declarations != null && documentation != null) {
             final ScriptFile file = (ScriptFile) PsiFileFactory.getInstance(project).
                     createFileFromText("declarations.eiscript", ScriptFileType.INSTANCE, declarations);
             functionNameToPsi = new HashMap<>();
@@ -66,7 +91,7 @@ public class EIScriptNativeFunctionsUtil {
             functionNames = new ArrayList<>();
             EIFunctionDeclaration[] functionDeclarations = PsiTreeUtil.getChildrenOfType(file, EIFunctionDeclaration.class);
             int functionNumber = 0;
-            if(functionDeclarations != null) {
+            if (functionDeclarations != null) {
                 for (EIFunctionDeclaration declaration : functionDeclarations) {
                     functionNames.add(declaration.getName());
                     functionNameToPsi.put(declaration.getName().toLowerCase(Locale.ENGLISH), declaration);

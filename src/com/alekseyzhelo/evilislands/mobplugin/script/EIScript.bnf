@@ -58,11 +58,11 @@ scriptBlock ::= scriptIfBlock scriptThenBlock
 
 scriptIfBlock ::= IF LPAREN ifConjunction RPAREN
 
-ifConjunction ::= functionCall*
+private ifConjunction ::= functionCall*
 
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN
 
-scriptThenBody ::= scriptExpression*
+private scriptThenBody ::= scriptExpression*
 
 scriptExpression ::= assignment | functionCall | forBlock
 
@@ -89,4 +89,5 @@ scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.s
 scriptReference ::= scriptIdentifier {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiReferenceImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiReference"}
 
-type ::= FLOAT | STRING | OBJECT | GROUP
+type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptTypeMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin"}
