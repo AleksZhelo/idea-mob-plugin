@@ -10,7 +10,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
- 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
     public String getPlaceholderText(@NotNull ASTNode node) {
         return "...";
     }
- 
+
     @Override
     public boolean isCollapsedByDefault(@NotNull ASTNode node) {
         return false;
@@ -42,7 +42,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processGlobals(@NotNull PsiElement root, @NotNull List<FoldingDescriptor> descriptors) {
         EIGlobalVars globals = PsiTreeUtil.getChildOfType(root, EIGlobalVars.class);
-        if(globals != null) {
+        if (globals != null) {
             final int variablesCount = globals.getGlobalVarList().size();
             @SuppressWarnings("ConstantConditions")
             final int lParenOffset = globals.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
@@ -60,7 +60,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processScriptDeclarations(@NotNull PsiElement root, @NotNull List<FoldingDescriptor> descriptors) {
         EIDeclarations declarations = PsiTreeUtil.getChildOfType(root, EIDeclarations.class);
-        if(declarations != null) {
+        if (declarations != null) {
             final int declarationsCount = declarations.getScriptDeclarationList().size();
             foldWholeElement(descriptors, declarations, "{" + declarationsCount + " script declarations}");
         }
@@ -68,10 +68,10 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processScriptImplementations(@NotNull PsiElement root, @NotNull List<FoldingDescriptor> descriptors) {
         EIScripts scripts = PsiTreeUtil.getChildOfType(root, EIScripts.class);
-        if(scripts != null) {
+        if (scripts != null) {
             final int implementationsCount = scripts.getScriptImplementationList().size();
             foldWholeElement(descriptors, scripts, "{" + implementationsCount + " script implementations}");
-            for(EIScriptImplementation scriptImplementation : scripts.getScriptImplementationList()) {
+            for (EIScriptImplementation scriptImplementation : scripts.getScriptImplementationList()) {
                 processScriptImplementation(scriptImplementation, descriptors);
             }
         }
@@ -79,7 +79,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processScriptImplementation(@NotNull EIScriptImplementation scriptImplementation, @NotNull List<FoldingDescriptor> descriptors) {
         foldFromLParenToEnd(descriptors, scriptImplementation);
-        for(EIScriptBlock block : scriptImplementation.getScriptBlockList()) {
+        for (EIScriptBlock block : scriptImplementation.getScriptBlockList()) {
             processScriptBlock(block, descriptors);
         }
     }
@@ -92,7 +92,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processWorldScript(@NotNull PsiElement root, @NotNull List<FoldingDescriptor> descriptors) {
         EIWorldScript worldScript = PsiTreeUtil.getChildOfType(root, EIWorldScript.class);
-        if(worldScript != null) {
+        if (worldScript != null) {
             foldFromLParenToEnd(descriptors, worldScript);
         }
     }
@@ -102,6 +102,9 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
             final PsiElement element,
             final String placeholderText
     ) {
+        if (element.getTextRange().getStartOffset() >= element.getTextRange().getEndOffset()) {
+            return;
+        }
         descriptors.add(new FoldingDescriptor(element.getNode(),
                 new TextRange(element.getTextRange().getStartOffset(),
                         element.getTextRange().getEndOffset()), null) {
@@ -116,6 +119,9 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
     private void foldFromLParenToEnd(@NotNull List<FoldingDescriptor> descriptors, @NotNull final PsiElement element) {
         @SuppressWarnings("ConstantConditions")
         final int lParenOffset = element.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
+        if (lParenOffset >= element.getTextRange().getEndOffset()) {
+            return;
+        }
         descriptors.add(new FoldingDescriptor(element.getNode(),
                 new TextRange(lParenOffset,
                         element.getTextRange().getEndOffset()), null) {

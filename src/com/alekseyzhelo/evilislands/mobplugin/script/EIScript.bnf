@@ -28,7 +28,7 @@ private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
 
 private ignored ::= (COMMENT)
 
-functionDeclaration ::= scriptIdentifier formalParams COLON type | scriptIdentifier formalParams{mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+functionDeclaration ::= scriptIdentifier formalParams COLON type | scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 // utility end
 
@@ -43,10 +43,10 @@ worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
-globalVar ::= scriptIdentifier COLON type {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+globalVar ::= scriptIdentifier COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
 scriptImplementation ::= SCRIPT scriptReference LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
@@ -56,7 +56,7 @@ private scriptBody ::= scriptBlock+
 
 scriptBlock ::= scriptIfBlock scriptThenBlock
 
-scriptIfBlock ::= IF LPAREN ifConjunction RPAREN
+scriptIfBlock ::= IF LPAREN ifConjunction RPAREN //{pin=2 recoverWhile=scriptIfBlockRecover}
 
 private ifConjunction ::= functionCall*
 
@@ -91,3 +91,7 @@ scriptReference ::= scriptIdentifier {mixin="com.alekseyzhelo.evilislands.mobplu
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptTypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin"}
+
+private globalVarRecover ::= !(COMMA | RPAREN)
+private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
+private scriptIfBlockRecover ::= !(RPAREN)
