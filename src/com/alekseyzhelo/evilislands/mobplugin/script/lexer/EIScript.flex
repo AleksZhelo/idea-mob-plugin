@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script;
+package com.alekseyzhelo.evilislands.mobplugin.script.lexer;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
@@ -9,6 +9,7 @@ import com.intellij.psi.TokenType;
 
 %class EIScriptLexer
 %implements FlexLexer
+%public
 %unicode
 %caseless
 //%debug

@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
@@ -29,7 +30,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new FlexAdapter(new EIScriptLexer((Reader) null));
+        return new EILexer();
     }
  
     @NotNull

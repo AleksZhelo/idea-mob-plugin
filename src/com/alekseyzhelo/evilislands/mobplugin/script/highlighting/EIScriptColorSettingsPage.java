@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script;
+package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;

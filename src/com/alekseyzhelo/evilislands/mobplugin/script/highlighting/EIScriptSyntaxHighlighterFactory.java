@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script;
+package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;

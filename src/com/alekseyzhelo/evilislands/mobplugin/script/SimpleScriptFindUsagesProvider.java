@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
@@ -17,7 +18,7 @@ import java.io.Reader;
 public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
     private static final DefaultWordsScanner WORDS_SCANNER =
             new DefaultWordsScanner(
-                    new FlexAdapter(new EIScriptLexer((Reader) null)),
+                    new EILexer(),
                     TokenSet.create(ScriptTypes.IDENTIFIER),
                     TokenSet.create(ScriptTypes.COMMENT),
                     TokenSet.create(ScriptTypes.CHARACTER_STRING, ScriptTypes.FLOATNUMBER)

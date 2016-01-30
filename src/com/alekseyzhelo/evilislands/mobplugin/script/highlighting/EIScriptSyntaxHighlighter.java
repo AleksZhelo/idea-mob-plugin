@@ -1,7 +1,7 @@
-package com.alekseyzhelo.evilislands.mobplugin.script;
+package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
-import com.intellij.lexer.FlexAdapter;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -13,7 +13,6 @@ import com.intellij.ui.JBColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,7 +69,7 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new FlexAdapter(new EIScriptLexer((Reader) null));
+        return new EILexer();
     }
 
     @NotNull
@@ -90,7 +89,7 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return NUMBER_KEYS;
         } else if (tokenType.equals(ScriptTypes.SCRIPT_IDENTIFIER)) {
             return IDENTIFIER_KEYS;
-        }  else if (tokenType.equals(ScriptTypes.VARIABLE_ACCESS)) {
+        } else if (tokenType.equals(ScriptTypes.VARIABLE_ACCESS)) {
             return VARIABLE_KEYS;
         } else if (tokenType.equals(ScriptTypes.COMMENT)) {
             return COMMENT_KEYS;
