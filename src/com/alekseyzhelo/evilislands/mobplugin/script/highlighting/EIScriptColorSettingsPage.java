@@ -9,36 +9,39 @@ import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
- 
+
 import javax.swing.*;
 import java.util.Map;
- 
+
+import static com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlightingColors.*;
+
 public class EIScriptColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Equals sign", EIScriptSyntaxHighlighter.EQUALS),
-            new AttributesDescriptor("Comma", EIScriptSyntaxHighlighter.COMMA),
-            new AttributesDescriptor("Parentheses", EIScriptSyntaxHighlighter.PARENTHESES),
-            new AttributesDescriptor("Keyword", EIScriptSyntaxHighlighter.KEYWORD),
-            new AttributesDescriptor("String", EIScriptSyntaxHighlighter.STRING),
-            new AttributesDescriptor("Number", EIScriptSyntaxHighlighter.NUMBER),
-            new AttributesDescriptor("Identifier", EIScriptSyntaxHighlighter.IDENTIFIER),
+            new AttributesDescriptor("Equals sign", EQUALS),
+            new AttributesDescriptor("Comma", COMMA),
+            new AttributesDescriptor("Parentheses", PARENTHESES),
+            new AttributesDescriptor("Keyword", KEYWORD),
+            new AttributesDescriptor("Type", TYPE),
+            new AttributesDescriptor("String", STRING),
+            new AttributesDescriptor("Number", NUMBER),
+            new AttributesDescriptor("Identifier", IDENTIFIER),
             new AttributesDescriptor("Function call", DefaultLanguageHighlighterColors.FUNCTION_CALL),
-            new AttributesDescriptor("Variable", EIScriptSyntaxHighlighter.VARIABLE),
-            new AttributesDescriptor("Comment", EIScriptSyntaxHighlighter.COMMENT),
+            new AttributesDescriptor("Variable", VARIABLE),
+            new AttributesDescriptor("Comment", COMMENT),
     };
- 
+
     @Nullable
     @Override
     public Icon getIcon() {
         return Icons.FILE;
     }
- 
+
     @NotNull
     @Override
     public SyntaxHighlighter getHighlighter() {
         return new EIScriptSyntaxHighlighter();
     }
- 
+
     @NotNull
     @Override
     public String getDemoText() {
@@ -175,25 +178,25 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "  Sleep( 10 ) //Чтобы другие скрипты не начали выполняться\n" +
                 ")\n";
     }
- 
+
     @Nullable
     @Override
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
         return null;
     }
- 
+
     @NotNull
     @Override
     public AttributesDescriptor[] getAttributeDescriptors() {
         return DESCRIPTORS;
     }
- 
+
     @NotNull
     @Override
     public ColorDescriptor[] getColorDescriptors() {
         return ColorDescriptor.EMPTY_ARRAY;
     }
- 
+
     @NotNull
     @Override
     public String getDisplayName() {

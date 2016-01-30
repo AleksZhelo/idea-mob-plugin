@@ -56,21 +56,14 @@ public class EIScriptAnnotator implements Annotator {
         } else {
             if (function.getType() == null || function.getType().getTypeToken() != EIType.FLOAT) {
                 markAsError(holder, nameElement, NOT_ALLOWED_IN_SCRIPT_IF_ERROR);
-            } else {
-                annotateAsFunctionCall(holder, nameElement);
             }
         }
     }
 
     private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, String name, EIFunctionDeclaration function) {
-        if (function != null) {
-            annotateAsFunctionCall(holder, nameElement);
-        } else {
+        if (function == null) {
             EIScriptDeclaration scriptDeclaration = EIScriptResolveUtil.findScriptDeclaration((ScriptFile) element.getContainingFile(), name);
-            if (scriptDeclaration != null) {
-                // TODO
-                // annotateAsFunctionCall(holder, nameElement);
-            } else {
+            if (scriptDeclaration == null) {
                 markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
             }
         }
@@ -82,10 +75,4 @@ public class EIScriptAnnotator implements Annotator {
         holder.createErrorAnnotation(range, errorString).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
     }
 
-    private void annotateAsFunctionCall(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement) {
-        TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
-                nameElement.getTextRange().getEndOffset());
-        Annotation annotation = holder.createInfoAnnotation(range, null);
-        annotation.setTextAttributes(DefaultLanguageHighlighterColors.FUNCTION_CALL);
-    }
 }
