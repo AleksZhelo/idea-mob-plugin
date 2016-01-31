@@ -1,15 +1,12 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.lookup.LookupElementPresentation;
-import com.intellij.codeInsight.lookup.LookupElementRenderer;
 import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.util.ProcessingContext;
@@ -25,8 +22,9 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     public EIScriptCompletionContributor() {
         extend(CompletionType.BASIC,
-                PlatformPatterns.psiElement(EIScriptReference.class)
-                        .inside(EIFunctionCall.class),
+                PlatformPatterns.psiElement(ScriptTypes.IDENTIFIER)
+                        .inside(EIScriptThenBlock.class)
+                        .withLanguage(EIScriptLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                ProcessingContext context,
@@ -49,5 +47,10 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     .withRenderer(new EICallLookupElementRenderer<>()));
         }
         return lookupElements;
+    }
+
+    @Override
+    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+        super.fillCompletionVariants(parameters, result);
     }
 }

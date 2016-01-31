@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Created by Aleks on 25-07-2015.
+ * @author Aleks on 25-07-2015.
  */
 public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
-        implements ScriptPsiReference {
+        implements ScriptPsiReference { // implement PolyVariantReference instead?
 
     private static LookupElement[] allFunctionLookupElements;
     private static Map<EIType, LookupElement[]> typedFunctionLookups = new HashMap<>();

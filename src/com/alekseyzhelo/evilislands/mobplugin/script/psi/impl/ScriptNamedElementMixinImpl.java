@@ -25,7 +25,7 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         }
     }
 
-    public PsiElement setName(String newName) {
+    public PsiElement setName(@NotNull String newName) {
         boolean nameIsReference = false;
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if(keyNode == null) {

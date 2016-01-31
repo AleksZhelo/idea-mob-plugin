@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
