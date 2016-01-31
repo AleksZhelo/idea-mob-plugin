@@ -10,7 +10,7 @@ import java.awt.*;
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 /**
- * Created by Aleks on 31-01-2016.
+ * @author Aleks on 31-01-2016.
  */
 public class EIScriptSyntaxHighlightingColors {
     public static final TextAttributesKey EQUALS =
@@ -23,15 +23,17 @@ public class EIScriptSyntaxHighlightingColors {
             createTextAttributesKey("SCRIPT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey TYPE =
             //createTextAttributesKey("SCRIPT_TYPE", TextAttributesKey.createTextAttributesKey("SCRIPT_TYPE")); // better something like this?
-            createTextAttributesKey("SCRIPT_TYPE", new TextAttributes(JBColor.decode("#800000"), null, null, null, Font.BOLD));
+            createTextAttributesKey("SCRIPT_TYPE", new TextAttributes(JBColor.decode("#b10000"), null, null, null, Font.BOLD));
     public static final TextAttributesKey STRING =
             createTextAttributesKey("SCRIPT_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey NUMBER =
             createTextAttributesKey("SCRIPT_NUMBER", DefaultLanguageHighlighterColors.NUMBER);
     public static final TextAttributesKey IDENTIFIER =
             createTextAttributesKey("SCRIPT_IDENTIFIER", DefaultLanguageHighlighterColors.IDENTIFIER);
-    public static final TextAttributesKey VARIABLE =
-            createTextAttributesKey("SCRIPT_VARIABLE", DefaultLanguageHighlighterColors.GLOBAL_VARIABLE);
+    public static final TextAttributesKey FUNCTION_CALL =
+            createTextAttributesKey("SCRIPT_FUNCTION_CALL", DefaultLanguageHighlighterColors.FUNCTION_CALL);
+    public static final TextAttributesKey VARIABLE_ACCESS =
+            createTextAttributesKey("SCRIPT_VARIABLE", DefaultLanguageHighlighterColors.LOCAL_VARIABLE);
     public static final TextAttributesKey COMMENT =
             createTextAttributesKey("SCRIPT_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
 

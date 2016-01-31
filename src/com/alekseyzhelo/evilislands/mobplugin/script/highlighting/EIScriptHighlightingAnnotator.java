@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -20,7 +19,7 @@ public class EIScriptHighlightingAnnotator implements Annotator {
         if (element instanceof EIVariableAccess) {
             EIVariableAccess variableAccess = (EIVariableAccess) element;
             // there is something wrong with the color definition for variables
-            setHighlighting(variableAccess, holder, EIScriptSyntaxHighlightingColors.VARIABLE);
+            setHighlighting(variableAccess, holder, EIScriptSyntaxHighlightingColors.VARIABLE_ACCESS);
         } else if (element instanceof EIFunctionCall) {
             EIFunctionCall functionCall = (EIFunctionCall) element;
             PsiElement nameElement = element.getFirstChild();

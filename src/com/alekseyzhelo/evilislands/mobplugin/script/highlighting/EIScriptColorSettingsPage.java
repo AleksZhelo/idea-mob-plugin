@@ -1,12 +1,12 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +25,16 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor("String", STRING),
             new AttributesDescriptor("Number", NUMBER),
             new AttributesDescriptor("Identifier", IDENTIFIER),
-            new AttributesDescriptor("Function call", DefaultLanguageHighlighterColors.FUNCTION_CALL),
-            new AttributesDescriptor("Variable", VARIABLE),
+            new AttributesDescriptor("Function call", FUNCTION_CALL),
+            new AttributesDescriptor("Variable access", VARIABLE_ACCESS),
             new AttributesDescriptor("Comment", COMMENT),
     };
+
+    private static final Map<String, TextAttributesKey> ATTRIBUTES_KEY_MAP = ContainerUtil.newHashMap();
+    static {
+        ATTRIBUTES_KEY_MAP.put("fc", FUNCTION_CALL);
+        ATTRIBUTES_KEY_MAP.put("va", VARIABLE_ACCESS);
+    }
 
     @Nullable
     @Override
@@ -86,7 +92,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "  )\n" +
                 "  then\n" +
                 "  (\n" +
-                "    KillScript(  )\n" +
+                "    <fc>KillScript</fc>(  )\n" +
                 "\n" +
                 "  )\n" +
                 ")\n" +
@@ -104,8 +110,8 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "  )\n" +
                 "  then\n" +
                 "  (\n" +
-                "    KillScript(  )\n" +
-                "    ConsoleString(\"DEBUG SCRIPT LAUNCHED!!!\")\n" +
+                "    <fc>KillScript</fc>(  )\n" +
+                "    <fc>ConsoleString</fc>(\"DEBUG SCRIPT LAUNCHED!!!\")\n" +
                 "  )\n" +
                 ")\n" +
                 "\n" +
@@ -118,11 +124,11 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "  )\n" +
                 "  then\n" +
                 "  (\n" +
-                "    KillScript(  )\n" +
+                "    <fc>KillScript</fc>(  )\n" +
                 "\t\n" +
-                "\tHero = GetLeader()      //Злобный хуманоид по кличке Хома.\n" +
-                "    Yolochka1 = GetObjectByID(\"2300\")   //Мигающая йолка.\n" +
-                "    Yolochka2 = GetObjectByID(\"2301\")   //Мигающая йолка нумер два.\n" +
+                "    <va>Hero</va> = <fc>GetLeader</fc>()      //Злобный хуманоид по кличке Хома.\n" +
+                "    <va>Yolochka1</va> = <fc>GetObjectByID</fc>(\"2300\")   //Мигающая йолка.\n" +
+                "    <va>Yolochka2</va> = <fc>GetObjectByID</fc>(\"2301\")   //Мигающая йолка нумер два.\n" +
                 "  )\n" +
                 ")\n" +
                 "\n" +
@@ -135,7 +141,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "  )\n" +
                 "  then\n" +
                 "  (\n" +
-                "    KillScript(  )  //Убить скрипт чтоб больше не выполнялся\n" +
+                "    <fc>KillScript</fc>(  )  //Убить скрипт чтоб больше не выполнялся\n" +
                 "\n" +
                 "    //Включить те брифинги, которые должны быть постоянно...\n" +
                 "\n" +
@@ -147,13 +153,13 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "(\n" +
                 "  if\n" +
                 "  (\n" +
-                "    IsEqual(GSGetVar(0,\"z.ing_gorod\"),0)\n" +
+                "    <fc>IsEqual</fc>(<fc>GSGetVar</fc>(0,\"z.ing_gorod\"),0)\n" +
                 "  )\n" +
                 "  then\n" +
                 "  (\n" +
-                "    KillScript( )\n" +
+                "    <fc>KillScript</fc>( )\n" +
                 "    //DebugScript(NULL)\n" +
-                "    gssetvar(0,\"z.ing_gorod\",2)\n" +
+                "    <fc>gssetvar</fc>(0,\"z.ing_gorod\",2)\n" +
                 "  )\n" +
                 ")\n" +
                 "\n" +
@@ -167,22 +173,22 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
                 "\n" +
                 "WorldScript\n" +
                 "(\n" +
-                "  Sleep( 2 )\n" +
-                "  SomeValue = 4\n" +
+                "  <fc>Sleep</fc>( 2 )\n" +
+                "  <va>SomeValue</va> = 4\n" +
                 "  //Глобальные скрипты зоны...\n" +
-                "  DebugScript(NULL)  //Если надо проверить, работает ли скрипт - раскомментируйте.\n" +
-                "  DoNameObjects(NULL)  //Привязать идешники объектов к именным объектам\n" +
-                "  SetDefZoneVars(NULL) //Выставить умолчальные для зоны переменые.\n" +
-                "  EnableZone(NULL) //Открыть зону если она еще закрыта.\n" +
+                "  <fc>DebugScript</fc>(<va>NULL</va>)  //Если надо проверить, работает ли скрипт - раскомментируйте.\n" +
+                "  <fc>DoNameObjects</fc>(<va>NULL</va>)  //Привязать идешники объектов к именным объектам\n" +
+                "  <fc>SetDefZoneVars</fc>(<va>NULL</va>) //Выставить умолчальные для зоны переменые.\n" +
+                "  <fc>EnableZone</fc>(<va>NULL</va>) //Открыть зону если она еще закрыта.\n" +
                 "\n" +
-                "  Sleep( 10 ) //Чтобы другие скрипты не начали выполняться\n" +
+                "  <fc>Sleep</fc>( 10 ) //Чтобы другие скрипты не начали выполняться\n" +
                 ")\n";
     }
 
     @Nullable
     @Override
     public Map<String, TextAttributesKey> getAdditionalHighlightingTagToDescriptorMap() {
-        return null;
+        return ATTRIBUTES_KEY_MAP;
     }
 
     @NotNull
