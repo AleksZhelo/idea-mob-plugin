@@ -73,7 +73,7 @@ private formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalPa
 formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN
+params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN // {pin(".*")=1}
 
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
@@ -81,7 +81,7 @@ variableAccess ::= scriptReference
 
 functionCall ::= scriptReference params
 
-assignment ::= scriptReference EQUALS expression
+assignment ::= scriptReference EQUALS expression {pin=2} // TODO: this pin and error recovery stuff
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin"}
