@@ -49,7 +49,6 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
             descriptors.add(new FoldingDescriptor(globals.getNode(),
                     new TextRange(lParenOffset,
                             globals.getTextRange().getEndOffset()), null) {
-                @Nullable
                 @Override
                 public String getPlaceholderText() {
                     return "(" + variablesCount + " declarations)";
@@ -125,7 +124,6 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         descriptors.add(new FoldingDescriptor(element.getNode(),
                 new TextRange(lParenOffset,
                         element.getTextRange().getEndOffset()), null) {
-            @Nullable
             @Override
             public String getPlaceholderText() {
                 return "(...)";

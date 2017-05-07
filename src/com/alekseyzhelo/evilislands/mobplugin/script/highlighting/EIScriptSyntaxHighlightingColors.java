@@ -23,7 +23,7 @@ public class EIScriptSyntaxHighlightingColors {
             createTextAttributesKey("SCRIPT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey TYPE =
             //createTextAttributesKey("SCRIPT_TYPE", TextAttributesKey.createTextAttributesKey("SCRIPT_TYPE")); // better something like this?
-            createTextAttributesKey("SCRIPT_TYPE", new TextAttributes(JBColor.decode("#b10000"), null, null, null, Font.BOLD));
+            createTextAttributesKey("SCRIPT_TYPE", new TextAttributes(JBColor.decode("#B10679"), null, null, null, Font.BOLD));
     public static final TextAttributesKey STRING =
             createTextAttributesKey("SCRIPT_STRING", DefaultLanguageHighlighterColors.STRING);
     public static final TextAttributesKey NUMBER =

@@ -85,9 +85,6 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
             //noinspection ConstantConditions
             return ((PsiNamedElement) element).getName();
         }
-        if (element instanceof EIScriptReference) {
-            return element.getText();
-        }
         if (element instanceof EIScriptIdentifier) {
             return element.getText();
         }

@@ -8,7 +8,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EIScriptElementFactory {
+
+    private static Map<ScriptFile, EIGlobalVar> thisMap = new HashMap<>();
+
     public static EIScriptIdentifier createIdentifierFromText(Project project, String name) {
         final EIGlobalVar globalVar = createGlobalVar(project, name);
         return PsiTreeUtil.findChildOfType(globalVar, EIScriptIdentifier.class);
@@ -18,10 +24,20 @@ public class EIScriptElementFactory {
         final ScriptFile file = createFile(project, EIScriptGenerationUtil.wrapGlobalVars(name));
         return PsiTreeUtil.findChildOfType(file.getFirstChild(), EIGlobalVar.class);
     }
- 
+
     public static ScriptFile createFile(Project project, String text) {
         String name = "dummy.eiscript";
         return (ScriptFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ScriptFileType.INSTANCE, text);
+    }
+
+    public static EIGlobalVar getThisForFile(ScriptFile file) {
+        EIGlobalVar var = thisMap.get(file);
+        if (var == null) {
+            var = createGlobalVar(file.getProject(), "this");
+            thisMap.put(file, var);
+        }
+
+        return var;
     }
 }

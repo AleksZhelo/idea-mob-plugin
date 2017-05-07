@@ -49,8 +49,8 @@ globalVar ::= scriptIdentifier COLON type {pin=1 recoverWhile=globalVarRecover m
 scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-scriptImplementation ::= SCRIPT scriptReference LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"} // TODO implements own interface?
+scriptImplementation ::= SCRIPT scriptIdentifier LPAREN scriptBody RPAREN {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
 
 private scriptBody ::= scriptBlock+
 
@@ -66,7 +66,7 @@ private scriptThenBody ::= scriptExpression*
 
 scriptExpression ::= assignment | functionCall | forBlock
 
-forBlock ::= FOR LPAREN scriptReference COMMA scriptReference RPAREN LPAREN scriptThenBody RPAREN
+forBlock ::= FOR LPAREN scriptIdentifier COMMA scriptIdentifier RPAREN LPAREN scriptThenBody RPAREN
 
 private formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
 
@@ -77,17 +77,14 @@ params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN /
 
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
-variableAccess ::= scriptReference
+variableAccess ::= scriptIdentifier {methods=[getReference]}  // TODO: right, wrong?
 
-functionCall ::= scriptReference params
+functionCall ::= scriptIdentifier params
 
-assignment ::= scriptReference EQUALS expression {pin=2} // TODO: this pin and error recovery stuff
+assignment ::= scriptIdentifier EQUALS expression {pin=2} // TODO: this pin and error recovery stuff
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin"}
-
-scriptReference ::= scriptIdentifier {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiReferenceImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiReference"}
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptTypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin"}

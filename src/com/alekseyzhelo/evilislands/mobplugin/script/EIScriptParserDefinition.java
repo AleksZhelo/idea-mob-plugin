@@ -25,7 +25,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
     public static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.COMMENT);
  
     public static final IFileElementType FILE =
-            new IFileElementType(Language.<EIScriptLanguage>findInstance(EIScriptLanguage.class));
+            new IFileElementType(Language.findInstance(EIScriptLanguage.class));
  
     @NotNull
     @Override

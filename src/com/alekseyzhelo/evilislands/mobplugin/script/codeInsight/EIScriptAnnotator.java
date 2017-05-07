@@ -1,16 +1,16 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
 import com.intellij.codeInspection.ProblemHighlightType;
-import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -24,19 +24,18 @@ public class EIScriptAnnotator implements Annotator {
 
     @Override
     public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof EIScriptReference) {
-            if (element.getParent() instanceof EIScriptImplementation) {
-                EIScriptReference reference = (EIScriptReference) element;
-                if (reference.resolve() == null) {
-                    TextRange range = new TextRange(reference.getTextRange().getStartOffset(),
-                            reference.getTextRange().getEndOffset());
-                    holder.createErrorAnnotation(range, SCRIPT_NOT_DECLARED_ERROR).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
-                }
+        if (element instanceof EIScriptImplementation) {
+            EIScriptImplementation scriptImplementation = (EIScriptImplementation) element;
+            PsiReference reference = scriptImplementation.getReference();
+            if (reference == null || reference.resolve() == null) {
+                TextRange range = scriptImplementation.getScriptIdentifier().getTextRange();
+                holder.createErrorAnnotation(range, SCRIPT_NOT_DECLARED_ERROR).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
             }
         }
+
         if (element instanceof EIFunctionCall) {
             EIFunctionCall functionCall = (EIFunctionCall) element;
-            PsiElement nameElement = element.getFirstChild();
+            PsiElement nameElement = functionCall.getScriptIdentifier();
             String name = nameElement.getText();
             if (name != null) {
                 Project project = element.getProject();

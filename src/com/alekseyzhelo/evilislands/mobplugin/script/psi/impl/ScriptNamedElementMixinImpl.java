@@ -5,7 +5,12 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiKeyword;
+import com.intellij.psi.PsiReference;
+import com.intellij.psi.impl.source.PsiMethodImpl;
+import com.intellij.psi.impl.source.tree.java.PsiKeywordImpl;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl implements ScriptNamedElementMixin {
@@ -15,9 +20,6 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
 
     public String getName() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
-        if(keyNode == null) {
-            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
-        }
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -26,36 +28,17 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
     }
 
     public PsiElement setName(@NotNull String newName) {
-        boolean nameIsReference = false;
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
-        if(keyNode == null) {
-            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
-            nameIsReference = true;
-        }
         if (keyNode != null) {
             EIScriptIdentifier identifier = EIScriptElementFactory.createIdentifierFromText(getProject(), newName);
             ASTNode newKeyNode = identifier.getNode();
-            if(!nameIsReference) {
-                getNode().replaceChild(keyNode, newKeyNode);
-            } else {
-                //noinspection ConstantConditions
-                keyNode.replaceChild(
-                        keyNode.findChildByType(ScriptTypes.SCRIPT_IDENTIFIER),
-                        newKeyNode
-                );
-            }
+            getNode().replaceChild(keyNode, newKeyNode);
         }
         return this;
     }
 
     public PsiElement getNameIdentifier() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
-        if(keyNode == null) {
-            keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_REFERENCE);
-            if (keyNode != null) {
-                keyNode = keyNode.findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
-            }
-        }
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {
@@ -63,4 +46,14 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         }
     }
 
+    @NotNull
+    @Override
+    public PsiElement getNavigationElement() {
+        return getNameIdentifier() != null ? getNameIdentifier() : this;
+    }
+
+    @Override
+    public int getTextOffset() {
+        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset() : super.getTextOffset();
+    }
 }

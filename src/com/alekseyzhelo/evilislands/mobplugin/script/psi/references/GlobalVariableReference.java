@@ -1,13 +1,18 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
+package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
  
@@ -21,13 +26,17 @@ public class GlobalVariableReference extends PsiReferenceBase<PsiElement>  {
         super(element, textRange);
         name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
- 
+
+    @Override
+    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+        return EIScriptRenameUtil.renameElement(myElement, newElementName);
+    }
+
     @Nullable
     @Override
     public PsiElement resolve() {
         PsiFile file = myElement.getContainingFile();
-        final EIGlobalVar globalVar = EIScriptResolveUtil.findGlobalVar((ScriptFile) file, name);
-        return globalVar != null ? new PsiElementResolveResult(globalVar).getElement() : null;
+        return EIScriptResolveUtil.findGlobalVar((ScriptFile) file, name);
     }
  
     @NotNull
@@ -46,4 +55,5 @@ public class GlobalVariableReference extends PsiReferenceBase<PsiElement>  {
         }
         return variants.toArray();
     }
-} 
+
+}

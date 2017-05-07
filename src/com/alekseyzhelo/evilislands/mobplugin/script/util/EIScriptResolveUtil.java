@@ -25,7 +25,9 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -55,7 +57,7 @@ public class EIScriptResolveUtil {
             return Collections.emptyList();
         }
         final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(scriptFile, EIGlobalVars.class);
-        if(globalVars == null) {
+        if (globalVars == null) {
             return Collections.emptyList();
         }
 
@@ -98,7 +100,7 @@ public class EIScriptResolveUtil {
             return Collections.emptyList();
         }
         final EIDeclarations declarations = PsiTreeUtil.getChildOfType(file, EIDeclarations.class);
-        if(declarations == null) {
+        if (declarations == null) {
             return Collections.emptyList();
         }
         final EIScriptDeclaration[] scriptDeclarations = PsiTreeUtil.getChildrenOfType(declarations, EIScriptDeclaration.class);
@@ -126,7 +128,7 @@ public class EIScriptResolveUtil {
             return Collections.emptyList();
         }
         final EIDeclarations declarations = PsiTreeUtil.getChildOfType(file, EIDeclarations.class);
-        if(declarations == null) {
+        if (declarations == null) {
             return Collections.emptyList();
         }
         final EIScriptDeclaration[] scriptDeclarations = PsiTreeUtil.getChildrenOfType(declarations, EIScriptDeclaration.class);
@@ -134,7 +136,7 @@ public class EIScriptResolveUtil {
             return Collections.emptyList();
         }
         List<EIFormalParameter> formalParameters = new ArrayList<>();
-        for(EIScriptDeclaration declaration : scriptDeclarations) {
+        for (EIScriptDeclaration declaration : scriptDeclarations) {
             formalParameters.addAll(declaration.getFormalParameterList());
         }
         return formalParameters;
@@ -144,11 +146,9 @@ public class EIScriptResolveUtil {
         List<EIVariableAccess> result = null;
         if (scriptFile != null) {
             Collection<EIVariableAccess> accesses = PsiTreeUtil.collectElementsOfType(scriptFile, EIVariableAccess.class);
-            if (accesses != null) {
-                result = new ArrayList<>(accesses);
-            }
+            result = new ArrayList<>(accesses);
         }
-        return result != null ? result : Collections.<EIVariableAccess>emptyList();
+        return result != null ? result : Collections.emptyList();
     }
 
     // TODO use

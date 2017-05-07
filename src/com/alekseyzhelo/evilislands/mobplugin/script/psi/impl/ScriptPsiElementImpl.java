@@ -29,6 +29,7 @@ public class ScriptPsiElementImpl extends ASTWrapperPsiElement implements Script
     }
 
     @Override
+    // TODO: finish this functionality
     public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
         for (PsiElement element : getDeclarationsToProcess(lastParent)) {
             if (!processor.execute(element, state)) {

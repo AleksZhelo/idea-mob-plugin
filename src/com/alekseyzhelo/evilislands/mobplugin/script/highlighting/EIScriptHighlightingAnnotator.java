@@ -31,7 +31,7 @@ public class EIScriptHighlightingAnnotator implements Annotator {
     }
 
     private void annotateAsFunctionCall(@NotNull AnnotationHolder holder, @NotNull EIFunctionCall functionCall) {
-        setHighlighting(functionCall.getScriptReference(), holder, DefaultLanguageHighlighterColors.FUNCTION_CALL);
+        setHighlighting(functionCall.getScriptIdentifier(), holder, DefaultLanguageHighlighterColors.FUNCTION_CALL);
 //        TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
 //                nameElement.getTextRange().getEndOffset());
 //        Annotation annotation = holder.createInfoAnnotation(range, null);

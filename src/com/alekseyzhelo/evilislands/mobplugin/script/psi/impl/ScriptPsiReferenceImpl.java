@@ -4,16 +4,18 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLook
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.*;
-import com.intellij.psi.impl.source.resolve.ResolveCache;
+import com.intellij.psi.EmptySubstitutor;
+import com.intellij.psi.JavaResolveResult;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.psi.infos.CandidateInfo;
-import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -28,30 +30,80 @@ import java.util.stream.Collectors;
 /**
  * @author Aleks on 25-07-2015.
  */
+// TODO: fuck me this is all wrong
 public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
-        implements ScriptPsiReference { // implement PolyVariantReference instead?
+        implements ScriptPsiReference {
 
     private static LookupElement[] allFunctionLookupElements;
     private static Map<EIType, LookupElement[]> typedFunctionLookups = new HashMap<>();
 
+    private final PsiElement myElement;
+    private TextRange myRangeInElement;
+    private boolean mySoft;
+
     public ScriptPsiReferenceImpl(ASTNode node) {
         super(node);
+        String text = node.getFirstChildNode().getFirstChildNode().getText();
+        PsiElement parentPsi = node.getTreeParent().getPsi();
+        PsiElement element = null;
+
+        if (parentPsi instanceof EIScriptImplementation) {
+            element = findMyScriptDeclaration(text, parentPsi);
+        }
+
+        if (parentPsi instanceof EIFunctionCall) {
+            element = EIScriptNativeFunctionsUtil.getFunctionDeclaration(parentPsi.getProject(), text);
+
+            if (element == null) { // this is a script call
+                element = findMyScriptDeclaration(text, parentPsi);
+            }
+        } else if (parentPsi instanceof EIVariableAccess
+                || parentPsi instanceof EIAssignment
+                || parentPsi instanceof EIForBlock) {
+            if (!text.equals("this")) {
+                element = EIScriptResolveUtil.findGlobalVar(
+                        (ScriptFile) parentPsi.getContainingFile(),
+                        text
+                );
+            } else {
+                element = EIScriptElementFactory.getThisForFile((ScriptFile) parentPsi.getContainingFile());
+            }
+        }
+        if (element == null) { // TODO: temp for testing
+            element = EIScriptElementFactory.getThisForFile((ScriptFile) parentPsi.getContainingFile());
+        }
+        myElement = element;
+        try {
+            myRangeInElement = new TextRange(
+                    0,
+                    element.getTextRange().getEndOffset() - element.getTextRange().getStartOffset()
+            );
+        } catch (NullPointerException e) {
+            System.out.print("wutifuck");
+        }
+        mySoft = false; // TODO: what does this mean?
+    }
+
+    private PsiElement findMyScriptDeclaration(String text, PsiElement parentPsi) {
+        return EIScriptResolveUtil.findScriptDeclaration(
+                (ScriptFile) parentPsi.getContainingFile(),
+                text
+        );
     }
 
     @Override
     public PsiElement getElement() {
-        return this;
+        return myElement;
     }
 
     @Override
     public PsiReference getReference() {
-        return this;
+        return null;
     }
 
     @Override
     public TextRange getRangeInElement() {
-        final TextRange textRange = getTextRange();
-        return new TextRange(0, textRange.getEndOffset() - textRange.getStartOffset());
+        return myRangeInElement;
     }
 
     @Nullable
@@ -61,12 +113,9 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
     }
 
     @Nullable
+    // TODO: implement
     public PsiElement resolve(boolean incompleteCode) {
-        final ResolveResult[] resolveResults = multiResolve(incompleteCode);
-
-        return resolveResults.length == 0 ||
-                resolveResults.length > 1 ||
-                !resolveResults[0].isValidResult() ? null : resolveResults[0].getElement();
+        return myElement;
     }
 
     @NotNull
@@ -76,6 +125,7 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
     }
 
     @Override
+    // TODO: bullshit?
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
         final EIScriptIdentifier identifier = PsiTreeUtil.getChildOfType(this, EIScriptIdentifier.class);
         final EIScriptIdentifier identifierNew = EIScriptElementFactory.createIdentifierFromText(getProject(), newElementName);
@@ -95,16 +145,16 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
 
     @Override
     public boolean isReferenceTo(PsiElement element) {
-        // TODO
-        if (element instanceof ScriptNamedElementMixin) {
-            String name = ((ScriptNamedElementMixin) element).getName();
-            if (name != null
-                    && name.equals(getText())
-                    && element.getContainingFile().equals(getContainingFile())) {
-                return true;
-            }
-        }
-        return false;
+        return resolve() == element;
+//        if (element instanceof ScriptNamedElementMixin) {
+//            String name = ((ScriptNamedElementMixin) element).getName();
+//            if (name != null
+//                    && name.equals(getText())
+//                    && element.getContainingFile().equals(getContainingFile())) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     @NotNull
@@ -142,45 +192,7 @@ public class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
 
     @Override
     public boolean isSoft() {
-        return false;
-    }
-
-    @Override
-    public void processVariants(@NotNull PsiScopeProcessor processor) {
-        // TODO
-        // TODO needed at all?
-    }
-
-    @NotNull
-    @Override
-    public JavaResolveResult advancedResolve(boolean incompleteCode) {
-        final PsiElement resolved = resolve(incompleteCode);
-        // TODO correct?
-        return null != resolved ? new CandidateInfo(resolved, EmptySubstitutor.getInstance()) : JavaResolveResult.EMPTY;
-    }
-
-    @NotNull
-    @Override
-    public JavaResolveResult[] multiResolve(boolean incompleteCode) {
-        boolean skipCaching = true;
-        List<? extends PsiElement> cachedNames
-                = skipCaching ? (EIScriptResolver.INSTANCE).resolve(this, incompleteCode)
-                : ResolveCache.getInstance(getProject()).resolveWithCaching(this, EIScriptResolver.INSTANCE, true, incompleteCode);
-
-        // CandidateInfo does some extra resolution work when checking validity, so
-        // the results have to be turned into a CandidateInfoArray, and not just passed
-        // around as the list that EIScriptResolver returns.
-        JavaResolveResult[] result = toCandidateInfoArray(cachedNames);
-        return result;
-    }
-
-    @NotNull
-    private static JavaResolveResult[] toCandidateInfoArray(List<? extends PsiElement> elements) {
-        final JavaResolveResult[] result = new JavaResolveResult[elements.size()];
-        for (int i = 0, size = elements.size(); i < size; i++) {
-            result[i] = new CandidateInfo(elements.get(i), EmptySubstitutor.getInstance());
-        }
-        return result;
+        return mySoft;
     }
 
     private List<LookupElement> initFunctionLookup(@NotNull Project project) {

@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-// apparently this does not work
+// TODO: apparently this does not work
 public class EIScriptCompletionContributor extends CompletionContributor {
 
     private List<LookupElement> functionLookupElements;
