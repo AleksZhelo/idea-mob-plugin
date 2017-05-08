@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 
 import java.util.Locale;
@@ -12,31 +12,31 @@ import java.util.Locale;
 public class ScriptTypeMixinImpl extends ScriptPsiElementImpl
         implements ScriptTypeMixin {
 
-    private final EIType type;
+    private final EITypeToken type;
 
     public ScriptTypeMixinImpl(ASTNode node) {
         super(node);
         String typeText = node.getText().toLowerCase(Locale.ENGLISH);
         switch (typeText) {
             case "float":
-                type = EIType.FLOAT;
+                type = EITypeToken.FLOAT;
                 break;
             case "string":
-                type = EIType.STRING;
+                type = EITypeToken.STRING;
                 break;
             case "object":
-                type = EIType.OBJECT;
+                type = EITypeToken.OBJECT;
                 break;
             case "group":
-                type = EIType.GROUP;
+                type = EITypeToken.GROUP;
                 break;
             default:
-                type = EIType.VOID;
+                type = EITypeToken.VOID;
         }
     }
 
     @Override
-    public EIType getTypeToken() {
+    public EITypeToken getTypeToken() {
         return type;
     }
 }

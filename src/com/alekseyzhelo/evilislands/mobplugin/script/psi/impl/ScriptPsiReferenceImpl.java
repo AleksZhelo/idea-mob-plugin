@@ -2,24 +2,13 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.EmptySubstitutor;
-import com.intellij.psi.JavaResolveResult;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.infos.CandidateInfo;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +24,7 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         implements ScriptPsiReference {
 
     private static LookupElement[] allFunctionLookupElements;
-    private static Map<EIType, LookupElement[]> typedFunctionLookups = new HashMap<>();
+    private static Map<EITypeToken, LookupElement[]> typedFunctionLookups = new HashMap<>();
 
     public ScriptPsiReferenceImpl(ASTNode node) {
         super(node);
@@ -46,18 +35,18 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
     public Object[] getVariants() {
         if (getParent() instanceof EIFunctionCall) {
             if (getParent().getParent() instanceof EIScriptIfBlock) {
-                if (typedFunctionLookups.get(EIType.FLOAT) == null) {
-                    initLookupFor(EIType.FLOAT);
+                if (typedFunctionLookups.get(EITypeToken.FLOAT) == null) {
+                    initLookupFor(EITypeToken.FLOAT);
                 }
-                return typedFunctionLookups.get(EIType.FLOAT);
+                return typedFunctionLookups.get(EITypeToken.FLOAT);
             }
             if (getParent().getParent() instanceof EIExpression) {
                 EIExpression expression = (EIExpression) getParent().getParent();
                 if (expression.getParent() instanceof EIScriptThenBlock) {
-                    if (typedFunctionLookups.get(EIType.VOID) == null) {
-                        initLookupFor(EIType.VOID);
+                    if (typedFunctionLookups.get(EITypeToken.VOID) == null) {
+                        initLookupFor(EITypeToken.VOID);
                     }
-                    return typedFunctionLookups.get(EIType.VOID);
+                    return typedFunctionLookups.get(EITypeToken.VOID);
                 } else if (expression.getParent() instanceof EIParams) {
                     EIParams params = (EIParams) expression.getParent();
                     int position = params.getExpressionList().indexOf(expression);
@@ -87,7 +76,7 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         return lookupElements;
     }
 
-    private LookupElement[] initTypedFunctionLookup(@NotNull Project project, @NotNull EIType type) {
+    private LookupElement[] initTypedFunctionLookup(@NotNull Project project, @NotNull EITypeToken type) {
         List<EIFunctionDeclaration> functions = EIScriptNativeFunctionsUtil.getAllFunctions(project, type);
         List<LookupElement> lookupElements = new ArrayList<>(functions.size());
         lookupElements.addAll(
@@ -100,7 +89,7 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
         return lookupElements.toArray(new LookupElement[lookupElements.size()]);
     }
 
-    private void initLookupFor(EIType type) {
+    private void initLookupFor(EITypeToken type) {
         typedFunctionLookups.put(
                 type,
                 initTypedFunctionLookup(getProject(), type)

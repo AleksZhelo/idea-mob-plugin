@@ -74,9 +74,10 @@ private formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalPa
 formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
-params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN // {pin(".*")=1}
+// TODO: type checking!
+params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN // {pin(".*")=1} // TODO: how to do references here?
 
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess // TODO: how to do references here?
 
 variableAccess ::= scriptIdentifier {methods=[getReference]}
 

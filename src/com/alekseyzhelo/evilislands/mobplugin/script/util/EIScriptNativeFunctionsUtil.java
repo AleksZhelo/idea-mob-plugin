@@ -47,17 +47,17 @@ public class EIScriptNativeFunctionsUtil {
         return new ArrayList<>(functionNameToPsi.values());
     }
 
-    public static List<EIFunctionDeclaration> getAllFunctions(Project project, final EIType type) {
+    public static List<EIFunctionDeclaration> getAllFunctions(Project project, final EITypeToken type) {
         if (functionNameToPsi == null) {
             initData(project);
         }
 
         return new ArrayList<>(functionNameToPsi.values()).stream()
                 .filter(x -> {
-                    if (type != EIType.VOID) {
+                    if (type != EITypeToken.VOID) {
                         return x.getType() != null && x.getType().getTypeToken() == type;
                     } else {
-                        return x.getType() == null || x.getType().getTypeToken() == EIType.VOID;
+                        return x.getType() == null || x.getType().getTypeToken() == EITypeToken.VOID;
                     }
                 })
                 .collect(Collectors.toList());

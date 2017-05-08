@@ -3,7 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIType;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -53,7 +53,7 @@ public class EIScriptAnnotator implements Annotator {
         if (function == null) {
             markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
         } else {
-            if (function.getType() == null || function.getType().getTypeToken() != EIType.FLOAT) {
+            if (function.getType() == null || function.getType().getTypeToken() != EITypeToken.FLOAT) {
                 markAsError(holder, nameElement, NOT_ALLOWED_IN_SCRIPT_IF_ERROR);
             }
         }
