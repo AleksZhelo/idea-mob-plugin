@@ -7,7 +7,6 @@ import com.intellij.psi.util.PsiTreeUtil;
 
 public final class EIScriptRenameUtil {
 
-    // TODO: properly done?
     public static PsiElement renameElement(PsiElement element, String newElementName) {
         final EIScriptIdentifier identifierNew =
                 EIScriptElementFactory.createIdentifierFromText(element.getProject(), newElementName);

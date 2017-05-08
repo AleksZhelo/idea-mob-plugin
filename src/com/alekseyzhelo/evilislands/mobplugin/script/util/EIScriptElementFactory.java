@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class EIScriptElementFactory {
 
-    private static Map<ScriptFile, EIGlobalVar> thisMap = new HashMap<>();
-
     public static EIScriptIdentifier createIdentifierFromText(Project project, String name) {
         final EIGlobalVar globalVar = createGlobalVar(project, name);
         return PsiTreeUtil.findChildOfType(globalVar, EIScriptIdentifier.class);
@@ -29,15 +27,5 @@ public class EIScriptElementFactory {
         String name = "dummy.eiscript";
         return (ScriptFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ScriptFileType.INSTANCE, text);
-    }
-
-    public static EIGlobalVar getThisForFile(ScriptFile file) {
-        EIGlobalVar var = thisMap.get(file);
-        if (var == null) {
-            var = createGlobalVar(file.getProject(), "this");
-            thisMap.put(file, var);
-        }
-
-        return var;
     }
 }

@@ -5,18 +5,12 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.ResolveState;
-import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
-import com.intellij.psi.scope.PsiScopeProcessor;
 import com.intellij.psi.util.PsiTreeUtil;
-import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,19 +22,9 @@ public class ScriptPsiElementImpl extends ASTWrapperPsiElement implements Script
         super(node);
     }
 
-    @Override
-    // TODO: finish this functionality
-    public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
-        for (PsiElement element : getDeclarationsToProcess(lastParent)) {
-            if (!processor.execute(element, state)) {
-                return false;
-            }
-        }
-        return super.processDeclarations(processor, state, lastParent, place);
-    }
 
     private List<PsiElement> getDeclarationsToProcess(PsiElement lastParent) {
-        if(this instanceof EIGlobalVars){
+        if (this instanceof EIGlobalVars) {
             System.out.println("wow");
         }
         final boolean isBlock = this instanceof EIScriptBlock || this instanceof EIGlobalVars;

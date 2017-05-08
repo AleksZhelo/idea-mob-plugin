@@ -18,11 +18,13 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Condition;
-import com.intellij.psi.*;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.SmartList;
@@ -48,30 +50,47 @@ public class UsefulPsiTreeUtil {
 
     @Nullable
     public static PsiElement getPrevSiblingSkipWhiteSpacesAndComments(@Nullable PsiElement sibling, boolean strictly) {
-        return getPrevSiblingSkipingCondition(sibling, new Condition<PsiElement>() {
-            @Override
-            public boolean value(PsiElement element) {
-                return isWhitespaceOrComment(element);
-            }
-        }, strictly);
+        return getPrevSiblingSkippingCondition(
+                sibling,
+                UsefulPsiTreeUtil::isWhitespaceOrComment,
+                strictly
+        );
     }
 
     @Nullable
     public static PsiElement getPrevSiblingSkipWhiteSpaces(@Nullable PsiElement sibling, boolean strictly) {
-        return getPrevSiblingSkipingCondition(sibling, new Condition<PsiElement>() {
-            @Override
-            public boolean value(PsiElement element) {
-                return element instanceof PsiWhiteSpace;
-            }
-        }, strictly);
+        return getPrevSiblingSkippingCondition(
+                sibling,
+                element -> element instanceof PsiWhiteSpace,
+                strictly
+        );
     }
 
     @Nullable
-    public static PsiElement getPrevSiblingSkipingCondition(@Nullable PsiElement sibling, Condition<PsiElement> condition, boolean strictly) {
+    public static PsiElement getPrevSiblingSkippingCondition(@Nullable PsiElement sibling, Condition<PsiElement> condition, boolean strictly) {
         if (sibling == null) return null;
         PsiElement result = strictly ? sibling.getPrevSibling() : sibling;
         while (result != null && condition.value(result)) {
             result = result.getPrevSibling();
+        }
+        return result;
+    }
+
+    @Nullable
+    public static PsiElement getNextSiblingSkipWhiteSpacesAndCommas(@Nullable PsiElement sibling, boolean strictly) {
+        return getNextSiblingSkippingCondition(
+                sibling,
+                element -> element instanceof PsiWhiteSpace || element.getNode().getElementType() == ScriptTypes.COMMA,
+                strictly
+        );
+    }
+
+    @Nullable
+    public static PsiElement getNextSiblingSkippingCondition(@Nullable PsiElement sibling, Condition<PsiElement> condition, boolean strictly) {
+        if (sibling == null) return null;
+        PsiElement result = strictly ? sibling.getNextSibling() : sibling;
+        while (result != null && condition.value(result)) {
+            result = result.getNextSibling();
         }
         return result;
     }
@@ -91,6 +110,7 @@ public class UsefulPsiTreeUtil {
     }
 
     @NotNull
+    // TODO: figure this one out
     public static <T extends PsiElement> List<T> getSubnodesOfType(@Nullable PsiElement element, @NotNull Class<T> aClass) {
         final List<T> result = new ArrayList<T>();
         final Queue<PsiElement> queue = new LinkedList<PsiElement>();
@@ -112,6 +132,21 @@ public class UsefulPsiTreeUtil {
             result.add(element);
             if (aClass.isInstance(element)) {
                 return result;
+            }
+            if (element instanceof PsiFile) return null;
+            element = element.getParent();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static PsiElement getParentOfType(@Nullable PsiElement element,
+                                             @NotNull Class<? extends PsiElement> aClass) {
+        if (element == null) return null;
+        while (element != null) {
+            if (aClass.isInstance(element)) {
+                return element;
             }
             if (element instanceof PsiFile) return null;
             element = element.getParent();
@@ -144,7 +179,7 @@ public class UsefulPsiTreeUtil {
                 break;
             }
             if (aClass.isInstance(child)) {
-                if (result == null) result = new SmartList<T>();
+                if (result == null) result = new SmartList<>();
                 //noinspection unchecked
                 result.add((T) child);
             }

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: handle going to declaration not working from the right half of the script implementation identifier
 public class ScriptDefinitionReference extends PsiReferenceBase<PsiElement> {
     private String name;
 
@@ -28,7 +29,6 @@ public class ScriptDefinitionReference extends PsiReferenceBase<PsiElement> {
         name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
 
-    // TODO: does not seem to be working
     @Override
     public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
         return EIScriptRenameUtil.renameElement(myElement, newElementName);
@@ -43,20 +43,21 @@ public class ScriptDefinitionReference extends PsiReferenceBase<PsiElement> {
 
     @NotNull
     @Override
+    // TODO: improve these methods
     public Object[] getVariants() {
-        return new Object[0];
-//        PsiFile file = myElement.getContainingFile();
-//        List<EIGlobalVar> globalVars = EIScriptResolveUtil.findGlobalVars((ScriptFile) file);
-//        List<LookupElement> variants = new ArrayList<>();
-//        for (final EIGlobalVar global : globalVars) {
-//            if (global.getName() != null && global.getName().length() > 0) {
-//                variants.add(LookupElementBuilder.create(global).
-//                        withIcon(Icons.FILE).
-//                        withTypeText(global.getContainingFile().getName())
-//                );
-//            }
-//        }
-//        return variants.toArray();
+        PsiFile file = myElement.getContainingFile();
+        List<EIScriptDeclaration> scripts =
+                EIScriptResolveUtil.findScriptDeclarations((ScriptFile) file);
+        List<LookupElement> variants = new ArrayList<>();
+        for (final EIScriptDeclaration script : scripts) {
+            if (script.getName() != null && script.getName().length() > 0) {
+                variants.add(LookupElementBuilder.create(script).
+                        withIcon(Icons.FILE).
+                        withTypeText(script.getContainingFile().getName())
+                );
+            }
+        }
+        return variants.toArray();
     }
 
 }

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class ScriptFile extends PsiFileBase {
+
     public ScriptFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, EIScriptLanguage.INSTANCE);
     }
@@ -40,35 +41,4 @@ public class ScriptFile extends PsiFileBase {
         return super.getIcon(flags);
     }
 
-
-    // TODO experimental (everything below)
-    @Override
-    public boolean processDeclarations(@NotNull PsiScopeProcessor processor, @NotNull ResolveState state, PsiElement lastParent, @NotNull PsiElement place) {
-        for (PsiElement element : getDeclarationsToProcess(lastParent)) {
-            if (!processor.execute(element, state)) {
-                return false;
-            }
-        }
-        return super.processDeclarations(processor, state, lastParent, place);
-    }
-
-    private List<PsiElement> getDeclarationsToProcess(PsiElement lastParent) {
-        final List<PsiElement> result = new ArrayList<PsiElement>();
-
-        addDeclarations(result, EIScriptResolveUtil.findGlobalVars(this));
-        addDeclarations(result, EIScriptResolveUtil.findFormalParameters(this));
-        addDeclarations(result, EIScriptResolveUtil.findScriptDeclarations(this));
-
-        // TODO something special for For blocks?
-//        if (this instanceof HaxeForStatement && ((HaxeForStatement)this).getIterable() != lastParent) {
-//            result.add(this);
-//        }
-        return result;
-    }
-
-    private static void addDeclarations(@NotNull List<PsiElement> result, List<? extends PsiElement> items) {
-        if (items != null) {
-            result.addAll(items);
-        }
-    }
 }

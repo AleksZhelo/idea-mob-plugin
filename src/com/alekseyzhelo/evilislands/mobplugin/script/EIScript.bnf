@@ -46,6 +46,7 @@ private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 globalVar ::= scriptIdentifier COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
+// TODO: do script params shadow global vars?
 scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
@@ -66,7 +67,7 @@ private scriptThenBody ::= scriptExpression*
 
 scriptExpression ::= assignment | functionCall | forBlock
 
-forBlock ::= FOR LPAREN scriptIdentifier COMMA scriptIdentifier RPAREN LPAREN scriptThenBody RPAREN
+forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 
 private formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
 
@@ -77,11 +78,11 @@ params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN /
 
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess
 
-variableAccess ::= scriptIdentifier {methods=[getReference]}  // TODO: right, wrong?
+variableAccess ::= scriptIdentifier {methods=[getReference]}
 
-functionCall ::= scriptIdentifier params
+functionCall ::= scriptIdentifier params {methods=[getReference]}
 
-assignment ::= scriptIdentifier EQUALS expression {pin=2} // TODO: this pin and error recovery stuff
+assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference]} // TODO: this pin and error recovery stuff
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin"}
