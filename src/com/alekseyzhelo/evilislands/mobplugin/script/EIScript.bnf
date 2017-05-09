@@ -29,7 +29,7 @@ private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
 private ignored ::= (COMMENT)
 
 functionDeclaration ::= scriptIdentifier formalParams COLON type | scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getDisplayableType]}
 // utility end
 
 globalVars ::= GLOBALVARS LPAREN RPAREN | GLOBALVARS LPAREN globalVarsDefs RPAREN
@@ -65,7 +65,7 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN
 
 private scriptThenBody ::= scriptExpression*
 
-scriptExpression ::= assignment | functionCall | forBlock
+scriptExpression ::= assignment | functionCall | forBlock // TODO: how to do references here?
 
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 

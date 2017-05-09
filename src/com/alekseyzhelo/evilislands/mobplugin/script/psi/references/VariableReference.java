@@ -4,6 +4,7 @@ import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -73,7 +74,11 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
             if (global.getName() != null && global.getName().length() > 0) {
                 variants.add(LookupElementBuilder.create(global).
                         withIcon(Icons.FILE).
-                        withTypeText(global.getType() != null ? global.getType().getText() : "unknown")
+                        withTypeText(
+                                global.getType() != null
+                                        ? global.getType().getText()
+                                        : EIScriptNamingUtil.UNKNOWN
+                        )
                 );
             }
         }

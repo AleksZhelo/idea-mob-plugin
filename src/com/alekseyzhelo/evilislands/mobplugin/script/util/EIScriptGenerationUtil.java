@@ -7,7 +7,7 @@ public final class EIScriptGenerationUtil {
 
     public static final String GLOBAL_VARS_PREFIX = "GlobalVars(";
     public static final String GLOBAL_VARS_SUFFIX = ")";
-    public static final String DUMMY_TYPE = "group";
+    public static final String DUMMY_TYPE = EITypeToken.GROUP.getTypeString();
 
     public static String wrapGlobalVars(String identifier) {
         identifier = trimDummy(identifier);

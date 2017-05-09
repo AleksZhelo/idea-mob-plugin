@@ -43,6 +43,7 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
 
     @NotNull
     @Override
+    // TODO: move these string to naming
     public String getType(@NotNull PsiElement element) {
         if (element instanceof EIGlobalVar) {
             return "global variable";
