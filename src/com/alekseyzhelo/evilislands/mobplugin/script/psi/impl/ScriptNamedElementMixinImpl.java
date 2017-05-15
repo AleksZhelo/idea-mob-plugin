@@ -5,12 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
-import com.intellij.navigation.ItemPresentation;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiKeyword;
-import com.intellij.psi.PsiReference;
-import com.intellij.psi.impl.source.PsiMethodImpl;
-import com.intellij.psi.impl.source.tree.java.PsiKeywordImpl;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl implements ScriptNamedElementMixin {
@@ -18,6 +13,7 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         super(node);
     }
 
+    @Override
     public String getName() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if (keyNode != null) {
@@ -27,6 +23,7 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         }
     }
 
+    @Override
     public PsiElement setName(@NotNull String newName) {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if (keyNode != null) {
@@ -37,6 +34,7 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         return this;
     }
 
+    @Override
     public PsiElement getNameIdentifier() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if (keyNode != null) {
@@ -54,6 +52,6 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
 
     @Override
     public int getTextOffset() {
-        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset() : super.getTextOffset();
+        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset()  : super.getTextOffset();
     }
 }

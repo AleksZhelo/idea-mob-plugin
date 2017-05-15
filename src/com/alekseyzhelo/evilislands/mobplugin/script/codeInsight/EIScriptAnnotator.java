@@ -1,24 +1,22 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Locale;
-
 // TODO finish, proper
 public class EIScriptAnnotator implements Annotator {
 
     public static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function";
+    public static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script";
+    public static final String SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR = "Script call not allowed here";
     public static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
     public static final String SCRIPT_NOT_DECLARED_ERROR = "Script not declared";
 
@@ -35,16 +33,18 @@ public class EIScriptAnnotator implements Annotator {
 
         if (element instanceof EIFunctionCall) {
             EIFunctionCall functionCall = (EIFunctionCall) element;
+            FunctionCallReference reference = (FunctionCallReference) functionCall.getReference();
             PsiElement nameElement = functionCall.getScriptIdentifier();
-            String name = nameElement.getText();
-            if (name != null) {
-                Project project = element.getProject();
-                EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(project, name.toLowerCase(Locale.ENGLISH));
-                if (element.getParent() instanceof EIScriptIfBlock) {
-                    handleFunctionCallInIfBlock(holder, nameElement, function);
+            PsiElement resolved = reference != null ? reference.resolve() : null;
+
+            if (element.getParent() instanceof EIScriptIfBlock) {
+                if (resolved instanceof EIScriptDeclaration) {
+                    markAsError(holder, nameElement, SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR);
                 } else {
-                    handleFunctionOrScriptCall(element, holder, nameElement, name, function);
+                    handleFunctionCallInIfBlock(holder, nameElement, (EIFunctionDeclaration) resolved);
                 }
+            } else {
+                handleFunctionOrScriptCall(element, holder, nameElement, resolved);
             }
         }
     }
@@ -59,12 +59,9 @@ public class EIScriptAnnotator implements Annotator {
         }
     }
 
-    private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, String name, EIFunctionDeclaration function) {
-        if (function == null) {
-            EIScriptDeclaration scriptDeclaration = EIScriptResolveUtil.findScriptDeclaration((ScriptFile) element.getContainingFile(), name);
-            if (scriptDeclaration == null) {
-                markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
-            }
+    private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, PsiElement call) {
+        if (call == null) {
+            markAsError(holder, nameElement, UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR);
         }
     }
 
