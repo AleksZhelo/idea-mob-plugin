@@ -22,7 +22,10 @@ import com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiComment;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -94,23 +97,17 @@ public class EIScriptResolveUtil {
     }
 
     @Nullable
-    public static EIFormalParameter[] findEnclosingScriptParams(PsiElement myElement) {
+    public static List<EIFormalParameter> findEnclosingScriptParams(PsiElement myElement) {
         EIScriptImplementation script = UsefulPsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class);
         if (script == null || script.getName() == null) {
             return null;
         } else {
-            return UsefulPsiTreeUtil.getChildrenOfType(
-                    EIScriptResolveUtil.findScriptDeclaration(
-                            (ScriptFile) script.getContainingFile(),
-                            script.getName()
-                    ),
-                    EIFormalParameter.class,
-                    null
+            EIScriptDeclaration declaration = EIScriptResolveUtil.findScriptDeclaration(
+                    (ScriptFile) script.getContainingFile(),
+                    script.getName()
             );
+            return declaration != null ? declaration.getFormalParameterList() : null;
         }
-    }
-
-    private static void findScriptDeclaration(PsiFile containingFile) {
     }
 
     // TODO use

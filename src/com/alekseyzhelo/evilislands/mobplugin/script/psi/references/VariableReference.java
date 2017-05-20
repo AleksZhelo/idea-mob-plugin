@@ -3,10 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
@@ -48,11 +47,20 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        List<LookupElement> variants = getGlobalVarVariants(myElement);
-        EIFormalParameter[] params = EIScriptResolveUtil.findEnclosingScriptParams(myElement);
+        PsiElement parent = myElement.getParent();
+        EITypeToken expectedType = null;
+        if (parent instanceof EIVariableAccess) {
+            expectedType = EIScriptTypingUtil.getExpectedType((EIVariableAccess) parent);
+        }
+
+        List<LookupElement> variants = getGlobalVarVariants(myElement, expectedType);
+        List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(myElement);
         if (params != null) {
             for (final EIFormalParameter param : params) {
                 if (param.getName() != null && param.getName().length() > 0) {
+                    if (expectedType != null && param.getType() != null && param.getType().getTypeToken() != expectedType) {
+                        continue;
+                    }
                     variants.add(LookupElementBuilder.create(param).
                             withIcon(Icons.FILE).
                             withTypeText(param.getType().getText())
@@ -61,17 +69,21 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
             }
         }
 
+
         return variants.toArray();
     }
 
     @NotNull
     // TODO: string localization, or simply a better string for "unknown"?
-    private List<LookupElement> getGlobalVarVariants(PsiElement myElement) {
+    private List<LookupElement> getGlobalVarVariants(PsiElement myElement, EITypeToken expectedType) {
         PsiFile file = myElement.getContainingFile();
         List<EIGlobalVar> globalVars = EIScriptResolveUtil.findGlobalVars((ScriptFile) file);
         List<LookupElement> variants = new ArrayList<>();
         for (final EIGlobalVar global : globalVars) {
             if (global.getName() != null && global.getName().length() > 0) {
+                if (expectedType != null && global.getType() != null && global.getType().getTypeToken() != expectedType) {
+                    continue;
+                }
                 variants.add(LookupElementBuilder.create(global).
                         withIcon(Icons.FILE).
                         withTypeText(

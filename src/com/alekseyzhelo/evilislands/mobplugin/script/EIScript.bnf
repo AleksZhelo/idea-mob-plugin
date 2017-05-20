@@ -65,7 +65,8 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN
 
 private scriptThenBody ::= scriptExpression*
 
-scriptExpression ::= assignment | functionCall | forBlock // TODO: how to do references here?
+// TODO: how to do references here?
+scriptExpression ::= assignment | functionCall | forBlock
 
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 
@@ -77,11 +78,12 @@ formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilis
 // TODO: type checking!
 params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN // {pin(".*")=1} // TODO: how to do references here?
 
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess // TODO: how to do references here?
+// TODO: how to do references here?
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getType]}
 
-variableAccess ::= scriptIdentifier {methods=[getReference]}
+variableAccess ::= scriptIdentifier {methods=[getReference getType]}
 
-functionCall ::= scriptIdentifier params {methods=[getReference]}
+functionCall ::= scriptIdentifier params {methods=[getReference getType]}
 
 assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference]} // TODO: this pin and error recovery stuff
 
