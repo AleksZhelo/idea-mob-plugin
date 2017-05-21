@@ -3,7 +3,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -35,7 +34,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        PsiElement param = EIScriptResolveUtil.matchByName(name, EIScriptResolveUtil.findEnclosingScriptParams(myElement));
+        EIFormalParameter param = EIScriptResolveUtil.matchByName(name, EIScriptResolveUtil.findEnclosingScriptParams(myElement));
         if (param != null) {
             return param;
         } else {
@@ -47,12 +46,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        PsiElement parent = myElement.getParent();
-        EITypeToken expectedType = null;
-        if (parent instanceof EIVariableAccess) {
-            expectedType = EIScriptTypingUtil.getExpectedType((EIVariableAccess) parent);
-        }
-
+        EITypeToken expectedType = EIScriptTypingUtil.getExpectedType(this);
         List<LookupElement> variants = getGlobalVarVariants(myElement, expectedType);
         List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(myElement);
         if (params != null) {
@@ -68,7 +62,6 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
                 }
             }
         }
-
 
         return variants.toArray();
     }
