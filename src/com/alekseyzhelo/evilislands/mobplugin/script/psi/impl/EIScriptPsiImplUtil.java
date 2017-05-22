@@ -88,4 +88,18 @@ public class EIScriptPsiImplUtil {
             return null;
         }
     }
+
+    @Nullable
+    public static EITypeToken getType(EIScriptExpression element) {
+        if (element.getAssignment() != null) {
+            return EITypeToken.VOID;
+        } else if (element.getForBlock() != null) {
+            return EITypeToken.VOID;
+        } else if (element.getFunctionCall() != null) {
+            return element.getFunctionCall().getType();
+        } else {
+            return null;
+        }
+    }
+
 }

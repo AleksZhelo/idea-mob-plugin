@@ -3,6 +3,8 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
+import com.intellij.lang.PairedBraceMatcher;
+import com.intellij.lang.parameterInfo.ParameterInfoHandler;
 import com.intellij.psi.PsiElement;
 
 public final class EIScriptTypingUtil {

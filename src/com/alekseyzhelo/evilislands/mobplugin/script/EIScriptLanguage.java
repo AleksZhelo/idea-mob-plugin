@@ -1,10 +1,14 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.intellij.lang.Language;
- 
+
+// TODO: PairedBraceMatcher
+// TODO: ParameterInfoHandler?
+// TODO: LineMarkerProvider?
+// TODO: something like https://github.com/sylvanaar/IDLua/blob/idea16/src/lang/psi/LuaPsiManager.java?
 public class EIScriptLanguage extends Language {
     public static final EIScriptLanguage INSTANCE = new EIScriptLanguage();
- 
+
     private EIScriptLanguage() {
         super("EIScriptLanguage");
     }
