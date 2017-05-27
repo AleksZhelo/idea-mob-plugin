@@ -2,6 +2,8 @@ package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVisitor;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.application.ApplicationManager;
@@ -11,35 +13,45 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-// TODO finish, proper
-public class EIScriptHighlightingAnnotator implements Annotator {
+// TODO finish
+// TODO: look into Lua annotator closer
+public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotator {
+
+    private AnnotationHolder myHolder = null;
 
     @Override
-    public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof EIVariableAccess) {
-            EIVariableAccess variableAccess = (EIVariableAccess) element;
-            // there is something wrong with the color definition for variables
-            setHighlighting(variableAccess, holder, EIScriptSyntaxHighlightingColors.VARIABLE_ACCESS);
-        } else if (element instanceof EIFunctionCall) {
-            EIFunctionCall functionCall = (EIFunctionCall) element;
-            PsiElement nameElement = element.getFirstChild();
-            String name = nameElement.getText();
-            if (name != null) {
-                annotateAsFunctionCall(holder, functionCall);
-            }
+    public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
+        if (element instanceof ScriptPsiElement) {
+            myHolder = holder;
+            element.accept(this);
+            myHolder = null;
         }
     }
 
-    private void annotateAsFunctionCall(@NotNull AnnotationHolder holder, @NotNull EIFunctionCall functionCall) {
-        setHighlighting(functionCall.getScriptIdentifier(), holder, DefaultLanguageHighlighterColors.FUNCTION_CALL);
-//        TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
-//                nameElement.getTextRange().getEndOffset());
-//        Annotation annotation = holder.createInfoAnnotation(range, null);
-//        annotation.setTextAttributes(DefaultLanguageHighlighterColors.FUNCTION_CALL);
+    @Override
+    public void visitVariableAccess(@NotNull EIVariableAccess variableAccess) {
+        super.visitVariableAccess(variableAccess);
+
+        setHighlighting(variableAccess, myHolder, EIScriptSyntaxHighlightingColors.VARIABLE_ACCESS);
+    }
+
+    @Override
+    public void visitFunctionCall(@NotNull EIFunctionCall functionCall) {
+        super.visitFunctionCall(functionCall);
+
+        // TODO: this only works inside the settings screen for some reason
+        if (functionCall.getScriptIdentifier().getText() != null) {
+            PsiElement nameElement = functionCall.getScriptIdentifier();
+            setHighlighting(nameElement, myHolder, DefaultLanguageHighlighterColors.FUNCTION_CALL);
+//            TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
+//                    nameElement.getTextRange().getEndOffset());
+//            Annotation annotation = myHolder.createInfoAnnotation(range, null);
+//            annotation.setTextAttributes(DefaultLanguageHighlighterColors.FUNCTION_CALL);
+        }
     }
 
     private static void setHighlighting(@NotNull PsiElement element, @NotNull AnnotationHolder holder, @NotNull TextAttributesKey key) {
-        holder.createInfoAnnotation(element, null).setEnforcedTextAttributes(TextAttributes.ERASE_MARKER);
+        holder.createInfoAnnotation(element, null).setEnforcedTextAttributes(TextAttributes.ERASE_MARKER); // TODO: why this?
         String description = ApplicationManager.getApplication().isUnitTestMode() ? key.getExternalName() : null;
         holder.createInfoAnnotation(element, description).setTextAttributes(key);
     }

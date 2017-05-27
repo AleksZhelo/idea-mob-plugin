@@ -26,4 +26,5 @@ public class ScriptTypeMixinImpl extends ScriptPsiElementImpl
     public EITypeToken getTypeToken() {
         return type;
     }
+
 }

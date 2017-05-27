@@ -12,7 +12,7 @@ import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
 // TODO finish, proper
-public class EIScriptAnnotator implements Annotator {
+public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     public static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function";
     public static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script";
@@ -20,32 +20,44 @@ public class EIScriptAnnotator implements Annotator {
     public static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
     public static final String SCRIPT_NOT_DECLARED_ERROR = "Script not declared";
 
+    private AnnotationHolder myHolder = null;
+
     @Override
-    public void annotate(@NotNull final PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof EIScriptImplementation) {
-            EIScriptImplementation scriptImplementation = (EIScriptImplementation) element;
-            PsiReference reference = scriptImplementation.getReference();
-            if (reference == null || reference.resolve() == null) {
-                TextRange range = scriptImplementation.getScriptIdentifier().getTextRange();
-                holder.createErrorAnnotation(range, SCRIPT_NOT_DECLARED_ERROR).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
-            }
+    public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
+        if (element instanceof ScriptPsiElement) {
+            myHolder = holder;
+            element.accept(this);
+            myHolder = null;
         }
+    }
 
-        if (element instanceof EIFunctionCall) {
-            EIFunctionCall functionCall = (EIFunctionCall) element;
-            FunctionCallReference reference = (FunctionCallReference) functionCall.getReference();
-            PsiElement nameElement = functionCall.getScriptIdentifier();
-            PsiElement resolved = reference != null ? reference.resolve() : null;
+    @Override
+    public void visitScriptImplementation(@NotNull EIScriptImplementation scriptImplementation) {
+        super.visitScriptImplementation(scriptImplementation);
 
-            if (element.getParent() instanceof EIScriptIfBlock) {
-                if (resolved instanceof EIScriptDeclaration) {
-                    markAsError(holder, nameElement, SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR);
-                } else {
-                    handleFunctionCallInIfBlock(holder, nameElement, (EIFunctionDeclaration) resolved);
-                }
+        PsiReference reference = scriptImplementation.getReference();
+        if (reference == null || reference.resolve() == null) {
+            TextRange range = scriptImplementation.getScriptIdentifier().getTextRange();
+            myHolder.createErrorAnnotation(range, SCRIPT_NOT_DECLARED_ERROR).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+        }
+    }
+
+    @Override
+    public void visitFunctionCall(@NotNull EIFunctionCall functionCall) {
+        super.visitFunctionCall(functionCall);
+
+        FunctionCallReference reference = (FunctionCallReference) functionCall.getReference();
+        PsiElement nameElement = functionCall.getScriptIdentifier();
+        PsiElement resolved = reference != null ? reference.resolve() : null;
+
+        if (functionCall.getParent() instanceof EIScriptIfBlock) {
+            if (resolved instanceof EIScriptDeclaration) {
+                markAsError(myHolder, nameElement, SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR);
             } else {
-                handleFunctionOrScriptCall(element, holder, nameElement, resolved);
+                handleFunctionCallInIfBlock(myHolder, nameElement, (EIFunctionDeclaration) resolved);
             }
+        } else {
+            handleFunctionOrScriptCall(functionCall, myHolder, nameElement, resolved);
         }
     }
 
