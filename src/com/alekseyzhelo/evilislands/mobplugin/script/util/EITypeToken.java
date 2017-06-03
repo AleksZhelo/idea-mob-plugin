@@ -4,11 +4,11 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
  * @author Aleks on 02-08-2015.
  */
 public enum EITypeToken {
-    VOID("void"),
-    FLOAT("float"),
-    STRING("string"),
-    OBJECT("object"),
-    GROUP("group");
+    VOID(EIScriptNamingUtil.VOID),
+    FLOAT(EIScriptNamingUtil.FLOAT),
+    STRING(EIScriptNamingUtil.STRING),
+    OBJECT(EIScriptNamingUtil.OBJECT),
+    GROUP(EIScriptNamingUtil.GROUP);
 
     private String typeString;
 

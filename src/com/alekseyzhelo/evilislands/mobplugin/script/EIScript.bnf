@@ -24,15 +24,15 @@
 scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldScript?
 
 // utility
-private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) *
+private meta comma_separated_list ::= <<param>> ( COMMA <<param>> ) * {pin(".*")=1 recoverWhile=comma_separated_list_recover}
 
-private ignored ::= (COMMENT)
+private ignored ::= (COMMENT) // TODO: unused
 
-functionDeclaration ::= scriptIdentifier formalParams COLON type | scriptIdentifier formalParams {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+functionDeclaration ::= scriptIdentifier formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getDisplayableType]}
 // utility end
 
-globalVars ::= GLOBALVARS LPAREN RPAREN | GLOBALVARS LPAREN globalVarsDefs RPAREN
+globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN
 
 // apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
 declarations ::= scriptDeclaration*
@@ -70,13 +70,13 @@ scriptExpression ::= assignment | functionCall | forBlock {methods=[getType]}
 
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 
-private formalParams ::= LPAREN RPAREN | LPAREN <<comma_separated_list (formalParameter)>> RPAREN
+private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
 
 formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
 
 // TODO: type checking!
-params ::= LPAREN RPAREN | LPAREN <<comma_separated_list (expression)>> RPAREN // {pin(".*")=1} // TODO: how to do references here?
+params ::= LPAREN <<comma_separated_list (expression)>>? RPAREN // {pin(".*")=1} // TODO: how to do references here?
 
 // TODO: how to do references here?
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getType]}
@@ -93,6 +93,7 @@ scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.s
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptTypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin"}
 
-private globalVarRecover ::= !(COMMA | RPAREN)
+private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
 private scriptThenBlockRecover ::= !(RPAREN)  // can't get this kind of stuff to work :(
+private comma_separated_list_recover ::= !(RPAREN)
