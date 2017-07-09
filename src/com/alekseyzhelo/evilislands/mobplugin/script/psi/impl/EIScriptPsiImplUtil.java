@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
@@ -12,6 +13,7 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
 
     @NotNull
@@ -100,6 +102,65 @@ public class EIScriptPsiImplUtil {
         } else {
             return null;
         }
+    }
+
+
+    // toString block
+
+    public static String toString(EIExpression expression) {
+        return EIScriptNamingUtil.NAME_EXPRESSION;
+    }
+
+    public static String toString(EIScriptDeclaration declaration) {
+        return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
+    }
+
+    public static String toString(EIGlobalVar globalVar) {
+        return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
+    }
+
+    public static String toString(EIFunctionCall functionCall) {
+        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getScriptIdentifier().getText();
+    }
+
+    public static String toString(EIVariableAccess variableAccess) {
+        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getScriptIdentifier().getText();
+    }
+
+    public static String toString(EIAssignment assignment) {
+        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getScriptIdentifier().getText();
+    }
+
+    public static String toString(EIScriptExpression scriptExpression) {
+        return EIScriptNamingUtil.NAME_SCRIPT_EXPRESSION;
+    }
+
+    public static String toString(EIScriptBlock scriptBlock) {
+        return EIScriptNamingUtil.NAME_SCRIPT_BLOCK;
+    }
+
+    public static String toString(EIScriptIfBlock scriptIfBlock) {
+        return EIScriptNamingUtil.NAME_SCRIPT_IF_BLOCK;
+    }
+
+    public static String toString(EIScriptThenBlock scriptThenBlock) {
+        return EIScriptNamingUtil.NAME_SCRIPT_THEN_BLOCK;
+    }
+
+    public static String toString(EIGlobalVars globalVars) {
+        return EIScriptNamingUtil.NAME_GLOBALVARS;
+    }
+
+    public static String toString(EIDeclarations declarations) {
+        return EIScriptNamingUtil.NAME_DECLARATIONS;
+    }
+
+    public static String toString(EIScripts scripts) {
+        return EIScriptNamingUtil.NAME_SCRIPTS;
+    }
+
+    public static String toString(EIWorldScript worldScript) {
+        return EIScriptNamingUtil.NAME_WORLDSCRIPT;
     }
 
 }

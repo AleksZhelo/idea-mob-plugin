@@ -128,6 +128,8 @@ public class EIScriptCompletionContributor extends CompletionContributor {
     private List<LookupElement> initFunctionLookup(Project project) {
         List<EIFunctionDeclaration> functions = EIScriptNativeFunctionsUtil.getAllFunctions(project);
         List<LookupElement> lookupElements = new ArrayList<>(functions.size());
+
+
         for (EIFunctionDeclaration function : functions) {
             lookupElements.add(LookupElementBuilder.create(function)
                     .withCaseSensitivity(false)

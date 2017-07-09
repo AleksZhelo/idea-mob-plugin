@@ -32,41 +32,41 @@ functionDeclaration ::= scriptIdentifier formalParams (COLON type)? {mixin="com.
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getDisplayableType]}
 // utility end
 
-globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN
+globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
 
 // apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
-declarations ::= scriptDeclaration*
+declarations ::= scriptDeclaration*  {methods=[toString]}
 
-scripts ::= scriptImplementation*
+scripts ::= scriptImplementation*  {methods=[toString]}
 
-worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN
+worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {methods=[toString]}
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
 globalVar ::= scriptIdentifier COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[toString]}
 
 // TODO: do script params shadow global vars?
 scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin"}
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[toString]}
 
 scriptImplementation ::= SCRIPT scriptIdentifier LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
 
 private scriptBody ::= scriptBlock+
 
-scriptBlock ::= scriptIfBlock scriptThenBlock
+scriptBlock ::= scriptIfBlock scriptThenBlock {methods=[toString]}
 
-scriptIfBlock ::= IF LPAREN ifConjunction RPAREN {pin=1 recoverWhile=scriptIfBlockRecover}
+scriptIfBlock ::= IF LPAREN ifConjunction RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
 private ifConjunction ::= functionCall*
 
-scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scriptThenBlockRecover}
+scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
 private scriptThenBody ::= scriptExpression*
 
 // TODO: how to do references here?
-scriptExpression ::= assignment | functionCall | forBlock {methods=[getType]}
+scriptExpression ::= assignment | functionCall | forBlock {methods=[getType toString]}
 
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 
@@ -79,13 +79,13 @@ formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilis
 params ::=  <<comma_separated_list (expression)>>   // TODO: how to do references here?
 
 // TODO: how to do references here?
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getType]}
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getType toString]}
 
-variableAccess ::= scriptIdentifier {methods=[getReference getType]}
+variableAccess ::= scriptIdentifier {methods=[getReference getType toString]}
 
-functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 methods=[getReference getType]}
+functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 methods=[getReference getType toString]}
 
-assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference]} // TODO: this pin and error recovery stuff
+assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference toString]} // TODO: this pin and error recovery stuff
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin"}

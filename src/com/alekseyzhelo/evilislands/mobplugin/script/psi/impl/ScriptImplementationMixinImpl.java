@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptImplementationMixin;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.intellij.lang.ASTNode;
 
 /**
@@ -11,6 +12,11 @@ public class ScriptImplementationMixinImpl extends ScriptNamedElementMixinImpl
 
     public ScriptImplementationMixinImpl(ASTNode node) {
         super(node);
+    }
+
+    @Override
+    public String toString() {
+        return EIScriptNamingUtil.NAME_SCRIPT_IMPL + getName();
     }
 
 }

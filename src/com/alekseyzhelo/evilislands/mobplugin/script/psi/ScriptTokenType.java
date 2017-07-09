@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,6 @@ public class ScriptTokenType extends IElementType {
 
     @Override
     public String toString() {
-        return "ScriptTokenType." + super.toString();
+        return EIScriptNamingUtil.NAME_SCRIPT_TOKEN + super.toString();
     }
 }

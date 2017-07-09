@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.IElementType;
 
@@ -20,4 +21,8 @@ public class ScriptPsiIdentifierMixinImpl extends ScriptPsiElementImpl
         return ScriptTypes.IDENTIFIER;
     }
 
+    @Override
+    public String toString() {
+        return EIScriptNamingUtil.NAME_IDENTIFIER + getText();
+    }
 }
