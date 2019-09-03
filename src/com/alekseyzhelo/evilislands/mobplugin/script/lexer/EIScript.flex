@@ -72,5 +72,5 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     \"{STRING_CHARACTER}+\"                      { return ScriptTypes.CHARACTER_STRING; }
 }
 
-
-.                                    { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? // apparently it might have been the byte order mark
+[^] { return TokenType.BAD_CHARACTER; }
+//.                                    { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? // apparently it might have been the byte order mark

@@ -19,25 +19,29 @@ public class EIScriptPsiImplUtil {
     @NotNull
     public static PsiReference getReference(EIAssignment assignment) {
         EIScriptIdentifier identifier = assignment.getScriptIdentifier();
-        return new VariableReference(identifier, TextRange.create(0, identifier.getTextLength()));
+        return new VariableReference(assignment, TextRange.create(0, identifier.getTextLength()));
     }
 
     @NotNull
     public static PsiReference getReference(EIFunctionCall call) {
         EIScriptIdentifier ident = call.getScriptIdentifier();
-        return new FunctionCallReference(ident, TextRange.create(0, ident.getTextLength()));
+        return new FunctionCallReference(call, TextRange.create(0, ident.getTextLength()));
     }
 
     @NotNull
     public static PsiReference getReference(EIScriptImplementation impl) {
         EIScriptIdentifier ident = impl.getScriptIdentifier();
-        return new FunctionCallReference(ident, TextRange.create(0, ident.getTextLength()), true);
+        // TODO: exception "reference not for same element as was queried, queried - impl, ref - identifier"
+        // seems to suggest I got the reference element wrong here, but with impl here the whole thing does not work
+        // wrong text range?
+        return new FunctionCallReference(ident != null ? ident : impl,
+                TextRange.create(0, ident != null ? ident.getTextLength() : 0), true);
     }
 
     @NotNull
     public static PsiReference getReference(EIVariableAccess variable) {
         EIScriptIdentifier identifier = variable.getScriptIdentifier();
-        return new VariableReference(identifier, new TextRange(0, identifier.getTextLength()));
+        return new VariableReference(variable, new TextRange(0, identifier.getTextLength()));
     }
 
     @NotNull
@@ -112,23 +116,28 @@ public class EIScriptPsiImplUtil {
     }
 
     public static String toString(EIScriptDeclaration declaration) {
-        return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
+//        return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
+        return declaration.getName();
     }
 
     public static String toString(EIGlobalVar globalVar) {
-        return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
+//        return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
+        return globalVar.getName();
     }
 
     public static String toString(EIFunctionCall functionCall) {
-        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getScriptIdentifier().getText();
+//        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getScriptIdentifier().getText();
+        return functionCall.getScriptIdentifier().getText();
     }
 
     public static String toString(EIVariableAccess variableAccess) {
-        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getScriptIdentifier().getText();
+//        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getScriptIdentifier().getText();
+        return variableAccess.getScriptIdentifier().getText();
     }
 
     public static String toString(EIAssignment assignment) {
-        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getScriptIdentifier().getText();
+//        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getScriptIdentifier().getText();
+        return assignment.getScriptIdentifier().getText();
     }
 
     public static String toString(EIScriptExpression scriptExpression) {

@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ public class MobFileType extends LanguageFileType {
     public static final MobFileType INSTANCE = new MobFileType();
 
     private MobFileType() {
-        super(null); // TODO: what to pass here?
+        super(EIScriptLanguage.INSTANCE);
     }
 
     @NotNull

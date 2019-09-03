@@ -115,18 +115,20 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
     }
 
     private void foldFromLParenToEnd(@NotNull List<FoldingDescriptor> descriptors, @NotNull final PsiElement element) {
-        @SuppressWarnings("ConstantConditions")
-        final int lParenOffset = element.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
-        if (lParenOffset >= element.getTextRange().getEndOffset()) {
-            return;
-        }
-        descriptors.add(new FoldingDescriptor(element.getNode(),
-                new TextRange(lParenOffset,
-                        element.getTextRange().getEndOffset()), null) {
-            @Override
-            public String getPlaceholderText() {
-                return "(...)";
+        ASTNode lParen = element.getNode().findChildByType(ScriptTypes.LPAREN);
+        if (lParen != null) {
+            @SuppressWarnings("ConstantConditions") final int lParenOffset = lParen.getStartOffset();
+            if (lParenOffset >= element.getTextRange().getEndOffset()) {
+                return;
             }
-        });
+            descriptors.add(new FoldingDescriptor(element.getNode(),
+                    new TextRange(lParenOffset,
+                            element.getTextRange().getEndOffset()), null) {
+                @Override
+                public String getPlaceholderText() {
+                    return "(...)";
+                }
+            });
+        }
     }
 }

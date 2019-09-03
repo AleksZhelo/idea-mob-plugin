@@ -13,6 +13,6 @@ public class ScriptTokenType extends IElementType {
 
     @Override
     public String toString() {
-        return EIScriptNamingUtil.NAME_SCRIPT_TOKEN + super.toString();
+        return super.toString();
     }
 }

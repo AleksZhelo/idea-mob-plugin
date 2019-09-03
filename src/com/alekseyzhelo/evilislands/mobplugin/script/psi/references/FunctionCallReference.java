@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
@@ -29,7 +30,11 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
 
     public FunctionCallReference(@NotNull PsiElement element, TextRange textRange) {
         super(element, textRange);
-        name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+        if (element instanceof EIScriptImplementation) {
+            name = ((EIScriptImplementation) element).getName();
+        } else {
+            name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+        }
         this.scriptOnly = false;
     }
 
@@ -39,7 +44,7 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     }
 
     @Override
-    public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
+    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
         PsiElement element = resolve();
         if (element instanceof EIFunctionDeclaration) {
             throw new IncorrectOperationException();

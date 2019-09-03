@@ -16,7 +16,7 @@ public class ScriptImplementationMixinImpl extends ScriptNamedElementMixinImpl
 
     @Override
     public String toString() {
-        return EIScriptNamingUtil.NAME_SCRIPT_IMPL + getName();
+        return getName();
     }
 
 }

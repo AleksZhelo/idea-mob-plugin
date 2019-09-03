@@ -20,9 +20,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-// this does work, actually
-// but isn't currently necessary?
+// TODO: insertHandler-s for script declarations, script implementations, function calls, script calls, etc
 public class EIScriptCompletionContributor extends CompletionContributor {
 
     private List<LookupElement> functionLookupElements;
@@ -43,8 +43,10 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
                         PsiElement parent = UsefulPsiTreeUtil.getParentByPattern(parameters.getOriginalPosition(), hasErrorChild);
                         PsiErrorElement[] errors = UsefulPsiTreeUtil.getChildrenOfType(parent, PsiErrorElement.class, null);
-                        String errorDescription = errors[0].getErrorDescription();
-                        fillSuggestedTokens(result, errorDescription);
+                        if (errors != null && errors.length > 0) {
+                            String errorDescription = errors[0].getErrorDescription();
+                            fillSuggestedTokens(result, parent, errorDescription);
+                        }
                     }
                 });
         extend(CompletionType.BASIC,
@@ -59,19 +61,20 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     @Override
                     protected void addCompletions(@NotNull CompletionParameters parameters, ProcessingContext context, @NotNull CompletionResultSet result) {
                         PsiElement element = parameters.getOriginalPosition().getParent();
+                        PsiElement parent = UsefulPsiTreeUtil.getParentByPattern(parameters.getOriginalPosition(), hasErrorChild);
                         if (!(element instanceof PsiErrorElement)) {  // TODO: makes sense to check the original pos first?
                             // check if non-original has 'dummy' and expected?
-                            PsiElement parent = UsefulPsiTreeUtil.getParentByPattern(parameters.getOriginalPosition(), hasErrorChild);
                             if (parent != null) {
                                 PsiErrorElement[] errors = UsefulPsiTreeUtil.getChildrenOfType(parent, PsiErrorElement.class, null);
-                                element = errors[0];
+                                if (errors != null && errors.length > 0) {
+                                    element = errors[0];
+                                }
                             } else {
                                 element = parameters.getPosition().getParent();
-
                             }
                         }
                         String errorDescription = ((PsiErrorElement) element).getErrorDescription();
-                        fillSuggestedTokens(result, errorDescription);
+                        fillSuggestedTokens(result, parent, errorDescription);
                     }
                 });
         // XXX: already done by my references
@@ -92,22 +95,41 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //        );
     }
 
-    private void fillSuggestedTokens(@NotNull CompletionResultSet result, String errorDescription) {
+    private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
+        if (errorDescription.contains("expected, got")) {
+            suggestExpectedTerms(result, parent, errorDescription);
+        } else if (errorDescription.contains("unexpected")) {
+            suggestUnexpected(result, parent, errorDescription);
+        }
+    }
+
+    private void suggestExpectedTerms(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
+        // TODO: if parent is a ThenBlock or WorldScript, then we can also suggest global variables, functions or scripts
+        // (or equals?); also check right-hand side of assignments? (or is this done automatically?)
         int indexOfSuggestion = errorDescription.indexOf(" expected, got ");
         if (indexOfSuggestion >= 0) {
             errorDescription = errorDescription.substring(0, indexOfSuggestion);
             errorDescription = errorDescription.replaceAll("ScriptTokenType\\.", "");
             String[] suggestedTokens = errorDescription.split("(, )|( or )");
-            String prefix = "IntellijIdeaRulezzz".equals(result.getPrefixMatcher().getPrefix()) ? "" : result.getPrefixMatcher().getPrefix();
             for (String suggestedToken : suggestedTokens) {
                 if ("<type>".equals(suggestedToken)) {
-                    result.addElement(prefixedToken(prefix, EIScriptNamingUtil.FLOAT, true));
-                    result.addElement(prefixedToken(prefix, EIScriptNamingUtil.STRING, true));
-                    result.addElement(prefixedToken(prefix, EIScriptNamingUtil.OBJECT, true));
-                    result.addElement(prefixedToken(prefix, EIScriptNamingUtil.GROUP, true));
+                    suggestToken(result, EIScriptNamingUtil.FLOAT);
+                    suggestToken(result, EIScriptNamingUtil.STRING);
+                    suggestToken(result, EIScriptNamingUtil.OBJECT);
+                    suggestToken(result, EIScriptNamingUtil.GROUP);
                 } else if (EIScriptNamingUtil.tokenMap.get(suggestedToken) != null) {
-                    result.addElement(prefixedToken(prefix, EIScriptNamingUtil.tokenMap.get(suggestedToken), spaceForToken(suggestedToken)));
+                    suggestToken(result, EIScriptNamingUtil.tokenMap.get(suggestedToken));
                 }
+            }
+        }
+    }
+
+    private void suggestUnexpected(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
+        String unexpectedTerm = errorDescription.split("'")[1];
+        // TODO: should be parent-dependent
+        for (String token : EIScriptNamingUtil.tokenMap.values()){
+            if (token.toLowerCase(Locale.ENGLISH).startsWith(unexpectedTerm.toLowerCase(Locale.ENGLISH))){
+                suggestToken(result, token);
             }
         }
     }
@@ -115,6 +137,13 @@ public class EIScriptCompletionContributor extends CompletionContributor {
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
         super.fillCompletionVariants(parameters, result);
+    }
+
+    private void suggestToken(CompletionResultSet result, String token) {
+        String prefix = "IntellijIdeaRulezzz".equals(result.getPrefixMatcher().getPrefix()) ? "" : result.getPrefixMatcher().getPrefix();
+        if (prefix.length() == 0 || result.getPrefixMatcher().prefixMatches(token)) {
+            result.addElement(LookupElementBuilder.create(token));
+        }
     }
 
     private LookupElementBuilder prefixedToken(String prefix, String token, boolean withWhitespace) {

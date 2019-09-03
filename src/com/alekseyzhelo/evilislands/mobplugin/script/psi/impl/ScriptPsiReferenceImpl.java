@@ -56,7 +56,7 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
 
             if (allFunctionLookupElements == null) {
                 List<LookupElement> elements = initFunctionLookup(getProject());
-                allFunctionLookupElements = elements.toArray(new LookupElement[elements.size()]);
+                allFunctionLookupElements = elements.toArray(new LookupElement[0]);
             }
             return allFunctionLookupElements;
         }
@@ -86,7 +86,7 @@ public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
                                 .withRenderer(new EICallLookupElementRenderer<>()))
                         .collect(Collectors.toList())
         );
-        return lookupElements.toArray(new LookupElement[lookupElements.size()]);
+        return lookupElements.toArray(new LookupElement[0]);
     }
 
     private void initLookupFor(EITypeToken type) {

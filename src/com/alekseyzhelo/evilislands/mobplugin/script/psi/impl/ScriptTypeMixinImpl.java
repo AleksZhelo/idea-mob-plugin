@@ -30,7 +30,8 @@ public class ScriptTypeMixinImpl extends ScriptPsiElementImpl
 
     @Override
     public String toString() {
-        return EIScriptNamingUtil.NAME_TYPE + getText();
+//        return EIScriptNamingUtil.NAME_TYPE + getText();
+        return getText();
     }
 
 }

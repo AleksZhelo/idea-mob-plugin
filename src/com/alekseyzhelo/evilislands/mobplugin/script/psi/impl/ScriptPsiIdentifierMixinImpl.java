@@ -23,6 +23,6 @@ public class ScriptPsiIdentifierMixinImpl extends ScriptPsiElementImpl
 
     @Override
     public String toString() {
-        return EIScriptNamingUtil.NAME_IDENTIFIER + getText();
+        return getText();
     }
 }
