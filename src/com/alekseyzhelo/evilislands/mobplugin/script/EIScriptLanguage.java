@@ -25,7 +25,7 @@ public class EIScriptLanguage extends Language {
 //     *
 //     * This main method is the debugging routine for the scanner.
 //     * It prints debugging information about each returned token to
-//     * System.out until the end of file is reached, or an error occured.
+//     * System.out until the end of file is reached, or an error occurred.
 //     *
 //     * @param argv   the command line, contains the filenames to run
 //     *               the scanner on.
