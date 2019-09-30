@@ -1,0 +1,132 @@
+// Диалоговая зона.
+// Версия дефолтного скрипта: 4.
+// ing_gorod - Город Ингос
+
+////////////////////////////////////////////
+// Переменные
+////////////////////////////////////////////
+
+GlobalVars (
+  NULL : object,
+  VSS#i#val : object,
+  i : object,
+  Hero : object,
+  Yolochka1 : object,
+  Yolochka2 : object,
+  SomeValue : float
+)
+
+////////////////////////////////////////////
+// Объявления скриптов
+////////////////////////////////////////////
+
+DeclareScript #OnBriefingComplete (  nPlayer : float,  szComplete : string )
+DeclareScript DebugScript (  this : object )
+DeclareScript DoNameObjects (  this : object )
+DeclareScript SetDefZoneVars (  this : object )
+DeclareScript EnableZone (  this : object )
+
+
+////////////////////////////////////////////
+// Скрипт по окончанию брифингов...
+////////////////////////////////////////////
+
+Script #OnBriefingComplete
+(
+  if
+  (
+
+  )
+  then
+  (
+    <fc>KillScript</fc>(  )
+
+  )
+)
+
+////////////////////////////////////////////
+// Скрипты глобальные для зоны
+////////////////////////////////////////////
+
+Script DebugScript
+//Отладочный скрипт - для проверки того, что скрипт зоны работает.
+(
+  if
+  (
+
+  )
+  then
+  (
+    <fc>KillScript</fc>(  )
+    <fc>ConsoleString</fc>("DEBUG SCRIPT LAUNCHED!!!")
+  )
+)
+
+Script DoNameObjects
+//Этот скрипт привязывает идешники объектов к переменным - объектам.
+(
+  if
+  (
+
+  )
+  then
+  (
+    <fc>KillScript</fc>(  )
+
+    <va>Hero</va> = <fc>GetLeader</fc>()      //Злобный хуманоид по кличке Хома.
+    <va>Yolochka1</va> = <fc>GetObjectByID</fc>("2300")   //Мигающая йолка.
+    <va>Yolochka2</va> = <fc>GetObjectByID</fc>("2301")   //Мигающая йолка нумер два.
+  )
+)
+
+Script SetDefZoneVars
+//Этот скрипт выставляет умолчальные значение переменных при входе именно в эту зону
+(
+  if
+  (
+
+  )
+  then
+  (
+    <fc>KillScript</fc>(  )  //Убить скрипт чтоб больше не выполнялся
+
+    //Включить те брифинги, которые должны быть постоянно...
+
+  )
+)
+
+Script EnableZone
+//Открывает зону если она еще закрыта
+(
+  if
+  (
+    <fc>IsEqual</fc>(<fc>GSGetVar</fc>(0,"z.ing_gorod"),0)
+  )
+  then
+  (
+    <fc>KillScript</fc>( )
+    //DebugScript(NULL)
+    <fc>gssetvar</fc>(0,"z.ing_gorod",2)
+  )
+)
+
+////////////////////////////////////////////
+// Другие скрипты
+////////////////////////////////////////////
+
+////////////////////////////////////////////
+// WorldScript
+////////////////////////////////////////////
+
+WorldScript
+(
+  <fc>Sleep</fc>( 2 )
+  <va>SomeValue</va> = 4
+  //Глобальные скрипты зоны...
+  <fc>DebugScript</fc>(<va>NULL</va>)  //Если надо проверить, работает ли скрипт - раскомментируйте.
+  <fc>DoNameObjects</fc>(<va>NULL</va>)  //Привязать идешники объектов к именным объектам
+  <fc>SetDefZoneVars</fc>(<va>NULL</va>) //Выставить умолчальные для зоны переменые.
+  <fc>EnableZone</fc>(<va>NULL</va>) //Открыть зону если она еще закрыта.
+
+  <fc>Sleep</fc>( 10 ) //Чтобы другие скрипты не начали выполняться
+)
