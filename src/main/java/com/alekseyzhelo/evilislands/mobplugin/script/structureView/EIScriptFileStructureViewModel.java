@@ -8,7 +8,8 @@ import com.intellij.ide.util.treeView.smartTree.Grouper;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: scripts/units/etc via groupers?
+// TODO: units/etc via groupers?  | will try to do this in the project view window
+// TODO: filters: global vars, scripts, gsSet vars
 public class EIScriptFileStructureViewModel extends TextEditorBasedStructureViewModel implements StructureViewModel.ElementInfoProvider {
 
     EIScriptFileStructureViewModel(Editor editor, ScriptFile file) {

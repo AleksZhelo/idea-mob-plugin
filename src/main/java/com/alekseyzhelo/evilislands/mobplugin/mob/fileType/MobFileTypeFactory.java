@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.mob;
+package com.alekseyzhelo.evilislands.mobplugin.mob.fileType;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
