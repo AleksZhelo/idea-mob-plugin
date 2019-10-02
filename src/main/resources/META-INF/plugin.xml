@@ -25,7 +25,7 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileTypeFactory"/>
+        <fileTypeFactory implementation="com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileTypeFactory"/>
         <lang.parserDefinition language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition"/>
         <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptColorSettingsPage"/>
@@ -38,6 +38,8 @@
         <annotator language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptAnnotator"/>
         <lang.documentationProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptDocumentationProvider"/>
         <completion.contributor language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptCompletionContributor"/>
+        <lang.psiStructureViewFactory language="EIScriptLanguage"
+                                      implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
     </extensions>
 
     <application-components>

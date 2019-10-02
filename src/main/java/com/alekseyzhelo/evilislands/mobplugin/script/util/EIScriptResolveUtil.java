@@ -18,19 +18,10 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.search.FileTypeIndex;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.indexing.FileBasedIndex;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -40,72 +31,14 @@ import java.util.*;
  */
 public class EIScriptResolveUtil {
 
-    public static List<EIGlobalVar> findGlobalVars(ScriptFile scriptFile) {
-        if (scriptFile == null) {
-            return Collections.emptyList();
-        }
-        final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(scriptFile, EIGlobalVars.class);
-        if (globalVars == null) {
-            return Collections.emptyList();
-        }
-
-        final EIGlobalVar[] globalVarsActual = PsiTreeUtil.getChildrenOfType(globalVars, EIGlobalVar.class);
-        if (globalVarsActual == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(globalVarsActual);
-    }
-
-    public static EIGlobalVar findGlobalVar(ScriptFile scriptFile, String varName) {
-        return matchByName(varName, findGlobalVars(scriptFile));
-    }
-
-    // useless, but do not want to delete for now
-    public static List<EIGlobalVar> findGlobalVars(Project project) {
-        List<EIGlobalVar> result = new ArrayList<>();
-        Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance().getContainingFiles(
-                FileTypeIndex.NAME,
-                ScriptFileType.INSTANCE,
-                GlobalSearchScope.allScope(project)
-        );
-        for (VirtualFile virtualFile : virtualFiles) {
-            ScriptFile scriptFile = (ScriptFile) PsiManager.getInstance(project).findFile(virtualFile);
-            result.addAll(findGlobalVars(scriptFile));
-        }
-        return result;
-    }
-
-    @NotNull
-    public static List<EIScriptDeclaration> findScriptDeclarations(@Nullable ScriptFile file) {
-        if (file == null) {
-            return Collections.emptyList();
-        }
-        final EIDeclarations declarations = PsiTreeUtil.getChildOfType(file, EIDeclarations.class);
-        if (declarations == null) {
-            return Collections.emptyList();
-        }
-        final EIScriptDeclaration[] scriptDeclarations = PsiTreeUtil.getChildrenOfType(declarations, EIScriptDeclaration.class);
-        if (scriptDeclarations == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.asList(scriptDeclarations);
-    }
-
-    @Nullable
-    public static EIScriptDeclaration findScriptDeclaration(@Nullable ScriptFile file, @NotNull String scriptName) {
-        return matchByName(scriptName, findScriptDeclarations(file));
-    }
-
     @Nullable
     public static List<EIFormalParameter> findEnclosingScriptParams(PsiElement myElement) {
         EIScriptImplementation script = UsefulPsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class);
         if (script == null || script.getName() == null) {
             return null;
         } else {
-            EIScriptDeclaration declaration = EIScriptResolveUtil.findScriptDeclaration(
-                    (ScriptFile) script.getContainingFile(),
-                    script.getName()
-            );
+            EIScriptDeclaration declaration =
+                    ((ScriptFile) script.getContainingFile()).findScriptDeclaration(script.getName());
             return declaration != null ? declaration.getFormalParameterList() : null;
         }
     }

@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.file;
+package com.alekseyzhelo.evilislands.mobplugin.script.fileType;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;

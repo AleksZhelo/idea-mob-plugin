@@ -9,7 +9,6 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -38,8 +37,8 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
         if (param != null) {
             return param;
         } else {
-            PsiFile file = myElement.getContainingFile();
-            return EIScriptResolveUtil.findGlobalVar((ScriptFile) file, name);
+            ScriptFile file = (ScriptFile) myElement.getContainingFile();
+            return file.findGlobalVar(name);
         }
     }
 
@@ -69,8 +68,8 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @NotNull
     // TODO: string localization, or simply a better string for "unknown"?
     private List<LookupElement> getGlobalVarVariants(PsiElement myElement, EITypeToken expectedType) {
-        PsiFile file = myElement.getContainingFile();
-        List<EIGlobalVar> globalVars = EIScriptResolveUtil.findGlobalVars((ScriptFile) file);
+        ScriptFile file = (ScriptFile) myElement.getContainingFile();
+        List<EIGlobalVar> globalVars = file.findGlobalVars();
         List<LookupElement> variants = new ArrayList<>();
         for (final EIGlobalVar global : globalVars) {
             if (global.getName() != null && global.getName().length() > 0) {

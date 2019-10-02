@@ -8,12 +8,10 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: handle going to declaration not working from the right half of the script implementation identifier
 // This is either a function or a script call
+// TODO: split into two classes implementing a common interface?
 public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     private final String name;
     private boolean scriptOnly;
@@ -55,14 +53,12 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        PsiFile file = myElement.getContainingFile();
+        ScriptFile file = (ScriptFile) myElement.getContainingFile();
         if (scriptOnly) {
-            return EIScriptResolveUtil.findScriptDeclaration((ScriptFile) file, name);
+            return file.findScriptDeclaration(name);
         } else {
             EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(file.getProject(), name);
-            return function != null
-                    ? function
-                    : EIScriptResolveUtil.findScriptDeclaration((ScriptFile) file, name);
+            return function != null ? function : file.findScriptDeclaration(name);
         }
     }
 
@@ -70,11 +66,10 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     @Override
     // TODO: improve these methods
     public Object[] getVariants() {
-        PsiFile file = myElement.getContainingFile();
+        ScriptFile file = (ScriptFile) myElement.getContainingFile();
         List<LookupElement> variants = new ArrayList<>();
 
-        List<EIScriptDeclaration> scripts =
-                EIScriptResolveUtil.findScriptDeclarations((ScriptFile) file);
+        List<EIScriptDeclaration> scripts = file.findScriptDeclarations();
         for (final EIScriptDeclaration script : scripts) {
             if (script.getName() != null && script.getName().length() > 0) {
                 variants.add(LookupElementBuilder.create(script).

@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileType;
+import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
 import com.intellij.openapi.project.Project;

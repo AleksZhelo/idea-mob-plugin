@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.file.ScriptFileType;
+import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
