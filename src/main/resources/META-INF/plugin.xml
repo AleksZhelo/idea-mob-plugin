@@ -40,6 +40,14 @@
         <completion.contributor language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptCompletionContributor"/>
         <lang.psiStructureViewFactory language="EIScriptLanguage"
                                       implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
+
+        <virtualFileSystem key="mob"
+                           implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.vfs.MobAsArchiveFileSystem"/>
+        <fileType name="mob"
+                  patterns="*.mob"
+                  implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.fileType.TestMobFileType"/>
+        <treeStructureProvider
+                implementation="com.alekseyzhelo.evilislands.mobplugin.projectView.EIMobStructureProvider"/>
     </extensions>
 
     <application-components>

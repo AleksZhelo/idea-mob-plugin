@@ -24,7 +24,7 @@ public class MobFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "Evil islands composite map description file";
+        return "Evil Islands composite map description file";
     }
 
     @NotNull

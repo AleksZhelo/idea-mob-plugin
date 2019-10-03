@@ -1,8 +1,9 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.fileType;
+package com.alekseyzhelo.evilislands.mobplugin.mob.fileType;
 
-import com.alekseyzhelo.eimob.MobFile;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
+import com.intellij.icons.AllIcons;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -10,40 +11,45 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class ScriptFileType extends LanguageFileType {
-    public static final ScriptFileType INSTANCE = new ScriptFileType();
-
-    private ScriptFileType() {
-        super(EIScriptLanguage.INSTANCE);
-    }
+public class TestMobFileType implements FileType {
 
     @NotNull
     @Override
     public String getName() {
-        return "Script text file";
+        return "MOB";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "Evil islands scripting language file";
+        return "Evil Islands composite map description file";
     }
 
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "eiscript";
+        return "mob";
     }
 
     @Nullable
     @Override
     public Icon getIcon() {
-        return Icons.FILE;
+        return AllIcons.FileTypes.Custom;
     }
 
     @Override
-    public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
-        return MobFile.Companion.getEiCharset().toString();
+    public boolean isBinary() {
+        return true;
     }
 
+    @Override
+    public boolean isReadOnly() {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public String getCharset(@NotNull VirtualFile file, @NotNull byte[] content) {
+        return null;
+    }
 }
