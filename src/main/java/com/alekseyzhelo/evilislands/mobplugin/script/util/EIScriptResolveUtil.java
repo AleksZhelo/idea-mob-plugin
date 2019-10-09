@@ -38,7 +38,7 @@ public class EIScriptResolveUtil {
             return null;
         } else {
             EIScriptDeclaration declaration =
-                    ((ScriptFile) script.getContainingFile()).findScriptDeclaration(script.getName());
+                    ((ScriptPsiFile) script.getContainingFile()).findScriptDeclaration(script.getName());
             return declaration != null ? declaration.getFormalParameterList() : null;
         }
     }

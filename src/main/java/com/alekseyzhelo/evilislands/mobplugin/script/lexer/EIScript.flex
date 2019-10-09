@@ -12,16 +12,12 @@ import com.intellij.psi.TokenType;
 %public
 %unicode
 %caseless
-//%debug
-//%line //why doesn't this work?
-//%column //why doesn't this work?
+
 %function advance
 %type IElementType
+
 %eof{  return;
 %eof}
-
-%{
-%}
 
 LINE_TERMINATOR = \r|\n|\r\n
 INPUT_CHARACTER = [^\r\n]
@@ -42,10 +38,8 @@ WORLDSCRIPT="worldscript"
 IDENTIFIER=[#a-zA-Z]([#_a-zA-Z0-9-])*
 FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
 
-%state STRING
-
 %%
-// apparently it is very important to not ignore any characters from the input
+// apparently it is very important not to ignore any characters from the input
 <YYINITIAL> {
     {FLOAT}                                      { return ScriptTypes.FLOAT; }
     {STRING}                                     { return ScriptTypes.STRING; }
@@ -68,9 +62,7 @@ FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
     {END_OF_LINE_COMMENT}                        { return ScriptTypes.COMMENT;  }
     {WHITE_SPACE}                                { return TokenType.WHITE_SPACE;  }
     {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE;  }
-
-    \"{STRING_CHARACTER}+\"                      { return ScriptTypes.CHARACTER_STRING; }
+    \"{STRING_CHARACTER}*\"                      { return ScriptTypes.CHARACTER_STRING; }
 }
 
 [^] { return TokenType.BAD_CHARACTER; }
-//.                                    { return TokenType.BAD_CHARACTER; } // why in God's name do I need this? Why the fucking fuck is there a fucking bad character on file start? // apparently it might have been the byte order mark

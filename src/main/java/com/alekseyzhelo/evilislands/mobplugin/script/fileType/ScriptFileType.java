@@ -38,7 +38,7 @@ public class ScriptFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return Icons.FILE;
+        return Icons.SCRIPT_FILE;
     }
 
     @Override

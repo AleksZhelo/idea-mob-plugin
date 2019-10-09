@@ -1,38 +1,37 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi;
 
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.*;
 
-public class ScriptFile extends PsiFileBase {
+// TODO: processChildren implementation needed?
+public class ScriptPsiFile extends PsiFileBase {
 
-    public ScriptFile(@NotNull FileViewProvider viewProvider) {
+    public ScriptPsiFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, EIScriptLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public FileType getFileType() {
-        return ScriptFileType.INSTANCE;
+        return getViewProvider().getFileType();
     }
 
     @Override
     public String toString() {
-        return "Script File";
-    }
-
-    @Override
-    public Icon getIcon(int flags) {
-        return super.getIcon(flags);
+        return "ScriptFile: " + getName();
     }
 
     // TODO this and below: find or get?
@@ -71,4 +70,26 @@ public class ScriptFile extends PsiFileBase {
                 : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class);
     }
 
+    // TODO: better way to do this?
+    @Nullable
+    public PsiMobFile getCompanionMobFile() {
+        PsiDirectory parent = getParent();
+        if (parent == null) {
+            parent = myOriginalFile.getParent();
+        }
+
+        if (parent != null) {
+            PsiFile psiFile = parent.findFile(getViewProvider().getVirtualFile().getNameWithoutExtension() + ".mob");
+            if (psiFile instanceof PsiMobFile) {
+                return (PsiMobFile) psiFile;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public PsiMobObjectsBlock getCompanionMobObjectsBlock() {
+        PsiMobFile mobFile = getCompanionMobFile();
+        return mobFile != null ? (PsiMobObjectsBlock) mobFile.getChildren()[0] : null;
+    }
 }

@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.structureView.TextEditorBasedStructureViewModel;
@@ -12,14 +12,14 @@ import org.jetbrains.annotations.NotNull;
 // TODO: filters: global vars, scripts, gsSet vars
 public class EIScriptFileStructureViewModel extends TextEditorBasedStructureViewModel implements StructureViewModel.ElementInfoProvider {
 
-    EIScriptFileStructureViewModel(Editor editor, ScriptFile file) {
+    EIScriptFileStructureViewModel(Editor editor, ScriptPsiFile file) {
         super(editor, file);
     }
 
     @NotNull
     @Override
     public StructureViewTreeElement getRoot() {
-        return new EIScriptFileStructureViewElement((ScriptFile) getPsiFile());
+        return new EIScriptFileStructureViewElement((ScriptPsiFile) getPsiFile());
     }
 
     @Override

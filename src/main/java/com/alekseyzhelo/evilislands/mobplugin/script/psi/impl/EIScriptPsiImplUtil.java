@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
@@ -10,6 +11,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +41,30 @@ public class EIScriptPsiImplUtil {
     public static PsiReference getReference(EIVariableAccess variable) {
         EIScriptIdentifier identifier = variable.getScriptIdentifier();
         return new VariableReference(variable, new TextRange(0, identifier.getTextLength()));
+    }
+
+    @Nullable
+    public static PsiReference getReference(EIExpression expression) {
+        ASTNode firstChild = expression.getNode().getFirstChildNode();
+        final IElementType elementType = firstChild.getElementType();
+        if (elementType == ScriptTypes.FLOATNUMBER) {
+            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
+            if (parentCall != null && parentCall.getScriptIdentifier().getText().equalsIgnoreCase("getobject")) {
+                return new MobObjectReference(expression, new TextRange(0, firstChild.getTextLength()));
+            } else {
+                return null;
+            }
+        } else if (elementType == ScriptTypes.CHARACTER_STRING) {
+            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
+            // TODO: extract comparison logic; extract magic string?
+            if (parentCall != null && parentCall.getScriptIdentifier().getText().equalsIgnoreCase("getobjectbyid")) {
+                return new MobObjectReference(expression, new TextRange(1, firstChild.getTextLength() - 1));
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 
     @NotNull

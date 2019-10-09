@@ -2,7 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -79,7 +79,7 @@ public class EIScriptNativeFunctionsUtil {
             e.printStackTrace();
         }
         if (declarations != null && documentation != null) {
-            final ScriptFile file = (ScriptFile) PsiFileFactory.getInstance(project).
+            final ScriptPsiFile file = (ScriptPsiFile) PsiFileFactory.getInstance(project).
                     createFileFromText("declarations.eiscript", ScriptFileType.INSTANCE, declarations);
             functionNameToPsi = new HashMap<>();
             functionNameToDoc = new HashMap<>();

@@ -3,7 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -37,7 +37,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
         if (param != null) {
             return param;
         } else {
-            ScriptFile file = (ScriptFile) myElement.getContainingFile();
+            ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
             return file.findGlobalVar(name);
         }
     }
@@ -68,7 +68,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @NotNull
     // TODO: string localization, or simply a better string for "unknown"?
     private List<LookupElement> getGlobalVarVariants(PsiElement myElement, EITypeToken expectedType) {
-        ScriptFile file = (ScriptFile) myElement.getContainingFile();
+        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
         List<EIGlobalVar> globalVars = file.findGlobalVars();
         List<LookupElement> variants = new ArrayList<>();
         for (final EIGlobalVar global : globalVars) {

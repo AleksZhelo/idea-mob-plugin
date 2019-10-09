@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
@@ -21,6 +21,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
     private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     private static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.COMMENT);
     private static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
+    public static final TokenSet NUMERIC_LITERALS = TokenSet.create(ScriptTypes.FLOATNUMBER);
 
     private static final IFileElementType FILE =
             new IFileElementType(Language.findInstance(EIScriptLanguage.class));
@@ -58,7 +59,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new ScriptFile(viewProvider);
+        return new ScriptPsiFile(viewProvider);
     }
 
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {

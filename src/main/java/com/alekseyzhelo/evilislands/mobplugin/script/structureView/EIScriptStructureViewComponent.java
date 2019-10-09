@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
@@ -11,21 +11,21 @@ import org.jetbrains.annotations.Nullable;
 
 class EIScriptStructureViewComponent extends StructureViewComponent {
 
-    private final ScriptFile myScriptFile;
+    private final ScriptPsiFile myScriptPsiFile;
 
-    EIScriptStructureViewComponent(@NotNull Project project, @NotNull ScriptFile file, @Nullable FileEditor editor) {
+    EIScriptStructureViewComponent(@NotNull Project project, @NotNull ScriptPsiFile file, @Nullable FileEditor editor) {
         super(editor, new EIScriptFileStructureViewModel(EditorUtil.getEditorEx(editor), file), project, true);
-        myScriptFile = file;
+        myScriptPsiFile = file;
     }
 
     // TODO: needed?
     @Override
     public Object getData(@NotNull String dataId) {
         if (CommonDataKeys.VIRTUAL_FILE.is(dataId)) {
-            return myScriptFile.getVirtualFile();
+            return myScriptPsiFile.getVirtualFile();
         }
         if (CommonDataKeys.PSI_ELEMENT.is(dataId)) {
-            return myScriptFile.getContainingFile();
+            return myScriptPsiFile.getContainingFile();
         }
         return super.getData(dataId);
     }

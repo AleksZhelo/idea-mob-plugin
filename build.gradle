@@ -7,8 +7,7 @@ group 'com.alekseyzhelo.evilislands'
 version '1.0'
 
 sourceCompatibility = 1.8
-compileJava.options.encoding = 'UTF-8'
-compileTestJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
 // TODO: add tasks to generate lexer and parser when needed
 sourceSets.main.java.srcDirs = ['src/main/java', 'gen']

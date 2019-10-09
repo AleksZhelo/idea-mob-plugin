@@ -25,7 +25,8 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileTypeFactory implementation="com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileTypeFactory"/>
+        <fileType name="eiscript" patterns="*.eiscript"
+                  implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType"/>
         <lang.parserDefinition language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition"/>
         <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptColorSettingsPage"/>
@@ -41,13 +42,15 @@
         <lang.psiStructureViewFactory language="EIScriptLanguage"
                                       implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
 
-        <virtualFileSystem key="mob"
-                           implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.vfs.MobAsArchiveFileSystem"/>
-        <fileType name="mob"
-                  patterns="*.mob"
-                  implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.fileType.TestMobFileType"/>
+        <fileType name="mob" patterns="*.mob"
+                  implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.fileType.MobFileType"/>
+        <fileType.fileViewProviderFactory filetype="Mob"
+                                          implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.psi.provider.MobFileViewProviderFactory"/>
         <treeStructureProvider
                 implementation="com.alekseyzhelo.evilislands.mobplugin.projectView.EIMobStructureProvider"/>
+        <completion.confidence language="EIScriptLanguage" order="before javaSkipAutopopupInStrings"
+                               implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.CompletionConfidenceOverride" />
+
     </extensions>
 
     <application-components>
@@ -59,7 +62,18 @@
     </project-components>
 
     <actions>
-        <!-- Add your actions here -->
+        <action id="UnpackMobAction" class="com.alekseyzhelo.evilislands.mobplugin.mob.UnpackMobAction"
+                text="UnpackMobAction" description="Unpack / pack mob files">
+        </action>
+
+        <group id="UnpackPack" text="Unpack/Pack Mob Files"
+               description="Unpack/pack mob files">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+            <add-to-group group-id="EditorTabPopupMenu"/>
+            <add-to-group group-id="ConsoleEditorPopupMenu"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <reference ref="UnpackMobAction"/>
+        </group>
     </actions>
 
 </idea-plugin>

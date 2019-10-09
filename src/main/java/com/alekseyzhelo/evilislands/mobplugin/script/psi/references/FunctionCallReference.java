@@ -4,7 +4,7 @@ import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
@@ -53,7 +53,7 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        ScriptFile file = (ScriptFile) myElement.getContainingFile();
+        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
         if (scriptOnly) {
             return file.findScriptDeclaration(name);
         } else {
@@ -66,7 +66,7 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     @Override
     // TODO: improve these methods
     public Object[] getVariants() {
-        ScriptFile file = (ScriptFile) myElement.getContainingFile();
+        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
         List<LookupElement> variants = new ArrayList<>();
 
         List<EIScriptDeclaration> scripts = file.findScriptDeclarations();

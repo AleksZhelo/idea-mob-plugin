@@ -77,12 +77,13 @@ formalParameter ::= scriptIdentifier COLON type  {mixin="com.alekseyzhelo.evilis
 params ::=  <<comma_separated_list (expression)>>   // TODO: how to do references here?
 
 // TODO: how to do references here?
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getType toString]}
+expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
 
 variableAccess ::= scriptIdentifier {methods=[getReference getType toString]}
 
 functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 methods=[getReference getType toString]}
 
+// TODO: replace identifier with variableAccess?
 assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference toString]} // TODO: this pin and error recovery stuff
 
 scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
