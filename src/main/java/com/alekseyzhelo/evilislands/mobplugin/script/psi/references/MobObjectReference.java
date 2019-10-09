@@ -23,12 +23,6 @@ public class MobObjectReference extends PsiReferenceBase<EIExpression> {
         throw new IncorrectOperationException("Can't rename a literal!");
     }
 
-    @NotNull
-    @Override
-    public String getCanonicalText() {
-        return super.getCanonicalText();
-    }
-
     @Nullable
     @Override
     public PsiElement resolve() {

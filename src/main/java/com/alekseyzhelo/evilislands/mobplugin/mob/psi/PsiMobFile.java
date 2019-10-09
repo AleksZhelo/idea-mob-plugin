@@ -30,6 +30,7 @@ public class PsiMobFile extends PsiBinaryFileImpl {
 
     public PsiMobFile(@NotNull PsiManagerImpl manager, @NotNull FileViewProvider viewProvider) throws MobException, IOException {
         super(manager, viewProvider);
+        // TODO: should really be done in background (with "indexing" progressbar)
         myMob = new MobFile(getVirtualFile().getPath(), getVirtualFile().contentsToByteArray());
     }
 

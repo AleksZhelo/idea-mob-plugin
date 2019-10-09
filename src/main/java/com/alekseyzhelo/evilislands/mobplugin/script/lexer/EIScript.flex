@@ -36,7 +36,7 @@ THEN="then"
 FOR="for"
 WORLDSCRIPT="worldscript"
 IDENTIFIER=[#a-zA-Z]([#_a-zA-Z0-9-])*
-FLOATNUMBER=-?[0-9][0-9]*|[0-9]+"."[0-9]+
+FLOATNUMBER=-?[0-9][0-9]*|-?[0-9]+"."[0-9]+
 
 %%
 // apparently it is very important not to ignore any characters from the input
