@@ -2,8 +2,11 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
@@ -13,14 +16,17 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
+import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 // TODO: insertHandler-s for script declarations, script implementations, function calls, script calls, etc
 public class EIScriptCompletionContributor extends CompletionContributor {
@@ -33,6 +39,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
 
     public EIScriptCompletionContributor() {
+        // TODO: rework?
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement()
@@ -49,13 +56,12 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                         }
                     }
                 });
+
+        // TODO: rework?
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
-                        .withParent(
-                                PlatformPatterns.psiElement(PsiErrorElement.class)
-                                        .withLanguage(EIScriptLanguage.INSTANCE)
-                        )
+                        .withParent(PlatformPatterns.psiElement(PsiErrorElement.class))
                         .withLanguage(EIScriptLanguage.INSTANCE),
                 new CompletionProvider<CompletionParameters>() {
                     @Override
@@ -77,6 +83,40 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                         fillSuggestedTokens(result, parent, errorDescription);
                     }
                 });
+
+        extend(CompletionType.BASIC, PlatformPatterns
+                        .psiElement(ScriptTypes.CHARACTER_STRING)
+                        .withSuperParent(3, PlatformPatterns
+                                .psiElement(EIFunctionCall.class)
+                                .withFirstChild(PlatformPatterns
+                                        .psiElement()
+                                        .withText(StandardPatterns.string().oneOfIgnoreCase("gssetvar", "gsgetvar"))
+                                )
+                        )
+                        .withLanguage(EIScriptLanguage.INSTANCE),
+                new CompletionProvider<CompletionParameters>() {
+                    @Override
+                    protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+                        Map<String, EIGSVar> vars = ((ScriptPsiFile) parameters.getOriginalFile()).findGSVars();
+                        PsiElement element = parameters.getOriginalPosition();
+                        EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
+
+                        assert element != null;
+                        assert call != null;
+                        String varName = EIGSVar.getVarName(element.getText());
+                        boolean isRead = EIGSVar.isGSVarRead(call);
+                        EIGSVar myVar = vars.get(varName);
+
+                        for (EIGSVar gsVar : vars.values()) {
+                            if (gsVar == myVar && ((isRead && (myVar.getReads() == 1 && myVar.getWrites() == 0))
+                                    || (!isRead && (myVar.getWrites() == 1 && myVar.getReads() == 0)))) {
+                                continue;
+                            }
+                            suggestToken(result, gsVar.toString());
+                        }
+                    }
+                }
+        );
         // XXX: already done by my references
 //        extend(CompletionType.BASIC,
 //                PlatformPatterns.psiElement(ScriptTypes.IDENTIFIER)
@@ -95,7 +135,8 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //        );
     }
 
-    private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
+    private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String
+            errorDescription) {
         if (errorDescription.contains("expected, got")) {
             suggestExpectedTerms(result, parent, errorDescription);
         } else if (errorDescription.contains("unexpected")) {
@@ -103,7 +144,8 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         }
     }
 
-    private void suggestExpectedTerms(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
+    private void suggestExpectedTerms(@NotNull CompletionResultSet result, PsiElement parent, String
+            errorDescription) {
         // TODO: if parent is a ThenBlock or WorldScript, then we can also suggest global variables, functions or scripts
         // (or equals?); also check right-hand side of assignments? (or is this done automatically?)
         int indexOfSuggestion = errorDescription.indexOf(" expected, got ");
@@ -127,15 +169,16 @@ public class EIScriptCompletionContributor extends CompletionContributor {
     private void suggestUnexpected(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
         String unexpectedTerm = errorDescription.split("'")[1];
         // TODO: should be parent-dependent
-        for (String token : EIScriptNamingUtil.tokenMap.values()){
-            if (token.toLowerCase(Locale.ENGLISH).startsWith(unexpectedTerm.toLowerCase(Locale.ENGLISH))){
+        for (String token : EIScriptNamingUtil.tokenMap.values()) {
+            if (token.toLowerCase(Locale.ENGLISH).startsWith(unexpectedTerm.toLowerCase(Locale.ENGLISH))) {
                 suggestToken(result, token);
             }
         }
     }
 
     @Override
-    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet
+            result) {
         super.fillCompletionVariants(parameters, result);
     }
 

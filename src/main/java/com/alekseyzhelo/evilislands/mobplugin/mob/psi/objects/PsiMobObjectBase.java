@@ -3,9 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 import com.alekseyzhelo.eimob.objects.MobObjectDataHolder;
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 
 abstract class PsiMobObjectBase<T extends MobObjectDataHolder> extends PsiMobElement {

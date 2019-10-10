@@ -56,7 +56,7 @@ public class EIScriptPsiImplUtil {
             }
         } else if (elementType == ScriptTypes.CHARACTER_STRING) {
             EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
-            // TODO: extract comparison logic; extract magic string?
+            // TODO: extract magic string?
             if (parentCall != null && parentCall.getScriptIdentifier().getText().equalsIgnoreCase("getobjectbyid")) {
                 return new MobObjectReference(expression, new TextRange(1, firstChild.getTextLength() - 1));
             } else {

@@ -3,18 +3,21 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiDirectory;
-import com.intellij.psi.PsiFile;
+import com.intellij.psi.*;
+import com.intellij.psi.util.CachedValueProvider;
+import com.intellij.psi.util.CachedValuesManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 // TODO: processChildren implementation needed?
 public class ScriptPsiFile extends PsiFileBase {
@@ -70,6 +73,11 @@ public class ScriptPsiFile extends PsiFileBase {
                 : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class);
     }
 
+    @NotNull
+    public Map<String, EIGSVar> findGSVars() {
+        return CachedValuesManager.getCachedValue(this, new CachedGSVarsProvider());
+    }
+
     // TODO: better way to do this?
     @Nullable
     public PsiMobFile getCompanionMobFile() {
@@ -91,5 +99,41 @@ public class ScriptPsiFile extends PsiFileBase {
     public PsiMobObjectsBlock getCompanionMobObjectsBlock() {
         PsiMobFile mobFile = getCompanionMobFile();
         return mobFile != null ? (PsiMobObjectsBlock) mobFile.getChildren()[0] : null;
+    }
+
+    private class CachedGSVarsProvider implements CachedValueProvider<Map<String, EIGSVar>> {
+        @Override
+        public Result<Map<String, EIGSVar>> compute() {
+            Map<String, EIGSVar> result = new HashMap<>();
+            acceptChildren(new PsiRecursiveElementVisitor() {
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    if (element.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+                        EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(
+                                element,
+                                EIFunctionCall.class,
+                                true,
+                                EIScriptBlock.class
+                        );
+                        if (parentCall != null) {
+                            EIGSVar stats = null;
+                            String varName = element.getText().substring(1, element.getTextLength() - 1);
+                            if (parentCall.getScriptIdentifier().getText().equalsIgnoreCase("gsgetvar")) {
+                                stats = result.getOrDefault(varName, new EIGSVar(varName));
+                                stats.addRead();
+                            } else if (parentCall.getScriptIdentifier().getText().equalsIgnoreCase("gssetvar")) {
+                                stats = result.getOrDefault(varName, new EIGSVar(varName));
+                                stats.addWrite();
+                            }
+                            if (stats != null) {
+                                result.put(varName, stats);
+                            }
+                        }
+                    }
+                }
+            });
+            return new Result<>(result, ScriptPsiFile.this);
+        }
     }
 }

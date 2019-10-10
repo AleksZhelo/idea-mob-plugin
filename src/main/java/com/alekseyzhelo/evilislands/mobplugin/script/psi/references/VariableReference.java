@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: ResolveCache.getInstance(getProject()).resolveWithCaching()?
 public class VariableReference extends PsiReferenceBase<PsiElement> {
     private final String name;
 
