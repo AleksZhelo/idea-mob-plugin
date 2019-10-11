@@ -18,7 +18,7 @@ public class PsiMobSound extends PsiMobElement {
 
     @Override
     @NotNull
-    public String getType() {
+    public String getObjectKind() {
         return "Sound";
     }
 
@@ -45,7 +45,7 @@ public class PsiMobSound extends PsiMobElement {
 
     @Override
     protected String getDocHeader() {
-        return DocumentationFormatter.bold(getType());
+        return DocumentationFormatter.bold(getObjectKind());
     }
 
     @Override

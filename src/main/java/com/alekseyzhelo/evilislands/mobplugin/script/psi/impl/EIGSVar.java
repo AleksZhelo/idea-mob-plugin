@@ -14,6 +14,10 @@ public class EIGSVar {
         varName = name;
     }
 
+    public String getVarName() {
+        return varName;
+    }
+
     public void addRead() {
         reads++;
     }

@@ -14,10 +14,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // TODO: processChildren implementation needed?
 public class ScriptPsiFile extends PsiFileBase {
@@ -104,7 +101,7 @@ public class ScriptPsiFile extends PsiFileBase {
     private class CachedGSVarsProvider implements CachedValueProvider<Map<String, EIGSVar>> {
         @Override
         public Result<Map<String, EIGSVar>> compute() {
-            Map<String, EIGSVar> result = new HashMap<>();
+            Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order
             acceptChildren(new PsiRecursiveElementVisitor() {
                 @Override
                 public void visitElement(PsiElement element) {

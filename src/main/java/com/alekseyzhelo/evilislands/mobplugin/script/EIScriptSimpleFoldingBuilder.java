@@ -28,11 +28,10 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         return descriptors.toArray(new FoldingDescriptor[0]);
     }
 
-
     @Nullable
     @Override
     public String getPlaceholderText(@NotNull ASTNode node) {
-        return "...";
+        return "\\u2026";
     }
 
     @Override

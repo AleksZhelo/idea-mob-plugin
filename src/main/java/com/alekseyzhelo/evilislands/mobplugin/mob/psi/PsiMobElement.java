@@ -24,7 +24,7 @@ public abstract class PsiMobElement extends PsiElementBase {
 
     // TODO: extract into sub-type?
     @NotNull
-    public abstract String getType();
+    public abstract String getObjectKind();
 
     protected abstract String getDocHeader();
 

@@ -18,7 +18,7 @@ public class PsiMobParticle extends PsiMobElement {
 
     @Override
     @NotNull
-    public String getType() {
+    public String getObjectKind() {
         return "Particle";
     }
 
@@ -45,7 +45,7 @@ public class PsiMobParticle extends PsiMobElement {
 
     @Override
     protected String getDocHeader() {
-        return DocumentationFormatter.bold(getType());
+        return DocumentationFormatter.bold(getObjectKind());
     }
 
     @Override

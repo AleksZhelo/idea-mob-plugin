@@ -12,7 +12,7 @@ public class PsiMobLever extends PsiMobObjectBase<MobLever> {
 
     @Override
     @NotNull
-    public String getType() {
+    public String getObjectKind() {
         return "Lever";
     }
 }

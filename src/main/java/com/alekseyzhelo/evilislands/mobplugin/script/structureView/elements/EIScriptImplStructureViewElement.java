@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
+package com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;

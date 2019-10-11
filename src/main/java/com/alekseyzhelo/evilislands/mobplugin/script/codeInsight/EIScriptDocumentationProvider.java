@@ -100,7 +100,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
     ) {
         String prefix = DocumentationFormatter.wrapKeyword(isFunction ? "Function" : "Script");
         String name = DocumentationFormatter.bold(nameElement.getText().trim());
-        String arguments = parameterList != null
+        String arguments = parameterList.size() > 0
                 ? parameterList.stream().reduce("", (u, x) -> u + x.getText() + ", ", String::concat)
                 : "  ";
         return prefix + " " + name + "(" + arguments.substring(0, arguments.length() - 2) + ")" + " : " + returnType.getTypeString();

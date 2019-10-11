@@ -40,7 +40,7 @@ abstract class PsiMobObjectBase<T extends MobObjectDataHolder> extends PsiMobEle
     @Override
     @NotNull
     protected String getDocHeader() {
-        return DocumentationFormatter.bold(getType());
+        return DocumentationFormatter.bold(getObjectKind());
     }
 
     @Override

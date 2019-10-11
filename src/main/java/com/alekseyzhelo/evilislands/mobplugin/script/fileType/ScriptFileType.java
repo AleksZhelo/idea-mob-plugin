@@ -26,7 +26,7 @@ public class ScriptFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "Evil islands scripting language file";
+        return "Evil Islands scripting language file";
     }
 
     @NotNull

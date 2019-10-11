@@ -25,7 +25,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
     }
 
     @Override
-    public String getType() {
+    public String getObjectKind() {
         return "Objects";
     }
 
@@ -73,7 +73,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
             for (PsiMobElement element : childrenMap.values()) {
                 container.add(LookupElementBuilder
                         .create(element.getText())
-                        .withTypeText(element.getType())
+                        .withTypeText(element.getObjectKind())
                         .withPresentableText(lookupText(element))
                 );
             }

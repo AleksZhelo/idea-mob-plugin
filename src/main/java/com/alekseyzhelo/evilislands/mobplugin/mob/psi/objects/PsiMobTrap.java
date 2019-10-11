@@ -12,7 +12,7 @@ public class PsiMobTrap extends PsiMobObjectBase<MobTrap> {
 
     @Override
     @NotNull
-    public String getType() {
+    public String getObjectKind() {
         return "Trap";
     }
 }
