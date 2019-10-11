@@ -1,33 +1,36 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class EIScriptDocumentationProvider extends AbstractDocumentationProvider {
     @Nullable
     @Override
     public String getQuickNavigateInfo(PsiElement element, PsiElement originalElement) {
         if (element.getParent() instanceof EIFunctionCall) {
-            return getFunctionCallQuickNavigateInfo(element.getParent());
+            return getFunctionCallQuickNavigateInfo((EIFunctionCall) element.getParent());
         }
         if (element instanceof EIFunctionCall) {
-            return getFunctionCallQuickNavigateInfo(element);
+            return getFunctionCallQuickNavigateInfo((EIFunctionCall) element);
         }
         return null;
     }
 
-    private String getFunctionCallQuickNavigateInfo(PsiElement element) {
-        EIFunctionDeclaration declaration = EIScriptNativeFunctionsUtil.getFunctionDeclaration(element.getProject(), getFunctionName((EIFunctionCall) element));
+    private String getFunctionCallQuickNavigateInfo(EIFunctionCall element) {
+        EIFunctionDeclaration declaration = EIScriptNativeFunctionsUtil.getFunctionDeclaration(element.getProject(), element.getName());
         return declaration != null ? declaration.getText() : "Unknown function";
     }
 
@@ -37,10 +40,10 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
             return getGlobalVarDoc((EIGlobalVar) element);
         }
         if (element.getParent() instanceof EIFunctionCall) {
-            return getFunctionCallDoc(element.getParent());
+            return getFunctionCallDoc((EIFunctionCall) element.getParent());
         }
         if (element instanceof EIFunctionCall) {
-            return getFunctionCallDoc(element);
+            return getFunctionCallDoc((EIFunctionCall) element);
         }
         if (element instanceof EIFunctionDeclaration) {
             return getFunctionDoc((EIFunctionDeclaration) element);
@@ -48,17 +51,24 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
         if (element instanceof PsiMobElement) {
             return ((PsiMobElement) element).getDoc();
         }
+        if (element instanceof EIScriptDeclaration) {
+            return getScriptDeclarationDoc((EIScriptDeclaration) element);
+        }
         return null;
     }
 
     private String getGlobalVarDoc(EIGlobalVar element) {
+        String doc = DocumentationFormatter.wrapDefinition(DocumentationFormatter.wrapKeyword("GlobalVar") + " " + DocumentationFormatter.bold(element.getName()));
         PsiElement next = UsefulPsiTreeUtil.getNextSiblingSkipWhiteSpacesAndCommas(element, true);
-        return next instanceof PsiComment ? next.getText().substring(2) : null;
+        if (next instanceof PsiComment) {
+            doc += DocumentationFormatter.wrapContent(next.getText().substring(2, next.getTextLength()));
+        }
+        return doc;
     }
 
     @NotNull
-    private String getFunctionCallDoc(PsiElement element) {
-        String functionName = getFunctionName((EIFunctionCall) element);
+    private String getFunctionCallDoc(EIFunctionCall element) {
+        String functionName = element.getName();
         EIFunctionDeclaration declaration = EIScriptNativeFunctionsUtil.getFunctionDeclaration(element.getProject(), functionName);
         return getFunctionDoc(declaration);
     }
@@ -69,28 +79,51 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
                 EIScriptNativeFunctionsUtil.getFunctionDoc(declaration.getProject(), declaration.getName());
         @NonNls String info = "";
         if (documentationText != null) {
-            info += "<b>" + declaration.getText() + "</b>";
-            info += "<br/><div style=\"margin-top: 1.5mm;\">" + documentationText + "</div>";
-//            TextAttributes attributes = EditorColorsManager.getInstance().getGlobalScheme().getAttributes(EIScriptSyntaxHighlighter.COMMENT).clone();
-//            Color background = attributes.getBackgroundColor();
-//            if (background != null) {
-//                info += "<div bgcolor=#" + GuiUtils.colorToHex(background) + ">";
-//            }
-//            String doc = StringUtil.join(ContainerUtil.map(StringUtil.split(documentationText, "\n"), new Function<String, String>() {
-//                @Override
-//                public String fun(String s) {
-//                    return StringUtil.trimStart(StringUtil.trimStart(s, "#"), "!").trim();
-//                }
-//            }), "<br>");
-//            info += "<font color=#" + GuiUtils.colorToHex(attributes.getForegroundColor()) + ">" + doc + "</font>\n<br>";
-//            if (background != null) {
-//                info += "</div>";
-//            }
+            info += DocumentationFormatter.wrapDefinition(
+                    getCallableDefinitionDoc(
+                            true,
+                            declaration.getScriptIdentifier(),
+                            declaration.getFormalParameterList(),
+                            declaration.getDisplayableType()
+                    )
+            );
+            info += DocumentationFormatter.wrapContent(documentationText);
         }
         return info;
     }
 
-    private String getFunctionName(EIFunctionCall call) {
-        return call.getScriptIdentifier().getText();
+    private String getCallableDefinitionDoc(
+            boolean isFunction,
+            EIScriptIdentifier nameElement,
+            List<EIFormalParameter> parameterList,
+            EITypeToken returnType
+    ) {
+        String prefix = DocumentationFormatter.wrapKeyword(isFunction ? "Function" : "Script");
+        String name = DocumentationFormatter.bold(nameElement.getText().trim());
+        String arguments = parameterList != null
+                ? parameterList.stream().reduce("", (u, x) -> u + x.getText() + ", ", String::concat)
+                : "  ";
+        return prefix + " " + name + "(" + arguments.substring(0, arguments.length() - 2) + ")" + " : " + returnType.getTypeString();
     }
+
+    @NotNull
+    private String getScriptDeclarationDoc(EIScriptDeclaration element) {
+        @NonNls String doc = DocumentationFormatter.wrapDefinition(
+                getCallableDefinitionDoc(
+                        false,
+                        element.getScriptIdentifier(),
+                        element.getFormalParameterList(),
+                        EITypeToken.VOID
+                )
+        );
+        PsiElement next = PsiTreeUtil.skipWhitespacesForward(element);
+        if (next == null) {
+            next = PsiTreeUtil.skipWhitespacesForward(element.getParent());
+        }
+        if (next instanceof PsiComment) {
+            doc += DocumentationFormatter.wrapContent(next.getText().substring(2, next.getTextLength()).trim());
+        }
+        return doc;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 import com.alekseyzhelo.eimob.objects.MobLight;
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,14 +45,17 @@ public class PsiMobLight extends PsiMobElement {
     }
 
     @Override
-    @NotNull
-    public String getDoc() {
-        return "<b>" + getType() + "</b>" + "<br/>" +
-                "ID: " + value.getId() + "<br/>" +
-                "Name: " + value.getName() + "<br/>" +
-                "Location: " + value.getLocation() + "<br/>" +
-                "Color (RGB): " + value.getColor() + "<br/>" +
-                "Particle size: " + value.getParticleSize() + "<br/>" +
-                "Shadow: " + value.getShowShadow() + "<br/>";
+    protected String getDocHeader() {
+        return DocumentationFormatter.bold(getType());
+    }
+
+    @Override
+    protected String getDocContent() {
+        return DocumentationFormatter.bold("ID: ") + value.getId() + "<br/>" +
+                DocumentationFormatter.bold("Name: ") + value.getName() + "<br/>" +
+                DocumentationFormatter.bold("Location: ") + value.getLocation() + "<br/>" +
+                DocumentationFormatter.bold("Color (RGB): ") + value.getColor() + "<br/>" +
+                DocumentationFormatter.bold("Particle size: ") + value.getParticleSize() + "<br/>" +
+                DocumentationFormatter.bold("Shadow: ") + value.getShowShadow() + "<br/>";
     }
 }

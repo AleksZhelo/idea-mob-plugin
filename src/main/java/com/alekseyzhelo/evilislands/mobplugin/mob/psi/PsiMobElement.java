@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.EIMobLanguage;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;
@@ -24,11 +25,21 @@ public abstract class PsiMobElement extends PsiElementBase {
     // TODO: extract into sub-type?
     @NotNull
     public abstract String getType();
-    @NotNull
-    public abstract String getDoc();
+
+    protected abstract String getDocHeader();
+
+    protected abstract String getDocContent();
+
     public abstract int getId();
+
     @NotNull
     public abstract Float3 getLocation();
+
+    @NotNull
+    public String getDoc() {
+        return DocumentationFormatter.wrapDefinition(getDocHeader()) +
+                DocumentationFormatter.wrapContent(getDocContent());
+    }
     // TODO: extract end
 
     @Override

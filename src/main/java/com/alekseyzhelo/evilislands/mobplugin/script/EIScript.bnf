@@ -81,7 +81,8 @@ expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {m
 
 variableAccess ::= scriptIdentifier {methods=[getReference getType toString]}
 
-functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 methods=[getReference getType toString]}
+functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptNamedElementMixin" methods=[getReference getType toString]}
 
 // TODO: replace identifier with variableAccess?
 assignment ::= scriptIdentifier EQUALS expression {pin=2 methods=[getReference toString]} // TODO: this pin and error recovery stuff

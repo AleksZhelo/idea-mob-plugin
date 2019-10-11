@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 import com.alekseyzhelo.eimob.objects.MobSound;
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,19 +43,22 @@ public class PsiMobSound extends PsiMobElement {
         return String.valueOf(value.getId());
     }
 
-    @NotNull
     @Override
-    public String getDoc() {
-        return "<b>" + getType() + "</b>" + "<br/>" +
-                "<b>ID: </b>" + value.getId() + "<br/>" +
-                "<b>Name: </b>" + value.getName() + "<br/>" +
-                "<b>Location: </b>" + value.getLocation() + "<br/>" +
-                "<b>Sounds: </b>" + value.getSoundResources() + "<br/>" +
-                "<b>Range: </b>" + value.getRange() + "<br/>" +
-                "<b>Range2: </b>" + value.getRange2() + "<br/>" +
-                "<b>Volume min: </b>" + value.getVolumeMin() + "<br/>" +
-                "<b>Volume max: </b>" + value.getVolumeMax() + "<br/>" +
-                "<b>Is ambient: </b>" + value.isAmbient() + "<br/>" +
-                "<b>Is music: </b>" + value.isMusic() + "<br/>";
+    protected String getDocHeader() {
+        return DocumentationFormatter.bold(getType());
+    }
+
+    @Override
+    protected String getDocContent() {
+        return DocumentationFormatter.bold("ID: ") + value.getId() + "<br/>" +
+                DocumentationFormatter.bold("Name: ") + value.getName() + "<br/>" +
+                DocumentationFormatter.bold("Location: ") + value.getLocation() + "<br/>" +
+                DocumentationFormatter.bold("Sounds: ") + value.getSoundResources() + "<br/>" +
+                DocumentationFormatter.bold("Range: ") + value.getRange() + "<br/>" +
+                DocumentationFormatter.bold("Range2: ") + value.getRange2() + "<br/>" +
+                DocumentationFormatter.bold("Volume min: ") + value.getVolumeMin() + "<br/>" +
+                DocumentationFormatter.bold("Volume max: ") + value.getVolumeMax() + "<br/>" +
+                DocumentationFormatter.bold("Is ambient: ") + value.isAmbient() + "<br/>" +
+                DocumentationFormatter.bold("Is music: ") + value.isMusic() + "<br/>";
     }
 }

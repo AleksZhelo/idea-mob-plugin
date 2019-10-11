@@ -22,6 +22,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class EIScriptResolveUtil {
     // TODO use
     @Nullable
     public static PsiComment findDocumentation(ScriptNamedElementMixin element) {
-        final PsiElement candidate = UsefulPsiTreeUtil.getPrevSiblingSkipWhiteSpaces(element, true);
+        final PsiElement candidate = PsiTreeUtil.skipWhitespacesBackward(element);
         if (candidate instanceof PsiComment) {
             return (PsiComment) candidate;
         }

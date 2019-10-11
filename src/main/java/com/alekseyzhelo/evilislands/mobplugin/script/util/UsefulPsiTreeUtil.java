@@ -37,6 +37,7 @@ import java.util.*;
 /**
  * @author Fedor.Korotkov, Aleksey Zhelo
  */
+// TODO: remove?
 public class UsefulPsiTreeUtil {
     @Nullable
     public static PsiElement getFirstChildSkipWhiteSpacesAndComments(@Nullable PsiElement root) {

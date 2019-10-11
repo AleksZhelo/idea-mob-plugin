@@ -7,7 +7,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiElement;
@@ -39,14 +38,9 @@ public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotato
     public void visitFunctionCall(@NotNull EIFunctionCall functionCall) {
         super.visitFunctionCall(functionCall);
 
-        // TODO: this only works inside the settings screen for some reason
         if (functionCall.getScriptIdentifier().getText() != null) {
             PsiElement nameElement = functionCall.getScriptIdentifier();
-            setHighlighting(nameElement, myHolder, DefaultLanguageHighlighterColors.FUNCTION_CALL);
-//            TextRange range = new TextRange(nameElement.getTextRange().getStartOffset(),
-//                    nameElement.getTextRange().getEndOffset());
-//            Annotation annotation = myHolder.createInfoAnnotation(range, null);
-//            annotation.setTextAttributes(DefaultLanguageHighlighterColors.FUNCTION_CALL);
+            setHighlighting(nameElement, myHolder, EIScriptSyntaxHighlightingColors.FUNCTION_CALL);
         }
     }
 

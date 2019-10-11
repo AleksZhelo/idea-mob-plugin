@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
 import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
@@ -28,10 +29,14 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         return "Objects";
     }
 
-    @NotNull
     @Override
-    public String getDoc() {
-        return String.format("Objects block with %d elements", children.length);
+    protected String getDocHeader() {
+        return DocumentationFormatter.bold("Objects block");
+    }
+
+    @Override
+    protected String getDocContent() {
+        return String.format("Contains %d elements", children.length);
     }
 
     @Override
