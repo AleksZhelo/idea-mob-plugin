@@ -13,13 +13,14 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
         super(node);
     }
 
+    @NotNull
     @Override
     public String getName() {
         ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -52,6 +53,6 @@ public abstract class ScriptNamedElementMixinImpl extends ScriptPsiElementImpl i
 
     @Override
     public int getTextOffset() {
-        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset()  : super.getTextOffset();
+        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset() : super.getTextOffset();
     }
 }

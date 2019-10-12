@@ -12,4 +12,5 @@ public class Icons {
     public static final Icon SCRIPT_IMPL = IconLoader.getIcon("/icons/scriptImpl.svg");
     public static final Icon GLOBAL_VAR = IconLoader.getIcon("/icons/globalVar.svg");
     public static final Icon GS_VAR = IconLoader.getIcon("/icons/gsVar.svg");
+    public static final Icon AREA = IconLoader.getIcon("/icons/area.svg");
 }

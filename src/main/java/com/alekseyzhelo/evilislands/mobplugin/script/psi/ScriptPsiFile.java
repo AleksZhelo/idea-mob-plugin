@@ -3,8 +3,10 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.util.Key;
@@ -37,6 +39,8 @@ public class ScriptPsiFile extends PsiFileBase {
 
     // TODO this and below: find or get?
     //  also: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
+    //  | done with CachedValue; investigate stubs?
+    // TODO: return Maps instead of lists?
     @NotNull
     public List<EIGlobalVar> findGlobalVars() {
         return CachedValuesManager.getCachedValue(this, new CacheGlobalVarsProvider());
@@ -53,7 +57,7 @@ public class ScriptPsiFile extends PsiFileBase {
     }
 
     @Nullable
-    public EIScriptDeclaration findScriptDeclaration(@NotNull String scriptName) {
+    public EIScriptDeclaration findScriptDeclaration(String scriptName) {
         return EIScriptResolveUtil.matchByName(scriptName, findScriptDeclarations());
     }
 
@@ -62,9 +66,19 @@ public class ScriptPsiFile extends PsiFileBase {
         return CachedValuesManager.getCachedValue(this, new CachedScriptImplementationsProvider());
     }
 
+    @Nullable
+    public EIScriptImplementation findScriptImplementation(String scriptName) {
+        return EIScriptResolveUtil.matchByName(scriptName, findScriptImplementations());
+    }
+
     @NotNull
     public Map<String, EIGSVar> findGSVars() {
         return CachedValuesManager.getCachedValue(this, new CachedGSVarsProvider());
+    }
+
+    @NotNull
+    public Map<Integer, EIArea> findAreas() {
+        return CachedValuesManager.getCachedValue(this, new CachedAreasProvider());
     }
 
     @Nullable
@@ -126,32 +140,76 @@ public class ScriptPsiFile extends PsiFileBase {
             Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
             acceptChildren(new PsiRecursiveElementVisitor() {
                 @Override
+                // TODO: do visitFunctionCall instead? benchmark!
                 public void visitElement(PsiElement element) {
                     super.visitElement(element);
                     if (element.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-                        EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(
-                                element,
-                                EIFunctionCall.class,
-                                true,
-                                EIScriptBlock.class
-                        );
+                        EIFunctionCall parentCall = UsefulPsiTreeUtil.getParentFunctionCall(element);
                         if (parentCall != null) {
-                            EIGSVar stats = null;
                             String varName = element.getText().substring(1, element.getTextLength() - 1);
-                            if (parentCall.getScriptIdentifier().getText().equalsIgnoreCase("gsgetvar")) {
-                                stats = result.getOrDefault(varName, new EIGSVar(varName));
-                                stats.addRead();
-                            } else if (parentCall.getScriptIdentifier().getText().equalsIgnoreCase("gssetvar")) {
-                                stats = result.getOrDefault(varName, new EIGSVar(varName));
-                                stats.addWrite();
-                            }
-                            if (stats != null) {
+                            // TODO: extract common?
+                            EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
+                            stats.processCall(parentCall);
+                            if (stats.isValid()) {
                                 result.put(varName, stats);
                             }
                         }
                     }
                 }
             });
+            return new Result<>(result, ScriptPsiFile.this);
+        }
+    }
+
+    private class CachedAreasProvider implements CachedValueProvider<Map<Integer, EIArea>> {
+        @Override
+        public Result<Map<Integer, EIArea>> compute() {
+            Map<Integer, EIArea> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
+            final int[] functionsVisited = {0};
+            final int[] elementsVisited = {0};
+            acceptChildren(new EIVisitor() {
+
+                @Override
+                public void visitFunctionCall(@NotNull EIFunctionCall o) {
+                    super.visitFunctionCall(o);
+                    functionsVisited[0]++;
+                }
+
+                @Override
+                // TODO: do visitFunctionCall instead? benchmark!
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    element.acceptChildren(this);
+
+                    if (element.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
+                        elementsVisited[0]++;
+                        EIFunctionCall parentCall = UsefulPsiTreeUtil.getParentFunctionCall(element);
+                        if (parentCall != null) {
+                            // TODO: probably rework
+                            List<EIExpression> expressions = parentCall.getParams().getExpressionList();
+                            if (expressions.size() > 0) {
+                                EIExpression expression = expressions.get(0);
+                                if(PsiTreeUtil.isAncestor(expression, element, true)) {
+                                    try {
+                                        int areaId = Integer.parseInt(element.getText());
+                                        EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
+                                        stats.processCall(parentCall);
+                                        if (stats.isValid()) {
+                                            result.put(areaId, stats);
+                                        }
+                                    } catch (NumberFormatException ignored) {
+                                        //don't really care
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            System.out.println(String.format("CachedAreasProvider visited %d functions, %d floats",
+                    functionsVisited[0],
+                    elementsVisited[0]
+            ));
             return new Result<>(result, ScriptPsiFile.this);
         }
     }

@@ -32,6 +32,9 @@ public class EIScriptFileStructureViewElement extends PsiTreeElementBase<ScriptP
             children.addAll(myFile.findGSVars().values().stream()
                     .map(EIGSVarStructureViewElement::new)
                     .collect(Collectors.toList()));
+            children.addAll(myFile.findAreas().values().stream()
+                    .map(EIAreaStructureViewElement::new)
+                    .collect(Collectors.toList()));
         }
         return children;
     }

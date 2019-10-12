@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptFileStructureViewElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptImplStructureViewElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.AreasFilter;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.GSVarsFilter;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.GlobalVarsFilter;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.ScriptsFilter;
@@ -47,7 +48,7 @@ public class EIScriptFileStructureViewModel extends TextEditorBasedStructureView
     @NotNull
     @Override
     public Filter[] getFilters() {
-        return new Filter[]{new ScriptsFilter(), new GlobalVarsFilter(), new GSVarsFilter()};
+        return new Filter[]{new ScriptsFilter(), new GlobalVarsFilter(), new GSVarsFilter(), new AreasFilter()};
     }
 
     @NotNull

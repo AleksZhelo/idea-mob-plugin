@@ -73,14 +73,14 @@ public class EIScriptNativeFunctionsUtil {
         String declarations = null;
         String[] documentation = null;
         try {
-            declarations = readUTF8String(EIScriptNativeFunctionsUtil.class.getResourceAsStream("/declarations.eiscript"));
+            declarations = readUTF8String(EIScriptNativeFunctionsUtil.class.getResourceAsStream("/function_declarations.eiscript"));
             documentation = readUTF8String(EIScriptNativeFunctionsUtil.class.getResourceAsStream("/documentation.txt")).split("\\r?\\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (declarations != null && documentation != null) {
             final ScriptPsiFile file = (ScriptPsiFile) PsiFileFactory.getInstance(project).
-                    createFileFromText("declarations.eiscript", ScriptFileType.INSTANCE, declarations);
+                    createFileFromText("function_declarations.eiscript", ScriptFileType.INSTANCE, declarations);
             functionNameToPsi = new HashMap<>();
             functionNameToDoc = new HashMap<>();
             functionNames = new ArrayList<>();

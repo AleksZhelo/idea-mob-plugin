@@ -18,6 +18,8 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Condition;
@@ -204,4 +206,12 @@ public class UsefulPsiTreeUtil {
         return result == null ? null : ArrayUtil.toObjectArray(result, aClass);
     }
 
+    public static EIFunctionCall getParentFunctionCall(PsiElement element) {
+        return PsiTreeUtil.getParentOfType(
+                element,
+                EIFunctionCall.class,
+                true,
+                EIScriptBlock.class
+        );
+    }
 }

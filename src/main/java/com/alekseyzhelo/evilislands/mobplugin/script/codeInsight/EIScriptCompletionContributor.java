@@ -117,6 +117,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     }
                 }
         );
+        // TODO: try GetObject completion here? also areas
         // XXX: already done by my references
 //        extend(CompletionType.BASIC,
 //                PlatformPatterns.psiElement(ScriptTypes.IDENTIFIER)

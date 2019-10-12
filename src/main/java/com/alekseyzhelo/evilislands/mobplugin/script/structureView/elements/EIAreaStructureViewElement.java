@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.NodeDescriptorProvidingKey;
@@ -12,18 +13,19 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 // TODO: navigate to first usage? or highlight all usages?
-public class EIGSVarStructureViewElement implements StructureViewTreeElement, ItemPresentation, NodeDescriptorProvidingKey {
+// TODO: merge with GSVar element?
+public class EIAreaStructureViewElement implements StructureViewTreeElement, ItemPresentation, NodeDescriptorProvidingKey {
 
-    private final EIGSVar myValue;
+    private final EIArea myValue;
 
-    EIGSVarStructureViewElement(@NotNull EIGSVar gsVar) {
+    EIAreaStructureViewElement(@NotNull EIArea gsVar) {
         myValue = gsVar;
     }
 
     @Nullable
     @Override
     public String getPresentableText() {
-        return myValue.getVariable();
+        return String.format("Area %d", myValue.getVariable());
     }
 
     @Nullable
@@ -34,7 +36,7 @@ public class EIGSVarStructureViewElement implements StructureViewTreeElement, It
 
     @Override
     public Icon getIcon(boolean open) {
-        return Icons.GS_VAR;
+        return Icons.AREA;
     }
 
     @Override
