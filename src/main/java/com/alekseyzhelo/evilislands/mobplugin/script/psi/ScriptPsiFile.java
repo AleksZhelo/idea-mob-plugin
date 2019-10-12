@@ -7,10 +7,9 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.util.Key;
 import com.intellij.psi.*;
-import com.intellij.psi.util.CachedValueProvider;
-import com.intellij.psi.util.CachedValuesManager;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +17,8 @@ import java.util.*;
 
 // TODO: processChildren implementation needed?
 public class ScriptPsiFile extends PsiFileBase {
+
+    private static final Key<CachedValue<PsiMobFile>> KEY_PSI_MOB_FILE = Key.create("KEY_PSI_MOB_FILE");
 
     public ScriptPsiFile(@NotNull FileViewProvider viewProvider) {
         super(viewProvider, EIScriptLanguage.INSTANCE);
@@ -38,10 +39,7 @@ public class ScriptPsiFile extends PsiFileBase {
     //  also: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
     @NotNull
     public List<EIGlobalVar> findGlobalVars() {
-        final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(this, EIGlobalVars.class);
-        return globalVars == null
-                ? Collections.emptyList()
-                : PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class);
+        return CachedValuesManager.getCachedValue(this, new CacheGlobalVarsProvider());
     }
 
     @Nullable
@@ -51,10 +49,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public List<EIScriptDeclaration> findScriptDeclarations() {
-        final EIDeclarations declarations = PsiTreeUtil.getChildOfType(this, EIDeclarations.class);
-        return declarations == null
-                ? Collections.emptyList()
-                : PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class);
+        return CachedValuesManager.getCachedValue(this, new CachedScriptDeclarationsProvider());
     }
 
     @Nullable
@@ -64,10 +59,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public List<EIScriptImplementation> findScriptImplementations() {
-        final EIScripts implementations = PsiTreeUtil.getChildOfType(this, EIScripts.class);
-        return implementations == null
-                ? Collections.emptyList()
-                : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class);
+        return CachedValuesManager.getCachedValue(this, new CachedScriptImplementationsProvider());
     }
 
     @NotNull
@@ -75,21 +67,9 @@ public class ScriptPsiFile extends PsiFileBase {
         return CachedValuesManager.getCachedValue(this, new CachedGSVarsProvider());
     }
 
-    // TODO: better way to do this?
     @Nullable
     public PsiMobFile getCompanionMobFile() {
-        PsiDirectory parent = getParent();
-        if (parent == null) {
-            parent = myOriginalFile.getParent();
-        }
-
-        if (parent != null) {
-            PsiFile psiFile = parent.findFile(getViewProvider().getVirtualFile().getNameWithoutExtension() + ".mob");
-            if (psiFile instanceof PsiMobFile) {
-                return (PsiMobFile) psiFile;
-            }
-        }
-        return null;
+        return CachedValuesManager.getManager(getProject()).getCachedValue(this, KEY_PSI_MOB_FILE, new CachedCompanionPsiMobFileProvider(), true);
     }
 
     @Nullable
@@ -98,10 +78,52 @@ public class ScriptPsiFile extends PsiFileBase {
         return mobFile != null ? (PsiMobObjectsBlock) mobFile.getChildren()[0] : null;
     }
 
+    private class CacheGlobalVarsProvider implements CachedValueProvider<List<EIGlobalVar>> {
+        @Nullable
+        @Override
+        public Result<List<EIGlobalVar>> compute() {
+            final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);
+            return new Result<>(
+                    globalVars == null
+                            ? Collections.emptyList()
+                            : PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class),
+                    ScriptPsiFile.this
+            );
+        }
+    }
+
+    private class CachedScriptDeclarationsProvider implements CachedValueProvider<List<EIScriptDeclaration>> {
+        @Nullable
+        @Override
+        public Result<List<EIScriptDeclaration>> compute() {
+            final EIDeclarations declarations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIDeclarations.class);
+            return new Result<>(
+                    declarations == null
+                            ? Collections.emptyList()
+                            : PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class),
+                    ScriptPsiFile.this
+            );
+        }
+    }
+
+    private class CachedScriptImplementationsProvider implements CachedValueProvider<List<EIScriptImplementation>> {
+        @Nullable
+        @Override
+        public Result<List<EIScriptImplementation>> compute() {
+            final EIScripts implementations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIScripts.class);
+            return new Result<>(
+                    implementations == null
+                            ? Collections.emptyList()
+                            : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class),
+                    ScriptPsiFile.this
+            );
+        }
+    }
+
     private class CachedGSVarsProvider implements CachedValueProvider<Map<String, EIGSVar>> {
         @Override
         public Result<Map<String, EIGSVar>> compute() {
-            Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order
+            Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
             acceptChildren(new PsiRecursiveElementVisitor() {
                 @Override
                 public void visitElement(PsiElement element) {
@@ -131,6 +153,27 @@ public class ScriptPsiFile extends PsiFileBase {
                 }
             });
             return new Result<>(result, ScriptPsiFile.this);
+        }
+    }
+
+    private class CachedCompanionPsiMobFileProvider implements CachedValueProvider<PsiMobFile> {
+        @Nullable
+        @Override
+        // TODO: better way to do this?
+        public Result<PsiMobFile> compute() {
+            PsiDirectory parent = getParent();
+            if (parent == null) {
+                parent = myOriginalFile.getParent();
+            }
+
+            PsiMobFile result = null;
+            if (parent != null) {
+                PsiFile psiFile = parent.findFile(getViewProvider().getVirtualFile().getNameWithoutExtension() + ".mob");
+                if (psiFile instanceof PsiMobFile) {
+                    result = (PsiMobFile) psiFile;
+                }
+            }
+            return new Result<>(result, PsiModificationTracker.NEVER_CHANGED);
         }
     }
 }

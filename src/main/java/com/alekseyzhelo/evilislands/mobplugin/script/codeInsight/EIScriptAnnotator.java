@@ -57,10 +57,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitFunctionCall(@NotNull EIFunctionCall functionCall) {
         super.visitFunctionCall(functionCall);
 
-        FunctionCallReference reference = (FunctionCallReference) functionCall.getReference();
-        PsiElement nameElement = functionCall.getScriptIdentifier();
-        PsiElement resolved = reference.resolve();
-
         if (EIGSVar.isGSVarRead(functionCall) || EIGSVar.isGSVarWrite(functionCall)) {
             PsiElement varNameElement = EIGSVar.getVarNameElement(functionCall);
             String varName = EIGSVar.getVarName(varNameElement.getText());
@@ -78,6 +74,9 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             }
         }
 
+        FunctionCallReference reference = (FunctionCallReference) functionCall.getReference();
+        PsiElement nameElement = functionCall.getScriptIdentifier();
+        PsiElement resolved = reference.resolve();
         if (functionCall.getParent() instanceof EIScriptIfBlock) {
             if (resolved instanceof EIScriptDeclaration) {
                 markAsError(myHolder, nameElement, SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR);
