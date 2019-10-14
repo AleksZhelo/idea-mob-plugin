@@ -20,11 +20,11 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
 
-    @NotNull
-    public static PsiReference getReference(EIAssignment assignment) {
-        EIScriptIdentifier identifier = assignment.getScriptIdentifier();
-        return new VariableReference(assignment, TextRange.create(0, identifier.getTextLength()));
-    }
+//    @NotNull
+//    public static PsiReference getReference(EIAssignment assignment) {
+//        EIScriptIdentifier identifier = assignment.getScriptIdentifier();
+//        return new VariableReference(assignment, TextRange.create(0, identifier.getTextLength()));
+//    }
 
     @NotNull
     public static PsiReference getReference(EIFunctionCall call) {
@@ -173,7 +173,8 @@ public class EIScriptPsiImplUtil {
 
     public static String toString(EIAssignment assignment) {
 //        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getScriptIdentifier().getText();
-        return assignment.getScriptIdentifier().getText();
+        // TODO: simply "EIAssignment"? or what?
+        return assignment.getText();
     }
 
     public static String toString(EIScriptExpression scriptExpression) {

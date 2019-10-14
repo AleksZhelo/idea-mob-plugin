@@ -138,12 +138,21 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         }
     }
 
-    @Override
-    public void visitAssignment(@NotNull EIAssignment assignment) {
-        super.visitAssignment(assignment);
+//    @Override
+//    public void visitAssignment(@NotNull EIAssignment assignment) {
+//        super.visitAssignment(assignment);
+//
+//        if (assignment.getReference().resolve() == null) {
+//            markAsError(myHolder, assignment.getScriptIdentifier(), UNDEFINED_VARIABLE_ERROR);
+//        }
+//    }
 
-        if (assignment.getReference().resolve() == null) {
-            markAsError(myHolder, assignment.getScriptIdentifier(), UNDEFINED_VARIABLE_ERROR);
+    @Override
+    public void visitVariableAccess(@NotNull EIVariableAccess access) {
+        super.visitVariableAccess(access);
+
+        if (access.getReference().resolve() == null) {
+            markAsError(myHolder, access.getScriptIdentifier(), UNDEFINED_VARIABLE_ERROR);
         }
     }
 

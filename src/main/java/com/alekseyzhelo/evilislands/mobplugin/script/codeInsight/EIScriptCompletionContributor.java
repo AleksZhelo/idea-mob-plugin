@@ -86,6 +86,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
         extend(CompletionType.BASIC, PlatformPatterns
                         .psiElement(ScriptTypes.CHARACTER_STRING)
+                        .withLanguage(EIScriptLanguage.INSTANCE)
                         .withSuperParent(3, PlatformPatterns
                                 .psiElement(EIFunctionCall.class)
                                 .withFirstChild(PlatformPatterns
@@ -93,7 +94,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                         .withText(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
                                 )
                         )
-                        .withLanguage(EIScriptLanguage.INSTANCE)
                         .with(new ArgumentPositionPatternCondition(1)),
                 new CompletionProvider<CompletionParameters>() {
                     @Override
@@ -122,14 +122,14 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         // TODO: wonky, fix grammar and dummy and try again
         extend(CompletionType.BASIC, PlatformPatterns
                         .psiElement()
+                        .withLanguage(EIScriptLanguage.INSTANCE)
                         .withSuperParent(3, PlatformPatterns
                                 .psiElement(EIFunctionCall.class)
                                 .withFirstChild(PlatformPatterns
                                         .psiElement()
                                         .withText(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
                                 )
-                        )
-                        .withLanguage(EIScriptLanguage.INSTANCE),
+                        ),
                 new CompletionProvider<CompletionParameters>() {
                     @Override
                     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
@@ -158,6 +158,21 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                         } catch (NumberFormatException ignored) {
                             //whatewz
                         }
+                    }
+                }
+        );
+        extend(CompletionType.BASIC,
+                PlatformPatterns
+                        .psiElement(ScriptTypes.IDENTIFIER)
+                        .inside(EIScriptIfBlock.class),
+                new CompletionProvider<CompletionParameters>() {
+                    public void addCompletions(@NotNull CompletionParameters parameters,
+                                               ProcessingContext context,
+                                               @NotNull CompletionResultSet resultSet) {
+                        if (functionLookupElements == null) {
+                            functionLookupElements = initFunctionLookup(parameters.getOriginalFile().getProject());
+                        }
+                        resultSet.addAllElements(functionLookupElements);
                     }
                 }
         );
