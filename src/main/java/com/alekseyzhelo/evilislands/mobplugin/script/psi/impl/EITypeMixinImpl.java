@@ -1,36 +1,35 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypeMixin;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Locale;
 
 /**
  * Created by Aleks on 02-08-2015.
  */
-public class ScriptTypeMixinImpl extends ScriptPsiElementImpl
-        implements ScriptTypeMixin {
+public class EITypeMixinImpl extends EIScriptPsiElementImpl
+        implements EITypeMixin {
 
-    @Nonnull
+    @NotNull
     private final EITypeToken type;
 
-    public ScriptTypeMixinImpl(ASTNode node) {
+    EITypeMixinImpl(ASTNode node) {
         super(node);
         String typeText = node.getText().toLowerCase(Locale.ENGLISH);
         type = EITypeToken.fromString(typeText);
     }
 
     @Override
+    @NotNull
     public EITypeToken getTypeToken() {
         return type;
     }
 
     @Override
     public String toString() {
-//        return EIScriptNamingUtil.NAME_TYPE + getText();
         return getText();
     }
-
 }

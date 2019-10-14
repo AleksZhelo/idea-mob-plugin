@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -16,14 +17,18 @@ import static com.alekseyzhelo.evilislands.mobplugin.IOUtil.readUTF8String;
 /**
  * Created by Aleks on 26-07-2015.
  */
+// TODO: this stuff breaks too often, should be an application component? or some proper cache
 public class EIScriptNativeFunctionsUtil {
+
+    private static Logger LOG = Logger.getInstance(EIScriptNativeFunctionsUtil.class);
 
     private static List<String> functionNames;
     private static Map<String, EIFunctionDeclaration> functionNameToPsi;
     private static Map<String, String> functionNameToDoc;
 
     public static EIFunctionDeclaration getFunctionDeclaration(Project project, String functionName) {
-        if (functionNameToPsi == null || functionNameToDoc == null) {
+        if (functionNameToPsi == null || functionNameToDoc == null ||
+                (functionNames != null && functionNames.size() == 0)) {
             initData(project);
         }
         return functionName != null ? functionNameToPsi.get(functionName.toLowerCase(Locale.ENGLISH)) : null;
@@ -76,7 +81,7 @@ public class EIScriptNativeFunctionsUtil {
             declarations = readUTF8String(EIScriptNativeFunctionsUtil.class.getResourceAsStream("/function_declarations.eiscript"));
             documentation = readUTF8String(EIScriptNativeFunctionsUtil.class.getResourceAsStream("/documentation.txt")).split("\\r?\\n");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e);
         }
         if (declarations != null && documentation != null) {
             final ScriptPsiFile file = (ScriptPsiFile) PsiFileFactory.getInstance(project).

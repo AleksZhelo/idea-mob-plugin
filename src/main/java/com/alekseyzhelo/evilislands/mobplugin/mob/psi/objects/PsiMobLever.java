@@ -4,7 +4,7 @@ import com.alekseyzhelo.eimob.objects.MobLever;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobLever extends PsiMobObjectBase<MobLever> {
+public class PsiMobLever extends PsiMobObjectDataHolder<MobLever> {
 
     public PsiMobLever(PsiElement parent, MobLever object) {
         super(parent, object);

@@ -7,7 +7,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.Documentat
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobParticle extends PsiMobElement {
+public class PsiMobParticle extends PsiMobEntityBase {
 
     private MobParticle value;
 

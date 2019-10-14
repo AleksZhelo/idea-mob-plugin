@@ -4,7 +4,7 @@ import com.alekseyzhelo.eimob.objects.MobTrap;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobTrap extends PsiMobObjectBase<MobTrap> {
+public class PsiMobTrap extends PsiMobObjectDataHolder<MobTrap> {
 
     public PsiMobTrap(PsiElement parent, MobTrap object) {
         super(parent, object);

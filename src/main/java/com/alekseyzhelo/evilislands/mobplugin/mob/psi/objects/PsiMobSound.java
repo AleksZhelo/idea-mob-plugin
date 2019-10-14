@@ -7,7 +7,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.Documentat
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobSound extends PsiMobElement {
+public class PsiMobSound extends PsiMobEntityBase {
 
     private MobSound value;
 

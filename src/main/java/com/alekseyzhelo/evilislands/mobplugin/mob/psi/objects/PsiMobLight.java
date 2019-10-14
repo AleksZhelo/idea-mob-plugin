@@ -7,7 +7,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.Documentat
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobLight extends PsiMobElement {
+public class PsiMobLight extends PsiMobEntityBase {
 
     private MobLight value;
 
@@ -38,7 +38,6 @@ public class PsiMobLight extends PsiMobElement {
         return value.getLocation();
     }
 
-    // TODO: extract to base, together with the above
     @Override
     public String getText() {
         return String.valueOf(value.getId());

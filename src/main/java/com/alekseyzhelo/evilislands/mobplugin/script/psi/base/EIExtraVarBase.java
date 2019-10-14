@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
+package com.alekseyzhelo.evilislands.mobplugin.script.psi.base;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +9,7 @@ public abstract class EIExtraVarBase<T> {
     private int reads = 0;
     private int writes = 0;
 
-    EIExtraVarBase(@NotNull T value) {
+    public EIExtraVarBase(@NotNull T value) {
         variable = value;
     }
 

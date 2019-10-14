@@ -5,7 +5,7 @@ import com.alekseyzhelo.eimob.util.Float3;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobFlame extends PsiMobObjectBase<MobFlame> {
+public class PsiMobFlame extends PsiMobObjectDataHolder<MobFlame> {
 
     public PsiMobFlame(PsiElement parent, MobFlame object) {
         super(parent, object);

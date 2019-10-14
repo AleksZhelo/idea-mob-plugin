@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
 import com.alekseyzhelo.eimob.util.Float3;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
@@ -16,7 +16,7 @@ import java.util.Map;
 // CachedValue/CachedValuesManager?
 public class PsiMobObjectsBlock extends PsiMobElement {
 
-    private Map<Integer, PsiMobElement> childrenMap;
+    private Map<Integer, PsiMobEntityBase> childrenMap;
     private PsiElement[] children;
     private LookupElement[] objectLookupElements = null;
 
@@ -24,33 +24,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         super(parent);
     }
 
-    @Override
-    public String getObjectKind() {
-        return "Objects";
-    }
-
-    @Override
-    protected String getDocHeader() {
-        return DocumentationFormatter.bold("Objects block");
-    }
-
-    @Override
-    protected String getDocContent() {
-        return String.format("Contains %d elements", children.length);
-    }
-
-    @Override
-    public int getId() {
-        return -1;
-    }
-
-    @NotNull
-    @Override
-    public Float3 getLocation() {
-        return new Float3(-1f, -1f, -1f);
-    }
-
-    void setElements(Map<Integer, PsiMobElement> elements) {
+    void setElements(Map<Integer, PsiMobEntityBase> elements) {
         childrenMap = Collections.unmodifiableMap(elements);
         children = childrenMap.values().toArray(PsiElement.EMPTY_ARRAY);
     }
@@ -70,7 +44,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
     public LookupElement[] getObjectLookupElements() {
         if (objectLookupElements == null) {
             List<LookupElement> container = new ArrayList<>();
-            for (PsiMobElement element : childrenMap.values()) {
+            for (PsiMobEntityBase element : childrenMap.values()) {
                 container.add(LookupElementBuilder
                         .create(element.getText())
                         .withTypeText(element.getObjectKind())
@@ -82,7 +56,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         return objectLookupElements;
     }
 
-    private static String lookupText(PsiMobElement element) {
+    private static String lookupText(PsiMobEntityBase element) {
         Float3 location = element.getLocation();
         return String.format("%-10d %s at (%.2f, %.2f, %.2f)", element.getId(), element.getName(),
                 location.getX(), location.getY(), location.getZ());

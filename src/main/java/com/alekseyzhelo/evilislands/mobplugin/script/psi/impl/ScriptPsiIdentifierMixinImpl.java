@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiIdentifierMixin;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.ScriptPsiIdentifierMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.IElementType;
@@ -8,7 +8,7 @@ import com.intellij.psi.tree.IElementType;
 /**
  * Created by Aleks on 25-07-2015.
  */
-public class ScriptPsiIdentifierMixinImpl extends ScriptPsiElementImpl
+public class ScriptPsiIdentifierMixinImpl extends EIScriptPsiElementImpl
         implements ScriptPsiIdentifierMixin {
 
     public ScriptPsiIdentifierMixinImpl(ASTNode node) {

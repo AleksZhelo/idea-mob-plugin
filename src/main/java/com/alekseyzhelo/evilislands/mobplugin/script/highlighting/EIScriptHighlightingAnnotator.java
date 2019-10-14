@@ -3,7 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVariableAccess;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIVisitor;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.application.ApplicationManager;
@@ -20,7 +20,7 @@ public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotato
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof ScriptPsiElement) {
+        if (element instanceof EIScriptPsiElement) {
             myHolder = holder;
             element.accept(this);
             myHolder = null;
@@ -45,7 +45,7 @@ public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotato
     }
 
     private static void setHighlighting(@NotNull PsiElement element, @NotNull AnnotationHolder holder, @NotNull TextAttributesKey key) {
-        holder.createInfoAnnotation(element, null).setEnforcedTextAttributes(TextAttributes.ERASE_MARKER); // TODO: why this?
+        holder.createInfoAnnotation(element, null).setEnforcedTextAttributes(TextAttributes.ERASE_MARKER);
         String description = ApplicationManager.getApplication().isUnitTestMode() ? key.getExternalName() : null;
         holder.createInfoAnnotation(element, description).setTextAttributes(key);
     }

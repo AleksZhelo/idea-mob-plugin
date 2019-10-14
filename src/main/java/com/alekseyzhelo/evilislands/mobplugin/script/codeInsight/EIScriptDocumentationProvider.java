@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
@@ -48,8 +49,8 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
         if (element instanceof EIFunctionDeclaration) {
             return getFunctionDoc((EIFunctionDeclaration) element);
         }
-        if (element instanceof PsiMobElement) {
-            return ((PsiMobElement) element).getDoc();
+        if (element instanceof PsiMobEntityBase) {
+            return ((PsiMobEntityBase) element).getDoc();
         }
         if (element instanceof EIScriptDeclaration) {
             return getScriptDeclarationDoc((EIScriptDeclaration) element);

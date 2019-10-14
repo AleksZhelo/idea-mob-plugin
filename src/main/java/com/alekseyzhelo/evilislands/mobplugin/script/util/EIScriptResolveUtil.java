@@ -19,6 +19,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
@@ -48,7 +49,7 @@ public class EIScriptResolveUtil {
 
     // TODO use
     @Nullable
-    public static PsiComment findDocumentation(ScriptNamedElementMixin element) {
+    public static PsiComment findDocumentation(EIScriptNamedElementMixin element) {
         final PsiElement candidate = PsiTreeUtil.skipWhitespacesBackward(element);
         if (candidate instanceof PsiComment) {
             return (PsiComment) candidate;

@@ -2,16 +2,15 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobObjectDataHolder;
 import com.alekseyzhelo.eimob.util.Float3;
-import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-abstract class PsiMobObjectBase<T extends MobObjectDataHolder> extends PsiMobElement {
+abstract class PsiMobObjectDataHolder<T extends MobObjectDataHolder> extends PsiMobEntityBase {
 
     protected T value;
 
-    PsiMobObjectBase(PsiElement parent, T object) {
+    PsiMobObjectDataHolder(PsiElement parent, T object) {
         super(parent);
         value = object;
     }

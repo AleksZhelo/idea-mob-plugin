@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.ScriptPsiReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
  * @author Aleks on 25-07-2015.
  */
 // TODO: fuck me this is all wrong
-public abstract class ScriptPsiReferenceImpl extends ScriptPsiElementImpl
+public abstract class ScriptPsiReferenceImpl extends EIScriptPsiElementImpl
         implements ScriptPsiReference {
 
     private static LookupElement[] allFunctionLookupElements;

@@ -22,26 +22,6 @@ public abstract class PsiMobElement extends PsiElementBase {
         project = parent.getProject();
     }
 
-    // TODO: extract into sub-type?
-    @NotNull
-    public abstract String getObjectKind();
-
-    protected abstract String getDocHeader();
-
-    protected abstract String getDocContent();
-
-    public abstract int getId();
-
-    @NotNull
-    public abstract Float3 getLocation();
-
-    @NotNull
-    public String getDoc() {
-        return DocumentationFormatter.wrapDefinition(getDocHeader()) +
-                DocumentationFormatter.wrapContent(getDocContent());
-    }
-    // TODO: extract end
-
     @Override
     public PsiElement getParent() {
         return parent;

@@ -5,7 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.Documentat
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiMobUnit extends PsiMobObjectBase<MobUnit> {
+public class PsiMobUnit extends PsiMobObjectDataHolder<MobUnit> {
 
     public PsiMobUnit(PsiElement parent, MobUnit object) {
         super(parent, object);

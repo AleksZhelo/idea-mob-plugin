@@ -15,6 +15,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
 
@@ -131,6 +133,17 @@ public class EIScriptPsiImplUtil {
         }
     }
 
+    @Nullable
+    public static PsiElement getNthArgument(EIFunctionCall call, int n) {
+        EIParams params = call.getParams();
+        if (params != null) {
+            List<EIExpression> expressions = params.getExpressionList();
+            if (expressions.size() > n) {
+                return expressions.get(n);
+            }
+        }
+        return null;
+    }
 
     // toString block
 

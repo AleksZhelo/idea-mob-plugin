@@ -134,27 +134,36 @@ public class ScriptPsiFile extends PsiFileBase {
         }
     }
 
+    // TODO: GSVars and Areas could be calculated in one PSI-tree pass, instead of two
     private class CachedGSVarsProvider implements CachedValueProvider<Map<String, EIGSVar>> {
         @Override
         public Result<Map<String, EIGSVar>> compute() {
             Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
-            acceptChildren(new PsiRecursiveElementVisitor() {
+            acceptChildren(new EIVisitor() {
                 @Override
-                // TODO: do visitFunctionCall instead? benchmark!
-                public void visitElement(PsiElement element) {
-                    super.visitElement(element);
-                    if (element.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-                        EIFunctionCall parentCall = UsefulPsiTreeUtil.getParentFunctionCall(element);
-                        if (parentCall != null) {
-                            String varName = element.getText().substring(1, element.getTextLength() - 1);
-                            // TODO: extract common?
+                public void visitFunctionCall(@NotNull EIFunctionCall call) {
+                    super.visitFunctionCall(call);
+
+                    if (EIGSVar.isReadOrWrite(call)) {
+                        PsiElement nameElement = EIGSVar.getVarNameElement(call);
+                        if (nameElement != null &&
+                                // TODO: can also be an expression, how to handle then? a reference goes to a formal param
+                                //  for instance, instead of the actual parameter
+                                nameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+                            String varName = EIGSVar.getVarName(nameElement.getText());
                             EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
-                            stats.processCall(parentCall);
+                            stats.processCall(call);
                             if (stats.isValid()) {
                                 result.put(varName, stats);
                             }
                         }
                     }
+                }
+
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    element.acceptChildren(this);
                 }
             });
             return new Result<>(result, ScriptPsiFile.this);
@@ -165,51 +174,37 @@ public class ScriptPsiFile extends PsiFileBase {
         @Override
         public Result<Map<Integer, EIArea>> compute() {
             Map<Integer, EIArea> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
-            final int[] functionsVisited = {0};
-            final int[] elementsVisited = {0};
             acceptChildren(new EIVisitor() {
-
                 @Override
-                public void visitFunctionCall(@NotNull EIFunctionCall o) {
-                    super.visitFunctionCall(o);
-                    functionsVisited[0]++;
-                }
+                public void visitFunctionCall(@NotNull EIFunctionCall call) {
+                    super.visitFunctionCall(call);
 
-                @Override
-                // TODO: do visitFunctionCall instead? benchmark!
-                public void visitElement(PsiElement element) {
-                    super.visitElement(element);
-                    element.acceptChildren(this);
-
-                    if (element.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
-                        elementsVisited[0]++;
-                        EIFunctionCall parentCall = UsefulPsiTreeUtil.getParentFunctionCall(element);
-                        if (parentCall != null) {
-                            // TODO: probably rework
-                            List<EIExpression> expressions = parentCall.getParams().getExpressionList();
-                            if (expressions.size() > 0) {
-                                EIExpression expression = expressions.get(0);
-                                if(PsiTreeUtil.isAncestor(expression, element, true)) {
-                                    try {
-                                        int areaId = Integer.parseInt(element.getText());
-                                        EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
-                                        stats.processCall(parentCall);
-                                        if (stats.isValid()) {
-                                            result.put(areaId, stats);
-                                        }
-                                    } catch (NumberFormatException ignored) {
-                                        //don't really care
-                                    }
+                    if (EIArea.isReadOrWrite(call)) {
+                        PsiElement areaIdElement = EIArea.getAreaIdElement(call);
+                        if (areaIdElement != null &&
+                                // TODO: same as with GSVars
+                                areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
+                            try {
+                                // TODO: also extract parsing to EIArea?
+                                int areaId = Integer.parseInt(areaIdElement.getText());
+                                EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
+                                stats.processCall(call);
+                                if (stats.isValid()) {
+                                    result.put(areaId, stats);
                                 }
+                            } catch (NumberFormatException ignored) {
+                                //don't really care
                             }
                         }
                     }
                 }
+
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    element.acceptChildren(this);
+                }
             });
-            System.out.println(String.format("CachedAreasProvider visited %d functions, %d floats",
-                    functionsVisited[0],
-                    elementsVisited[0]
-            ));
             return new Result<>(result, ScriptPsiFile.this);
         }
     }

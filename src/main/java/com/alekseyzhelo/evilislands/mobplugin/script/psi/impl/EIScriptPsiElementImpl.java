@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
@@ -16,12 +17,12 @@ import java.util.List;
 /**
  * Created by Aleks on 25-07-2015.
  */
-public class ScriptPsiElementImpl extends ASTWrapperPsiElement implements ScriptPsiElement {
+// TODO: use or remove unused code
+public class EIScriptPsiElementImpl extends ASTWrapperPsiElement implements EIScriptPsiElement {
 
-    public ScriptPsiElementImpl(ASTNode node) {
+    public EIScriptPsiElementImpl(ASTNode node) {
         super(node);
     }
-
 
     private List<PsiElement> getDeclarationsToProcess(PsiElement lastParent) {
         if (this instanceof EIGlobalVars) {
@@ -46,10 +47,5 @@ public class ScriptPsiElementImpl extends ASTWrapperPsiElement implements Script
         if (items != null) {
             result.addAll(Arrays.asList(items));
         }
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

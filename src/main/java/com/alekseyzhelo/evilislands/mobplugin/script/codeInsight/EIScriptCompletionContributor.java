@@ -2,11 +2,10 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
@@ -40,6 +39,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     public EIScriptCompletionContributor() {
         // TODO: rework?
+        // TODO: basically always triggers, as the error is produced by the IntellijIdeaRulezzz dummy identifier, fix!
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement()
@@ -90,10 +90,11 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                 .psiElement(EIFunctionCall.class)
                                 .withFirstChild(PlatformPatterns
                                         .psiElement()
-                                        .withText(StandardPatterns.string().oneOfIgnoreCase("gssetvar", "gsgetvar"))
+                                        .withText(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
                                 )
                         )
-                        .withLanguage(EIScriptLanguage.INSTANCE),
+                        .withLanguage(EIScriptLanguage.INSTANCE)
+                        .with(new ArgumentPositionPatternCondition(1)),
                 new CompletionProvider<CompletionParameters>() {
                     @Override
                     protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
@@ -118,6 +119,48 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                 }
         );
         // TODO: try GetObject completion here? also areas
+        // TODO: wonky, fix grammar and dummy and try again
+        extend(CompletionType.BASIC, PlatformPatterns
+                        .psiElement()
+                        .withSuperParent(3, PlatformPatterns
+                                .psiElement(EIFunctionCall.class)
+                                .withFirstChild(PlatformPatterns
+                                        .psiElement()
+                                        .withText(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
+                                )
+                        )
+                        .withLanguage(EIScriptLanguage.INSTANCE),
+                new CompletionProvider<CompletionParameters>() {
+                    @Override
+                    protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+                        Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
+                        PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
+                        if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
+                            return;
+                        }
+
+                        EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
+
+                        assert element != null;
+                        assert call != null;
+                        try {
+                            int areaId = Integer.parseInt(element.getText());
+                            boolean isRead = EIArea.isAreaRead(call);
+                            EIArea myArea = areas.get(areaId);
+
+                            for (EIArea area : areas.values()) {
+                                if (area == myArea && ((isRead && (myArea.getReads() == 1 && myArea.getWrites() == 0))
+                                        || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
+                                    continue;
+                                }
+                                suggestToken(result, area.toString());
+                            }
+                        } catch (NumberFormatException ignored) {
+                            //whatewz
+                        }
+                    }
+                }
+        );
         // XXX: already done by my references
 //        extend(CompletionType.BASIC,
 //                PlatformPatterns.psiElement(ScriptTypes.IDENTIFIER)
@@ -134,6 +177,17 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                    }
 //                }
 //        );
+    }
+
+    @Override
+    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet
+            result) {
+        super.fillCompletionVariants(parameters, result);
+    }
+
+    @Override
+    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
+        return super.invokeAutoPopup(position, typeChar);
     }
 
     private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String
@@ -175,12 +229,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                 suggestToken(result, token);
             }
         }
-    }
-
-    @Override
-    public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet
-            result) {
-        super.fillCompletionVariants(parameters, result);
     }
 
     private void suggestToken(CompletionResultSet result, String token) {

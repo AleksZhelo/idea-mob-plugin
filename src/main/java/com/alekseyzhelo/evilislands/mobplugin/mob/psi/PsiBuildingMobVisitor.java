@@ -17,7 +17,7 @@ public class PsiBuildingMobVisitor implements MobVisitor {
 
     private PsiMobFile myFile;
     private PsiMobObjectsBlock objectsBlock;
-    private Map<Integer, PsiMobElement> elementMap = new HashMap<>();
+    private Map<Integer, PsiMobEntityBase> elementMap = new HashMap<>();
 
     public static PsiMobObjectsBlock createPsiMobObjectsBlock(PsiMobFile file) {
         PsiBuildingMobVisitor visitor = new PsiBuildingMobVisitor(file);
@@ -31,7 +31,7 @@ public class PsiBuildingMobVisitor implements MobVisitor {
         objectsBlock = new PsiMobObjectsBlock(file);
     }
 
-    private void putChecked(int id, PsiMobElement element) {
+    private void putChecked(int id, PsiMobEntityBase element) {
         PsiMobElement old = elementMap.put(id, element);
         if (old != null) {
             LOG.error(String.format("ID %d is not unique in %s!", id, myFile.getVirtualFile().getPath()));
@@ -45,7 +45,7 @@ public class PsiBuildingMobVisitor implements MobVisitor {
 
     @Override
     public void visitObjectsBlock(@NotNull ObjectsBlock value) {
-
+        value.acceptChildren(this);
     }
 
     @Override

@@ -42,10 +42,9 @@ public class EIScriptParserDefinition implements ParserDefinition {
         return COMMENTS;
     }
 
-    // TODO: is this right?
     @NotNull
     public TokenSet getStringLiteralElements() {
-        return STRING_LITERALS;  // was TokenSet.EMPTY
+        return STRING_LITERALS;
     }
 
     @NotNull

@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-// TODO: show script as mob child
 public class EIMobStructureProvider implements TreeStructureProvider {
     @NotNull
     @Override
