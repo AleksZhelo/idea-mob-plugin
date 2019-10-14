@@ -31,6 +31,7 @@ public class MobObjectReference extends PsiReferenceBase<EIExpression> {
             int objectId = Integer.parseInt(myElement.getFirstChild().getText().replace("\"", ""));
             PsiMobObjectsBlock objectsBlock = ((ScriptPsiFile) myElement.getContainingFile()).getCompanionMobObjectsBlock();
             if (objectsBlock != null) {
+                // TODO: account for possible AddMob calls?
                 return objectsBlock.getChild(objectId);
             }
         } catch (NumberFormatException e) {

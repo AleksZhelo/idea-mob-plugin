@@ -71,7 +71,7 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
 
         List<EIScriptDeclaration> scripts = file.findScriptDeclarations();
         for (final EIScriptDeclaration script : scripts) {
-            if (script.getName() != null && script.getName().length() > 0) {
+            if (script.getName().length() > 0) {
                 variants.add(LookupElementBuilder.create(script).
                         withIcon(Icons.FILE).
                         withTypeText(EIScriptNamingUtil.SCRIPT)
@@ -83,7 +83,7 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
             List<EIFunctionDeclaration> functions =
                     EIScriptNativeFunctionsUtil.getAllFunctions(myElement.getProject());
             for (final EIFunctionDeclaration function : functions) {
-                if (function.getName() != null && function.getName().length() > 0) {
+                if (function.getName().length() > 0) {
                     variants.add(LookupElementBuilder.create(function).
                             withIcon(Icons.FILE).
                             withTypeText(function.getDisplayableType().getTypeString())
