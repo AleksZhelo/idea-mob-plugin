@@ -50,7 +50,8 @@
                 implementation="com.alekseyzhelo.evilislands.mobplugin.projectView.EIMobStructureProvider"/>
         <completion.confidence language="EIScriptLanguage" order="before javaSkipAutopopupInStrings"
                                implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.CompletionConfidenceOverride" />
-
+        <codeInsight.parameterInfo language="EIScriptLanguage"
+                                   implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIFunctionParameterInfoHandler"/>
     </extensions>
 
     <application-components>

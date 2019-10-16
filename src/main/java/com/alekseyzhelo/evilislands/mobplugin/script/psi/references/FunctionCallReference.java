@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
@@ -13,6 +14,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,18 +55,18 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
-        if (scriptOnly) {
-            return file.findScriptDeclaration(name);
-        } else {
-            EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(file.getProject(), name);
-            return function != null ? function : file.findScriptDeclaration(name);
-        }
+        return ResolveCache.getInstance(myElement.getProject()).resolveWithCaching(
+                this,
+                MyResolver.INSTANCE,
+                true,
+                false
+        );
     }
 
     @NotNull
     @Override
     // TODO: improve these methods
+    // TODO: cache as well?
     public Object[] getVariants() {
         ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
         List<LookupElement> variants = new ArrayList<>();
@@ -84,14 +86,29 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
                     EIScriptNativeFunctionsUtil.getAllFunctions(myElement.getProject());
             for (final EIFunctionDeclaration function : functions) {
                 if (function.getName().length() > 0) {
-                    variants.add(LookupElementBuilder.create(function).
-                            withIcon(Icons.FILE).
-                            withTypeText(function.getDisplayableType().getTypeString())
-                    );
+                    variants.add(EILookupElementFactory.create(function));
                 }
             }
         }
         return variants.toArray();
     }
 
+    private static class MyResolver implements ResolveCache.AbstractResolver<FunctionCallReference, PsiElement> {
+        static final MyResolver INSTANCE = new MyResolver();
+
+        @Override
+        // TODO: what is the use of incompleteCode?
+        public PsiElement resolve(@NotNull FunctionCallReference functionCallReference, boolean incompleteCode) {
+            ScriptPsiFile file = (ScriptPsiFile) functionCallReference.getElement().getContainingFile();
+            if (functionCallReference.scriptOnly) {
+                return file.findScriptDeclaration(functionCallReference.name);
+            } else {
+                EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(
+                        file.getProject(),
+                        functionCallReference.name
+                );
+                return function != null ? function : file.findScriptDeclaration(functionCallReference.name);
+            }
+        }
+    }
 }

@@ -1,8 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
-import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.EIMobLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.openapi.project.Project;

@@ -33,6 +33,7 @@ functionDeclaration ::= scriptIdentifier formalParams (COLON type)? {mixin="com.
 globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
 
 // apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
+// such disorder will not stand, of course
 declarations ::= scriptDeclaration*  {methods=[toString]}
 
 scripts ::= scriptImplementation*  {methods=[toString]}

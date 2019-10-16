@@ -1,16 +1,13 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
-import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 // CachedValue/CachedValuesManager?
@@ -43,22 +40,10 @@ public class PsiMobObjectsBlock extends PsiMobElement {
     @NotNull
     public LookupElement[] getObjectLookupElements() {
         if (objectLookupElements == null) {
-            List<LookupElement> container = new ArrayList<>();
-            for (PsiMobEntityBase element : childrenMap.values()) {
-                container.add(LookupElementBuilder
-                        .create(element.getText())
-                        .withTypeText(element.getObjectKind())
-                        .withPresentableText(lookupText(element))
-                );
-            }
-            objectLookupElements = container.toArray(new LookupElement[0]);
+            objectLookupElements = childrenMap.values().stream()
+                    .map(EILookupElementFactory::create)
+                    .toArray(LookupElement[]::new);
         }
         return objectLookupElements;
-    }
-
-    private static String lookupText(PsiMobEntityBase element) {
-        Float3 location = element.getLocation();
-        return String.format("%-10d %s at (%.2f, %.2f, %.2f)", element.getId(), element.getName(),
-                location.getX(), location.getY(), location.getZ());
     }
 }

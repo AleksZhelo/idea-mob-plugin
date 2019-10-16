@@ -6,16 +6,21 @@ import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.util.Key;
-import com.intellij.psi.*;
+import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 // TODO: processChildren implementation needed?
 public class ScriptPsiFile extends PsiFileBase {

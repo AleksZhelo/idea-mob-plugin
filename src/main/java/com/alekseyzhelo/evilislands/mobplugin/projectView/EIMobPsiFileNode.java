@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 // TODO: show objects/units/particles/etc?
+// TODO: red underline for script file when errors detected?
 public class EIMobPsiFileNode extends PsiFileNode {
 
     private Collection<AbstractTreeNode> children;

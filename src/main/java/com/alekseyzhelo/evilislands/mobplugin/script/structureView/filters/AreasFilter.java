@@ -1,9 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIAreaStructureViewElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIGSVarStructureViewElement;
 import com.intellij.ide.util.treeView.smartTree.ActionPresentation;
 import com.intellij.ide.util.treeView.smartTree.ActionPresentationData;
 import com.intellij.ide.util.treeView.smartTree.Filter;

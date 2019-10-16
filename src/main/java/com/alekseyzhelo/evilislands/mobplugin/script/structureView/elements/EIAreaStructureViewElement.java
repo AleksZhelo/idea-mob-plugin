@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.util.treeView.NodeDescriptorProvidingKey;
 import com.intellij.ide.util.treeView.smartTree.TreeElement;

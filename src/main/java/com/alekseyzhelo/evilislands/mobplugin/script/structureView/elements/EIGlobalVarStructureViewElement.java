@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements;
 
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.intellij.ide.structureView.StructureViewTreeElement;
 import com.intellij.ide.structureView.impl.common.PsiTreeElementBase;
 import org.jetbrains.annotations.NotNull;

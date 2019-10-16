@@ -1,8 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;

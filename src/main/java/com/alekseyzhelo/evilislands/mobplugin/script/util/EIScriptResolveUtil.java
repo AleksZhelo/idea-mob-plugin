@@ -18,7 +18,10 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;

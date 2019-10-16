@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallLookupElementRenderer;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
@@ -265,12 +265,10 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         List<EIFunctionDeclaration> functions = EIScriptNativeFunctionsUtil.getAllFunctions(project);
         List<LookupElement> lookupElements = new ArrayList<>(functions.size());
 
-
         for (EIFunctionDeclaration function : functions) {
-            lookupElements.add(LookupElementBuilder.create(function)
-                    .withCaseSensitivity(false)
-                    .withRenderer(new EICallLookupElementRenderer<>()));
+            lookupElements.add(EILookupElementFactory.create(function));
         }
         return lookupElements;
     }
+
 }

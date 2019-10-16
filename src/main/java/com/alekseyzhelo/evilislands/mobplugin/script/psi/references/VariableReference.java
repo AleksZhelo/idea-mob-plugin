@@ -1,15 +1,18 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
-import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
+import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,13 +37,12 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        EIFormalParameter param = EIScriptResolveUtil.matchByName(name, EIScriptResolveUtil.findEnclosingScriptParams(myElement));
-        if (param != null) {
-            return param;
-        } else {
-            ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
-            return file.findGlobalVar(name);
-        }
+        return ResolveCache.getInstance(myElement.getProject()).resolveWithCaching(
+                this,
+                MyResolver.INSTANCE,
+                true,
+                false
+        );
     }
 
     @NotNull
@@ -55,10 +57,7 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
                     if (expectedType != null && param.getType().getTypeToken() != expectedType) {
                         continue;
                     }
-                    variants.add(LookupElementBuilder.create(param).
-                            withIcon(Icons.FILE).
-                            withTypeText(param.getType().getText())
-                    );
+                    variants.add(EILookupElementFactory.create(param));
                 }
             }
         }
@@ -77,17 +76,27 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
                 if (expectedType != null && global.getType() != null && global.getType().getTypeToken() != expectedType) {
                     continue;
                 }
-                variants.add(LookupElementBuilder.create(global).
-                        withIcon(Icons.FILE).
-                        withTypeText(
-                                global.getType() != null
-                                        ? global.getType().getText()
-                                        : EIScriptNamingUtil.UNKNOWN
-                        )
-                );
+                variants.add(EILookupElementFactory.create(global));
             }
         }
         return variants;
     }
 
+    private static class MyResolver implements ResolveCache.AbstractResolver<VariableReference, PsiElement> {
+        static final MyResolver INSTANCE = new MyResolver();
+
+        @Override
+        public PsiElement resolve(@NotNull VariableReference variableReference, boolean incompleteCode) {
+            String name = variableReference.name;
+            PsiElement myElement = variableReference.myElement;
+
+            EIFormalParameter param = EIScriptResolveUtil.matchByName(name, EIScriptResolveUtil.findEnclosingScriptParams(myElement));
+            if (param != null) {
+                return param;
+            } else {
+                ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
+                return file.findGlobalVar(name);
+            }
+        }
+    }
 }
