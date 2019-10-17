@@ -41,6 +41,7 @@
         <completion.contributor language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptCompletionContributor"/>
         <lang.psiStructureViewFactory language="EIScriptLanguage"
                                       implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
+        <lang.formatter language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.formatting.EIFormattingModelBuilder"/>
 
         <fileType name="mob" patterns="*.mob"
                   implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.fileType.MobFileType"/>

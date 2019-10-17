@@ -7,6 +7,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;

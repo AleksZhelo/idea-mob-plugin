@@ -23,7 +23,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
     private static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
     public static final TokenSet NUMERIC_LITERALS = TokenSet.create(ScriptTypes.FLOATNUMBER);
 
-    private static final IFileElementType FILE =
+    public static final IFileElementType FILE =
             new IFileElementType(Language.findInstance(EIScriptLanguage.class));
 
     @NotNull

@@ -92,7 +92,7 @@ public final class EILookupElementFactory {
                 @Override
                 public LookupElement[] calculateLookupItems(ExpressionContext context) {
                     return null;
-                    // TODO: the below is likely not necessary, standard lokkup rules should apply
+                    // TODO: the below is likely not necessary, standard lookup rules should apply
 //                    ScriptPsiFile file = (ScriptPsiFile) context.getPsiElementAtStartOffset().getContainingFile();
 //                    return file.findGlobalVars().stream()
 //                            .filter((x) -> x.getType().getTypeToken() == parameter.getType().getTypeToken())
