@@ -22,21 +22,23 @@ import com.intellij.psi.TokenType;
 LINE_TERMINATOR = \r|\n|\r\n
 INPUT_CHARACTER = [^\r\n]
 STRING_CHARACTER = [^\r\n\"]
-WHITE_SPACE=[\ \t\f]
-END_OF_LINE_COMMENT="//" {INPUT_CHARACTER}* {LINE_TERMINATOR}?
-FLOAT="float"
-STRING="string"
-OBJECT="object"
-GROUP="group"
-GLOBALVARS="globalvars"
-DECLARESCRIPT="declarescript"
-SCRIPT="script"
-IF="if"
-THEN="then"
-FOR="for"
-WORLDSCRIPT="worldscript"
-IDENTIFIER=[#a-zA-Z]([#_a-zA-Z0-9-])*
-FLOATNUMBER=-?[0-9][0-9]*|-?[0-9]+"."[0-9]+
+WHITE_SPACE = [\ \t\f]
+COMMENT = "//" {INPUT_CHARACTER}*
+FLOAT = "float"
+STRING = "string"
+OBJECT = "object"
+GROUP = "group"
+GLOBALVARS = "globalvars"
+DECLARESCRIPT = "declarescript"
+SCRIPT = "script"
+IF = "if"
+THEN = "then"
+FOR = "for"
+WORLDSCRIPT = "worldscript"
+IDENTIFIER = [#a-zA-Z]([#_a-zA-Z0-9-])*
+FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
+
+%state STRING
 
 %%
 // apparently it is very important not to ignore any characters from the input
@@ -59,10 +61,15 @@ FLOATNUMBER=-?[0-9][0-9]*|-?[0-9]+"."[0-9]+
     ")"                                          { return ScriptTypes.RPAREN; }
     ","                                          { return ScriptTypes.COMMA; }
     ":"                                          { return ScriptTypes.COLON; }
-    {END_OF_LINE_COMMENT}                        { return ScriptTypes.COMMENT;  }
-    {WHITE_SPACE}                                { return TokenType.WHITE_SPACE;  }
-    {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE;  }
-    \"{STRING_CHARACTER}*\"                      { return ScriptTypes.CHARACTER_STRING; }
+    {WHITE_SPACE}                                { return TokenType.WHITE_SPACE; }
+    {COMMENT}                                    { return ScriptTypes.COMMENT; }
+    {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE; }
+    \"                                           { yybegin(STRING); }
+}
+
+<STRING> {
+     \" | {LINE_TERMINATOR}                      { yybegin(YYINITIAL); return ScriptTypes.CHARACTER_STRING; }
+     {STRING_CHARACTER}+                         { }
 }
 
 [^] { return TokenType.BAD_CHARACTER; }

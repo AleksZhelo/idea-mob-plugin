@@ -11,9 +11,11 @@ final class EISpacingBuilderProvider {
 
     private static final TokenSet other;
 
-    private EISpacingBuilderProvider() {}
+    private EISpacingBuilderProvider() {
+    }
 
-    static  {
+    static {
+        //  test
         other = TokenSet.create(ScriptTypes.COLON, ScriptTypes.EQUALS);
     }
 

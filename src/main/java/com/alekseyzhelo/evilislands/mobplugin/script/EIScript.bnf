@@ -24,7 +24,7 @@ scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldSc
 // utility
 private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )*)) {pin(".*")=1 recoverWhile=comma_separated_list_recover}
 
-private ignored ::= (COMMENT) // just to generate the ScriptToken? necessary?
+private ignored ::= (COMMENT) // just to generate the ScriptToken
 
 functionDeclaration ::= scriptIdentifier formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getDisplayableType]}

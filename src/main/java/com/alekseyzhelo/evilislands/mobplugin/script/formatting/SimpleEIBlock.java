@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.intellij.formatting.ChildAttributes.DELEGATE_TO_PREV_CHILD;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 
 class SimpleEIBlock extends AbstractBlock implements BlockEx {
@@ -24,7 +23,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     SimpleEIBlock(@NotNull ASTNode node, @Nullable Wrap wrap, @Nullable Alignment alignment, SpacingBuilder spacingBuilder) {
         super(node, wrap, alignment);
         mySpacingBuilder = spacingBuilder;
-        myIndent = EIIndentProcessor.getChildIndent(node);
+        myIndent = EIIndentProcessor.getIndent(node);
     }
 
     @Override
@@ -43,9 +42,10 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
                     EIBlockFactory.createEIBlock(
                             child,
                             myWrap,
-                            EIIndentProcessor.NO_INDENT_ELEMENTS.contains(childType) || childType.equals(ScriptTypes.COMMENT)
-                                    ? null
-                                    : null, // : childAlignment is bad, don't understand why
+                            null,
+//                            EIIndentProcessor.NO_INDENT_ELEMENTS.contains(childType) || childType.equals(ScriptTypes.COMMENT)
+//                                    ? null
+//                                    : null, // : childAlignment is bad, don't understand why
                             mySpacingBuilder
                     )
             );
@@ -55,6 +55,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
 
     @Override
     // TODO:?
+    // TODO: detect incomplete function call?
     public boolean isIncomplete() {
         return super.isIncomplete();
     }
@@ -79,7 +80,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     @Override
     // TODO:
     protected Indent getChildIndent() {
-        return Indent.getNormalIndent();
+        return EIIndentProcessor.getChildIndent(getElementType());
     }
 
     @NotNull

@@ -10,7 +10,7 @@ import static com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes.*;
 
 final class EIIndentProcessor {
 
-    public static TokenSet NO_INDENT_ELEMENTS = TokenSet.create(
+    private static TokenSet NO_INDENT_ELEMENTS = TokenSet.create(
             LPAREN,
             RPAREN,
             GLOBALVARS,
@@ -38,7 +38,7 @@ final class EIIndentProcessor {
     private EIIndentProcessor() {
     }
 
-    static Indent getChildIndent(ASTNode node) {
+    static Indent getIndent(ASTNode node) {
         IElementType elementType = node.getElementType();
         ASTNode parent = node.getTreeParent();
         IElementType parentType = parent != null ? parent.getElementType() : null;
@@ -60,6 +60,13 @@ final class EIIndentProcessor {
 
         // TODO: which one?
 //        return Indent.getContinuationWithoutFirstIndent();
+        return Indent.getNoneIndent();
+    }
+
+    static Indent getChildIndent(IElementType parentType) {
+        if (BLOCKS.contains(parentType)) {
+            return Indent.getNormalIndent();
+        }
         return Indent.getNoneIndent();
     }
 }
