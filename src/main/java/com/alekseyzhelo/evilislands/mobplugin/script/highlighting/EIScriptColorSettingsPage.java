@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
+import com.alekseyzhelo.evilislands.mobplugin.IOUtil;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
@@ -54,13 +55,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
     @NotNull
     @Override
     public String getDemoText() {
-        try {
-            return readUTF8String(EIScriptColorSettingsPage.class.getResourceAsStream("/color_settings_demo.txt"))
-                    .replace("\r", "");  // weird line separator bug
-        } catch (IOException e) {
-            e.printStackTrace();
-            return e.getMessage();  // TODO: ROFL
-        }
+        return IOUtil.readTextFromResources("/color_settings_demo.txt");
     }
 
     @Nullable

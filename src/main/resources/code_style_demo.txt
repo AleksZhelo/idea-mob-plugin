@@ -1,0 +1,137 @@
+// NYM2008: white_clan_home.mob
+
+GlobalVars (
+  NULL : object,
+  i : object,
+  Kolyan : object,
+  Listik : object,
+  Heroes : group
+)
+
+DeclareScript SetDefVars (this : object)
+DeclareScript TalkToMe (this : object)
+DeclareScript LeaveCurrZone (  this : object )
+DeclareScript #OnBriefingComplete (  nPlayer : float, szComplete : string )
+
+
+Script SetDefVars
+(
+  if
+  (
+  )
+  then
+  (
+    KillScript()
+    ConsoleString("First")
+    Sleep(2)
+    Kolyan = GetLeader()
+    Sleep(2)
+    Listik = GetObjectById("1000296040")
+    SetDiplomacy(0, 1, 1)
+    SetDiplomacy(1, 0, 1)
+    SetDiplomacy(1, 2, 1)
+    SetDiplomacy(1, 3, 1)
+    SetDiplomacy(1, 4, 1)
+    SetDiplomacy(1, 5, 1)
+    SetDiplomacy(1, 6, 1)
+    SetDiplomacy(1, 7, 1)
+    SetDiplomacy(1, 8, 1)
+    SetDiplomacy(1, 9, 1)
+    SetDiplomacy(1, 10, 1)
+    SetDiplomacy(1, 11, 1)
+    SetDiplomacy(1, 12, 1)
+    SetDiplomacy(1, 13, 1)
+    SetDiplomacy(1, 14, 1)
+    SetDiplomacy(1, 15, 1)
+    SetDiplomacy(1, 16, 1)
+    SetDiplomacy(2, 1, 1)
+    SetDiplomacy(3, 1, 1)
+    SetDiplomacy(4, 1, 1)
+    SetDiplomacy(5, 1, 1)
+    SetDiplomacy(6, 1, 1)
+    SetDiplomacy(7, 1, 1)
+    SetDiplomacy(8, 1, 1)
+    SetDiplomacy(9, 1, 1)
+    SetDiplomacy(10, 1, 1)
+    SetDiplomacy(11, 1, 1)
+    SetDiplomacy(12, 1, 1)
+    SetDiplomacy(13, 1, 1)
+    SetDiplomacy(14, 1, 1)
+    SetDiplomacy(15, 1, 1)
+    SetDiplomacy(16, 1, 1)
+  )
+)
+
+Script TalkToMe
+(
+  if
+  (
+  )
+  then
+  (
+    KillScript()
+    ConsoleString("Second")
+    GSSetVar(0, "b.Listik.Listik_1", 1)
+    SendStringEvent(0, "briefing Listik_1")
+  )
+)
+
+Script LeaveCurrZone
+(
+  if
+  (
+    IsGreater(DistanceUnitUnit(GetLeader(), Listik), 10)
+  )
+  then
+  (
+    KillScript( )
+    ConsoleString("Daragoi! Zachem tak daleko poshel? Davai-ka nazad!")
+    BlockUnit(GetLeader(), 1)
+    MoveToPoint(GetLeader(), 93, 339)
+    SleepUntil(IsLess(DistanceUnitUnit(GetLeader(), Listik), 3))
+    BlockUnit(GetLeader(), 0)
+    LeaveCurrZone(NULL)
+  )
+)
+
+
+Script #OnBriefingComplete
+(
+  if
+  (
+    IsEqual(GSGetVar(0, "b.Listik.Listik_1"), 2)
+  )
+  then
+  (
+    KillScript(  )
+    ConsoleString("Preved!")
+    Sleep(20)
+    LeaveToZone(0, "gz1g", 4)
+  )
+  if
+  (
+  )
+  then
+  (
+    KillScript(  )
+  )
+)
+
+WorldScript
+(
+  Sleep(2)
+  //Первым делом... так, что первым делом? А, пианину... а что это за жизнь без пианины?
+  //Хотя вообще первым делом надо зафиксать время на полдень. Т.е. 12 часов дня.
+  FixWorldTime(12)
+  //Ну и дальше, по плану - проставить дефолтные переменные, и все такое...
+  SetDefVars(NULL)
+  Sleep(2)
+  ResetTarget(Listik)
+  Sleep(2)
+  UMClear(Listik)
+  Sleep(2)
+  Idle(Listik)
+  Sleep(2)
+  TalkToMe(NULL)
+  //LeaveCurrZone(NULL)
+)

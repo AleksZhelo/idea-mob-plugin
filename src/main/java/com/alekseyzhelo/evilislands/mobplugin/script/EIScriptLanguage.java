@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.intellij.lang.Language;
+import org.jetbrains.annotations.NotNull;
 
 // TODO: PairedBraceMatcher
 // TODO: ParameterInfoHandler?
@@ -12,6 +13,12 @@ public class EIScriptLanguage extends Language {
 
     private EIScriptLanguage() {
         super("EIScriptLanguage");
+    }
+
+    @NotNull
+    @Override
+    public String getDisplayName() {
+        return "EIScript";
     }
 }
 

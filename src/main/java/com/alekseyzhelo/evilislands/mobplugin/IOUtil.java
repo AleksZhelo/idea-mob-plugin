@@ -20,4 +20,13 @@ public final class IOUtil {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
+    public static String readTextFromResources(String resourceName) {
+        try {
+            return readUTF8String(IOUtil.class.getResourceAsStream(resourceName))
+                    .replace("\r", "");  // weird line separator bug
+        } catch (IOException e) {
+            e.printStackTrace();
+            return e.getMessage();  // TODO: ROFL
+        }
+    }
 }

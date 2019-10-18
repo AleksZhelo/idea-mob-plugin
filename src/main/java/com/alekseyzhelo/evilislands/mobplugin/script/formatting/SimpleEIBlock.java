@@ -1,11 +1,11 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.formatting;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.google.common.collect.Lists;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
+import com.intellij.psi.codeStyle.FileTypeIndentOptionsProvider;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +15,8 @@ import java.util.List;
 
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 
+// TODO: alignment?
+// TODO: add a function block with nice argument indentation?
 class SimpleEIBlock extends AbstractBlock implements BlockEx {
 
     final SpacingBuilder mySpacingBuilder;
