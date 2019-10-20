@@ -62,6 +62,7 @@ FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
     ","                                          { return ScriptTypes.COMMA; }
     ":"                                          { return ScriptTypes.COLON; }
     {WHITE_SPACE}                                { return TokenType.WHITE_SPACE; }
+    ^{COMMENT}                                   { return ScriptTypes.WHOLE_LINE_COMMENT; }
     {COMMENT}                                    { return ScriptTypes.COMMENT; }
     {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE; }
     \"                                           { yybegin(STRING); }

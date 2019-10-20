@@ -26,7 +26,8 @@ final class EIIndentProcessor {
             SCRIPT_IF_BLOCK,
             SCRIPT_THEN_BLOCK,
             WORLD_SCRIPT,
-            FOR_BLOCK
+            FOR_BLOCK,
+            PARAMS
     );
     private static TokenSet NO_INDENT_BLOCKS = TokenSet.create(
             DECLARATIONS,
@@ -45,6 +46,10 @@ final class EIIndentProcessor {
 
         if (parent == null || parentType == FILE) {
             return Indent.getNoneIndent();
+        }
+
+        if (elementType.equals(WHOLE_LINE_COMMENT)) {
+            return Indent.getAbsoluteNoneIndent();
         }
 
         if (BLOCKS.contains(parentType)) {

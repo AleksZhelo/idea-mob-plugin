@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition;
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lexer.Lexer;
@@ -71,13 +72,13 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return KEYWORD_KEYS;
         } else if (TYPES.contains(tokenType)) {
             return TYPE_KEYS;
-        } else if (tokenType.equals(ScriptTypes.CHARACTER_STRING)) {
+        } else if (EIScriptParserDefinition.STRING_LITERALS.contains(tokenType)) {
             return STRING_KEYS;
-        } else if (tokenType.equals(ScriptTypes.FLOATNUMBER)) {
+        } else if (EIScriptParserDefinition.NUMERIC_LITERALS.contains(tokenType)) {
             return NUMBER_KEYS;
         } else if (tokenType.equals(ScriptTypes.SCRIPT_IDENTIFIER)) {
             return IDENTIFIER_KEYS;
-        } else if (tokenType.equals(ScriptTypes.COMMENT)) {
+        } else if (EIScriptParserDefinition.COMMENTS.contains(tokenType)) {
             return COMMENT_KEYS;
         } else if (tokenType.equals(TokenType.BAD_CHARACTER)) {
             return BAD_CHAR_KEYS;

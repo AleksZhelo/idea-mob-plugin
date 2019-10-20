@@ -19,8 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class EIScriptParserDefinition implements ParserDefinition {
     private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    private static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.COMMENT);
-    private static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
+    public static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.WHOLE_LINE_COMMENT, ScriptTypes.COMMENT);
+    public static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
     public static final TokenSet NUMERIC_LITERALS = TokenSet.create(ScriptTypes.FLOATNUMBER);
 
     public static final IFileElementType FILE =
