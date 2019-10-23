@@ -51,9 +51,9 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         ScriptPsiFile psiFile = (ScriptPsiFile) scriptDeclaration.getContainingFile();
         if (psiFile.findScriptImplementation(scriptDeclaration.getName()) == null) {
-            PsiElement ident = scriptDeclaration.getScriptIdentifier();
+            PsiElement ident = scriptDeclaration.getNameIdentifier();
             if (ident != null) {
-                markAsWarning(myHolder, scriptDeclaration.getScriptIdentifier(), SCRIPT_NOT_IMPLEMENTED_WARNING);
+                markAsWarning(myHolder, ident, SCRIPT_NOT_IMPLEMENTED_WARNING);
             }
         }
     }
@@ -64,7 +64,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = scriptImplementation.getReference();
         if (reference.resolve() == null) {
-            PsiElement ident = scriptImplementation.getScriptIdentifier();
+            PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
                 markAsError(myHolder, ident, SCRIPT_NOT_DECLARED_ERROR);
             }
@@ -149,7 +149,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitVariableAccess(access);
 
         if (access.getReference().resolve() == null) {
-            markAsError(myHolder, access.getScriptIdentifier(), UNDEFINED_VARIABLE_ERROR);
+            markAsError(myHolder, access.getNameIdentifier(), UNDEFINED_VARIABLE_ERROR);
         }
     }
 

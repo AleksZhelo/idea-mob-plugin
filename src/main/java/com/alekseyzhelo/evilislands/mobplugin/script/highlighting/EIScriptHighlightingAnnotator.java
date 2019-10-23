@@ -38,8 +38,8 @@ public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotato
     public void visitFunctionCall(@NotNull EIFunctionCall functionCall) {
         super.visitFunctionCall(functionCall);
 
-        if (functionCall.getScriptIdentifier().getText() != null) {
-            PsiElement nameElement = functionCall.getScriptIdentifier();
+        PsiElement nameElement = functionCall.getNameIdentifier();
+        if (nameElement != null) {
             setHighlighting(nameElement, myHolder, EIScriptSyntaxHighlightingColors.FUNCTION_CALL);
         }
     }

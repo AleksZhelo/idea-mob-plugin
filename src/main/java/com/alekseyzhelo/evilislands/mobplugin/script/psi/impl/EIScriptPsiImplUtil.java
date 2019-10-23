@@ -28,20 +28,20 @@ public class EIScriptPsiImplUtil {
 
     @NotNull
     public static PsiReference getReference(EIFunctionCall call) {
-        EIScriptIdentifier ident = call.getScriptIdentifier();
+        PsiElement ident = call.getNameIdentifier();
         return new FunctionCallReference(call, TextRange.create(0, ident.getTextLength()));
     }
 
     @NotNull
     public static PsiReference getReference(EIScriptImplementation impl) {
-        EIScriptIdentifier ident = impl.getScriptIdentifier();
+        PsiElement ident = impl.getNameIdentifier();
         return new FunctionCallReference(impl, ident != null ? ident.getTextRange().shiftLeft(impl.getTextRange().getStartOffset()) :
                 TextRange.create(0, 0), true);
     }
 
     @NotNull
     public static PsiReference getReference(EIVariableAccess variable) {
-        EIScriptIdentifier identifier = variable.getScriptIdentifier();
+        PsiElement identifier = variable.getNameIdentifier();
         return new VariableReference(variable, new TextRange(0, identifier.getTextLength()));
     }
 
@@ -51,7 +51,7 @@ public class EIScriptPsiImplUtil {
         final IElementType elementType = firstChild.getElementType();
         if (elementType == ScriptTypes.FLOATNUMBER) {
             EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
-            if (parentCall != null && parentCall.getScriptIdentifier().getText().equalsIgnoreCase("getobject")) {
+            if (parentCall != null && parentCall.getName().equalsIgnoreCase("getobject")) {
                 return new MobObjectReference(expression, new TextRange(0, firstChild.getTextLength()));
             } else {
                 return null;
@@ -59,7 +59,7 @@ public class EIScriptPsiImplUtil {
         } else if (elementType == ScriptTypes.CHARACTER_STRING) {
             EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
             // TODO: extract magic string?
-            if (parentCall != null && parentCall.getScriptIdentifier().getText().equalsIgnoreCase("getobjectbyid")) {
+            if (parentCall != null && parentCall.getName().equalsIgnoreCase("getobjectbyid")) {
                 return new MobObjectReference(expression, new TextRange(1, firstChild.getTextLength() - 1));
             } else {
                 return null;
@@ -162,12 +162,12 @@ public class EIScriptPsiImplUtil {
 
     public static String toString(EIFunctionCall functionCall) {
 //        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getScriptIdentifier().getText();
-        return functionCall.getScriptIdentifier().getText();
+        return functionCall.getName();
     }
 
     public static String toString(EIVariableAccess variableAccess) {
 //        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getScriptIdentifier().getText();
-        return variableAccess.getScriptIdentifier().getText();
+        return variableAccess.getName();
     }
 
     public static String toString(EIAssignment assignment) {

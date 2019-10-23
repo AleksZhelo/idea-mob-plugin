@@ -85,7 +85,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
                 info += DocumentationFormatter.wrapDefinition(
                         getCallableDefinitionDoc(
                                 true,
-                                declaration.getScriptIdentifier(),
+                                declaration.getNameIdentifier(),
                                 declaration.getFormalParameterList(),
                                 declaration.getDisplayableType()
                         )
@@ -98,7 +98,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
 
     private String getCallableDefinitionDoc(
             boolean isFunction,
-            EIScriptIdentifier nameElement,
+            PsiElement nameElement,
             List<EIFormalParameter> parameterList,
             EITypeToken returnType
     ) {
@@ -115,7 +115,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
         @NonNls String doc = DocumentationFormatter.wrapDefinition(
                 getCallableDefinitionDoc(
                         false,
-                        element.getScriptIdentifier(),
+                        element.getNameIdentifier(),
                         element.getFormalParameterList(),
                         EITypeToken.VOID
                 )

@@ -45,11 +45,13 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
         if (element instanceof EIGlobalVar) {
             return "global variable";
         } else if (element instanceof EIScriptDeclaration) {
-            return "script declaration";
+            return "script";
         } else if (element instanceof EIScriptImplementation) {
-            return "script implementation";
+            return "script";
         } else if (element instanceof EIFunctionCall) {
             return "function call";
+        } else if (element instanceof EIFunctionDeclaration) {
+            return "function";
         } else {
             return "";
         }
@@ -59,31 +61,32 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
     @Override
     public String getDescriptiveName(@NotNull PsiElement element) {
         if (element instanceof EIGlobalVar) {
-            return "global variable";
+            return ((EIGlobalVar) element).getName();
         } else if (element instanceof EIScriptDeclaration) {
-            return "script declaration";
+            // TODO: improve?
+            return ((EIScriptDeclaration) element).getName();
         } else if (element instanceof EIScriptImplementation) {
-            return "script implementation";
+            // TODO: improve?
+            return ((EIScriptImplementation) element).getName();
         } else if (element instanceof EIFunctionCall) {
-            return "function call";
+            // TODO: improve?
+            return ((EIFunctionCall) element).getName();
+        } else if (element instanceof EIFunctionDeclaration) {
+            return ((EIFunctionDeclaration) element).getName();
         } else {
             return "";
         }
-//        if (element instanceof SimpleProperty) {
-//            return ((SimpleProperty) element).getKey();
-//        } else {
-//            return "";
-//        }
     }
 
     @NotNull
     @Override
+    // TODO: improve?
     public String getNodeText(@NotNull PsiElement element, boolean useFullName) {
         if (element instanceof PsiNamedElement) {
             //noinspection ConstantConditions
             return ((PsiNamedElement) element).getName();
         }
-        if (element instanceof EIScriptIdentifier) {
+        if (element.getNode().getElementType().equals(ScriptTypes.IDENTIFIER)) {
             return element.getText();
         }
         return "";

@@ -31,8 +31,6 @@
         <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptColorSettingsPage"/>
         <lang.refactoringSupport language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptRefactoringSupportProvider"/>
-        <lang.elementManipulator forClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier"
-                                 implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.manipulators.ScriptIdentifierManipulator"/>
         <lang.findUsagesProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.SimpleScriptFindUsagesProvider"/>
         <lang.foldingBuilder language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptSimpleFoldingBuilder"/>
         <annotator language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptHighlightingAnnotator"/>

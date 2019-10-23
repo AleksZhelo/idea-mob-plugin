@@ -27,7 +27,7 @@ private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )
 //noinspection BnfUnusedRule
 private ignored ::= (WHOLE_LINE_COMMENT COMMENT) // just to generate the ScriptToken
 
-functionDeclaration ::= scriptIdentifier formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+functionDeclaration ::= IDENTIFIER formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getDisplayableType]}
 // utility end
 
@@ -43,14 +43,14 @@ worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=2 recoverWhile=wor
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
-globalVar ::= scriptIdentifier COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+globalVar ::= IDENTIFIER COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[toString]}
 
 // TODO: do script params shadow global vars?
-scriptDeclaration ::= DECLARESCRIPT scriptIdentifier formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[toString]}
 
-scriptImplementation ::= SCRIPT scriptIdentifier LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
+scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
 
 private scriptBody ::= scriptBlock+
@@ -73,7 +73,7 @@ forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN script
 
 private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
 
-formalParameter ::= scriptIdentifier COLON type  {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+formalParameter ::= IDENTIFIER COLON type  {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"}
 
 // TODO: type checking!
@@ -82,16 +82,14 @@ params ::=  <<comma_separated_list (expression)>>   // TODO: how to do reference
 // TODO: how to do references here?
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
 
-variableAccess ::= scriptIdentifier {methods=[getReference getType toString]}
+variableAccess ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType toString]}
 
-functionCall ::= scriptIdentifier LPAREN params? RPAREN {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+functionCall ::= IDENTIFIER LPAREN params? RPAREN {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType getNthArgument toString]}
 
 // TODO: handle no error on right part missing
 assignment ::= variableAccess EQUALS expression {pin=2 methods=[toString]} // TODO: this pin and error recovery stuff
-
-scriptIdentifier ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.ScriptPsiIdentifierMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.ScriptPsiIdentifierMixin"}
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"}

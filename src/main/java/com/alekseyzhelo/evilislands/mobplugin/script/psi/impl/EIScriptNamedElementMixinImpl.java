@@ -1,6 +1,5 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIdentifier;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
@@ -16,7 +15,7 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
     @NotNull
     @Override
     public String getName() {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
         if (keyNode != null) {
             return keyNode.getText();
         } else {
@@ -26,9 +25,9 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
 
     @Override
     public PsiElement setName(@NotNull String newName) {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
         if (keyNode != null) {
-            EIScriptIdentifier identifier = EIScriptElementFactory.createIdentifierFromText(getProject(), newName);
+            PsiElement identifier = EIScriptElementFactory.createIdentifierFromText(getProject(), newName);
             ASTNode newKeyNode = identifier.getNode();
             getNode().replaceChild(keyNode, newKeyNode);
         }
@@ -37,7 +36,7 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
 
     @Override
     public PsiElement getNameIdentifier() {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.SCRIPT_IDENTIFIER);
+        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
         if (keyNode != null) {
             return keyNode.getPsi();
         } else {

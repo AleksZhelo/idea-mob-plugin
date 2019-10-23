@@ -7,6 +7,7 @@ import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
+import com.intellij.psi.impl.source.tree.ElementType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +77,7 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return STRING_KEYS;
         } else if (EIScriptParserDefinition.NUMERIC_LITERALS.contains(tokenType)) {
             return NUMBER_KEYS;
-        } else if (tokenType.equals(ScriptTypes.SCRIPT_IDENTIFIER)) {
+        } else if (tokenType.equals(ScriptTypes.IDENTIFIER)) {
             return IDENTIFIER_KEYS;
         } else if (EIScriptParserDefinition.COMMENTS.contains(tokenType)) {
             return COMMENT_KEYS;
