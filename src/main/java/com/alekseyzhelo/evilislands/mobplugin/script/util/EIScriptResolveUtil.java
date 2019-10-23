@@ -78,5 +78,4 @@ public class EIScriptResolveUtil {
     public static <T extends PsiNamedElement> T matchByName(String name, T[] elements) {
         return matchByName(name, Arrays.asList(elements));
     }
-
 }

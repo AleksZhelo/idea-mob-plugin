@@ -1,19 +1,17 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.template.Expression;
 import com.intellij.codeInsight.template.ExpressionContext;
 import com.intellij.codeInsight.template.Result;
 import com.intellij.codeInsight.template.TextResult;
-import com.intellij.codeInsight.template.impl.LiveTemplateLookupElementImpl;
 import com.intellij.codeInsight.template.impl.TemplateImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,20 +27,31 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(EIFormalParameter param) {
-        return LookupElementBuilder.create(param).
-                withIcon(Icons.FILE).
-                withTypeText(param.getType().getText());
+        return LookupElementBuilder.create(param)
+                // TODO: icon
+                .withIcon(Icons.FILE)
+                .withTypeText(param.getType().getText())
+                .withCaseSensitivity(false);
     }
 
     @NotNull
     public static LookupElement create(EIGlobalVar globalVar) {
-        return LookupElementBuilder.create(globalVar).
-                withIcon(Icons.FILE).
-                withTypeText(
+        return LookupElementBuilder.create(globalVar)
+                .withIcon(Icons.GLOBAL_VAR)
+                .withTypeText(
                         globalVar.getType() != null
                                 ? globalVar.getType().getText()
                                 : EIScriptNamingUtil.UNKNOWN
-                );
+                )
+                .withCaseSensitivity(false);
+    }
+
+    @NotNull
+    public static LookupElement create(EIScriptDeclaration scriptDeclaration) {
+        return LookupElementBuilder.create(scriptDeclaration)
+                .withIcon(Icons.SCRIPT_IMPL)
+                .withTypeText(EIScriptNamingUtil.SCRIPT)
+                .withCaseSensitivity(false);
     }
 
 //    @NotNull
@@ -55,7 +64,7 @@ public final class EILookupElementFactory {
 
     @NotNull
     // TODO: replace with inline template as in Mathematica's BuiltinSymbolLookupElement.java?
-    public static LookupElement create(EIFunctionDeclaration function) {
+    public static EIFunctionLookupElement create(EIFunctionDeclaration function) {
         List<EIFormalParameter> params = function.getFormalParameterList();
         String argumentStr = params.size() > 0
                 ? params.stream()
@@ -102,7 +111,9 @@ public final class EILookupElementFactory {
             }, true);
         }
 //        AutoPopupController.getInstance(function.getProject()).autoPopupParameterInfo();
-        LiveTemplateLookupElementImpl element = new LiveTemplateLookupElementWithAutoPopup(template, false);
+        EIType type = function.getType();
+        EITypeToken typeToken = type != null ? type.getTypeToken() : EITypeToken.VOID;
+        EIFunctionLookupElement element = new EIFunctionLookupElement(typeToken, template, false);
 //        return LookupElementDecorator.withRenderer(element, new EICallLookupElementRenderer());
         return element;
     }

@@ -1,8 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
@@ -51,10 +51,12 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
         EITypeToken expectedType = EIScriptTypingUtil.getExpectedType(this);
         List<LookupElement> variants = getGlobalVarVariants(myElement, expectedType);
         List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(myElement);
+        // TODO: extract?
         if (params != null) {
             for (final EIFormalParameter param : params) {
-                if (param.getName() != null && param.getName().length() > 0) {
-                    if (expectedType != null && param.getType().getTypeToken() != expectedType) {
+                EIType paramType = param.getType();
+                if (param.getName().length() > 0 && paramType != null) {
+                    if (expectedType != null && paramType.getTypeToken() != expectedType) {
                         continue;
                     }
                     variants.add(EILookupElementFactory.create(param));
@@ -66,18 +68,11 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     }
 
     @NotNull
-    // TODO: string localization, or simply a better string for "unknown"?
     private List<LookupElement> getGlobalVarVariants(PsiElement myElement, EITypeToken expectedType) {
         ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
-        List<EIGlobalVar> globalVars = file.findGlobalVars();
         List<LookupElement> variants = new ArrayList<>();
-        for (final EIGlobalVar global : globalVars) {
-            if (global.getName() != null && global.getName().length() > 0) {
-                if (expectedType != null && global.getType() != null && global.getType().getTypeToken() != expectedType) {
-                    continue;
-                }
-                variants.add(EILookupElementFactory.create(global));
-            }
+        if (expectedType != null) {
+            variants.addAll(file.getGlobalVarLookupElements().get(expectedType));
         }
         return variants;
     }

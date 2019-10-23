@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;

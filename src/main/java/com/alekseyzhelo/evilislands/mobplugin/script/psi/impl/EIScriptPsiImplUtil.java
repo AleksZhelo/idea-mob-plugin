@@ -93,14 +93,13 @@ public class EIScriptPsiImplUtil {
     @Nullable
     public static EITypeToken getType(EIVariableAccess element) {
         PsiElement resolved = element.getReference().resolve();
-        if (resolved instanceof EIGlobalVar && (((EIGlobalVar) resolved).getType() != null)) {
-            //noinspection ConstantConditions
-            return ((EIGlobalVar) resolved).getType().getTypeToken();
+        EIType type = null;
+        if (resolved instanceof EIGlobalVar) {
+            type = ((EIGlobalVar) resolved).getType();
         } else if (resolved instanceof EIFormalParameter) {
-            return ((EIFormalParameter) resolved).getType().getTypeToken();
-        } else {
-            return null;
+            type = ((EIFormalParameter) resolved).getType();
         }
+        return type != null ? type.getTypeToken() : null;
     }
 
     @Nullable

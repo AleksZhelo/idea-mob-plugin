@@ -2,12 +2,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -15,8 +12,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Map;
 
 // TODO finish, proper
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
@@ -80,49 +75,50 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitFunctionCall(@NotNull EIFunctionCall call) {
         super.visitFunctionCall(call);
 
-        if (EIGSVar.isReadOrWrite(call)) {
-            PsiElement varNameElement = EIGSVar.getVarNameElement(call);
-            if (varNameElement != null &&
-                    varNameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-                String varName = EIGSVar.getVarName(varNameElement.getText());
-                Map<String, EIGSVar> vars = ((ScriptPsiFile) call.getContainingFile()).findGSVars();
-                EIGSVar gsVar = vars.get(varName);
-                if (gsVar != null) {
-                    if (gsVar.getReads() == 0 && !varName.startsWith("z.")) {
-                        markAsWeakWarning(myHolder, varNameElement,
-                                gsVar.getWrites() == 1 ? GS_VAR_ONLY_WRITTEN_AND_ONCE_WARNING : GS_VAR_ONLY_WRITTEN_WARNING);
-                    }
-                    if (gsVar.getWrites() == 0) {
-                        markAsWeakWarning(myHolder, varNameElement,
-                                gsVar.getReads() == 1 ? GS_VAR_ONLY_READ_AND_ONCE_WARNING : GS_VAR_ONLY_READ_WARNING);
-                    }
-                } else {
-                    LOG.error("GSVar is null for " + call);
-                }
-            }
-        } else if (EIArea.isReadOrWrite(call)) {
-            PsiElement areaIdElement = EIArea.getAreaIdElement(call);
-            if (areaIdElement != null &&
-                    areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
-                try {
-                    int areaId = Integer.parseInt(areaIdElement.getText());
-                    Map<Integer, EIArea> vars = ((ScriptPsiFile) call.getContainingFile()).findAreas();
-                    EIArea area = vars.get(areaId);
-                    if (area != null) {
-                        if (area.getReads() == 0) {
-                            markAsWarning(myHolder, areaIdElement, AREA_ONLY_WRITTEN_WARNING);
-                        }
-                        if (area.getWrites() == 0) {
-                            markAsWarning(myHolder, areaIdElement, AREA_ONLY_READ_WARNING);
-                        }
-                    } else {
-                        LOG.error("Area  is null for " + call);
-                    }
-                } catch (NumberFormatException ignored) {
-                    //don't really care
-                }
-            }
-        }
+        // TODO: uncomment!
+//        if (EIGSVar.isReadOrWrite(call)) {
+//            PsiElement varNameElement = EIGSVar.getVarNameElement(call);
+//            if (varNameElement != null &&
+//                    varNameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+//                String varName = EIGSVar.getVarName(varNameElement.getText());
+//                Map<String, EIGSVar> vars = ((ScriptPsiFile) call.getContainingFile()).findGSVars();
+//                EIGSVar gsVar = vars.get(varName);
+//                if (gsVar != null) {
+//                    if (gsVar.getReads() == 0 && !varName.startsWith("z.")) {
+//                        markAsWeakWarning(myHolder, varNameElement,
+//                                gsVar.getWrites() == 1 ? GS_VAR_ONLY_WRITTEN_AND_ONCE_WARNING : GS_VAR_ONLY_WRITTEN_WARNING);
+//                    }
+//                    if (gsVar.getWrites() == 0) {
+//                        markAsWeakWarning(myHolder, varNameElement,
+//                                gsVar.getReads() == 1 ? GS_VAR_ONLY_READ_AND_ONCE_WARNING : GS_VAR_ONLY_READ_WARNING);
+//                    }
+//                } else {
+//                    LOG.error("GSVar is null for " + call);
+//                }
+//            }
+//        } else if (EIArea.isReadOrWrite(call)) {
+//            PsiElement areaIdElement = EIArea.getAreaIdElement(call);
+//            if (areaIdElement != null &&
+//                    areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
+//                try {
+//                    int areaId = Integer.parseInt(areaIdElement.getText());
+//                    Map<Integer, EIArea> vars = ((ScriptPsiFile) call.getContainingFile()).findAreas();
+//                    EIArea area = vars.get(areaId);
+//                    if (area != null) {
+//                        if (area.getReads() == 0) {
+//                            markAsWarning(myHolder, areaIdElement, AREA_ONLY_WRITTEN_WARNING);
+//                        }
+//                        if (area.getWrites() == 0) {
+//                            markAsWarning(myHolder, areaIdElement, AREA_ONLY_READ_WARNING);
+//                        }
+//                    } else {
+//                        LOG.error("Area  is null for " + call);
+//                    }
+//                } catch (NumberFormatException ignored) {
+//                    //don't really care
+//                }
+//            }
+//        }
 
         // TODO: optimize?
         FunctionCallReference reference = (FunctionCallReference) call.getReference();

@@ -1,16 +1,12 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
-import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
+import com.intellij.codeInsight.lookup.TypedLookupItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
@@ -65,30 +61,15 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
 
     @NotNull
     @Override
-    // TODO: improve these methods
+    // TODO: typing here too?
     // TODO: cache as well?
     public Object[] getVariants() {
         ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
-        List<LookupElement> variants = new ArrayList<>();
-
-        List<EIScriptDeclaration> scripts = file.findScriptDeclarations();
-        for (final EIScriptDeclaration script : scripts) {
-            if (script.getName().length() > 0) {
-                variants.add(LookupElementBuilder.create(script).
-                        withIcon(Icons.FILE).
-                        withTypeText(EIScriptNamingUtil.SCRIPT)
-                );
-            }
-        }
+        List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
 
         if (!scriptOnly) {
-            List<EIFunctionDeclaration> functions =
-                    EIScriptNativeFunctionsUtil.getAllFunctions(myElement.getProject());
-            for (final EIFunctionDeclaration function : functions) {
-                if (function.getName().length() > 0) {
-                    variants.add(EILookupElementFactory.create(function));
-                }
-            }
+            EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
+            variants.addAll(service.getFunctionLookupElements());
         }
         return variants.toArray();
     }
@@ -103,10 +84,8 @@ public class FunctionCallReference extends PsiReferenceBase<PsiElement> {
             if (functionCallReference.scriptOnly) {
                 return file.findScriptDeclaration(functionCallReference.name);
             } else {
-                EIFunctionDeclaration function = EIScriptNativeFunctionsUtil.getFunctionDeclaration(
-                        file.getProject(),
-                        functionCallReference.name
-                );
+                EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
+                EIFunctionDeclaration function = service.getFunctionDeclaration(functionCallReference.name);
                 return function != null ? function : file.findScriptDeclaration(functionCallReference.name);
             }
         }

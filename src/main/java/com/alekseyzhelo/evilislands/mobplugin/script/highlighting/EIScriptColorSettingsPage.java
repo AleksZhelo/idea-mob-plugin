@@ -11,11 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.alekseyzhelo.evilislands.mobplugin.IOUtil.readUTF8String;
 import static com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlightingColors.*;
 
 public class EIScriptColorSettingsPage implements ColorSettingsPage {

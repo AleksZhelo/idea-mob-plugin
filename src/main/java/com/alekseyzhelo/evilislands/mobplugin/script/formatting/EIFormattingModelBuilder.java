@@ -1,6 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.formatting;
 
-import com.intellij.formatting.*;
+import com.intellij.formatting.FormattingModel;
+import com.intellij.formatting.FormattingModelBuilder;
+import com.intellij.formatting.FormattingModelProvider;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;

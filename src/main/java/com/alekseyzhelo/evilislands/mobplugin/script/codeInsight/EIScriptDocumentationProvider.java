@@ -1,9 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNativeFunctionsUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
@@ -30,7 +30,8 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
     }
 
     private String getFunctionCallQuickNavigateInfo(EIFunctionCall element) {
-        EIFunctionDeclaration declaration = EIScriptNativeFunctionsUtil.getFunctionDeclaration(element.getProject(), element.getName());
+        EIFunctionsService service = EIFunctionsService.getInstance(element.getProject());
+        EIFunctionDeclaration declaration = service.getFunctionDeclaration(element.getName());
         return declaration != null ? declaration.getText() : "Unknown function";
     }
 
@@ -46,7 +47,8 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
             return getFunctionCallDoc((EIFunctionCall) element);
         }
         if (element instanceof EIFunctionDeclaration) {
-            return getFunctionDoc((EIFunctionDeclaration) element);
+            return getFunctionDoc(EIFunctionsService.getInstance(element.getProject()),
+                    (EIFunctionDeclaration) element);
         }
         if (element instanceof PsiMobEntityBase) {
             return ((PsiMobEntityBase) element).getDoc();
@@ -69,25 +71,27 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
     @NotNull
     private String getFunctionCallDoc(EIFunctionCall element) {
         String functionName = element.getName();
-        EIFunctionDeclaration declaration = EIScriptNativeFunctionsUtil.getFunctionDeclaration(element.getProject(), functionName);
-        return getFunctionDoc(declaration);
+        EIFunctionsService service = EIFunctionsService.getInstance(element.getProject());
+        EIFunctionDeclaration declaration = service.getFunctionDeclaration(functionName);
+        return getFunctionDoc(service, declaration);
     }
 
     @NotNull
-    private String getFunctionDoc(EIFunctionDeclaration declaration) {
-        String documentationText =
-                EIScriptNativeFunctionsUtil.getFunctionDoc(declaration.getProject(), declaration.getName());
+    private String getFunctionDoc(EIFunctionsService service, EIFunctionDeclaration declaration) {
         @NonNls String info = "";
-        if (documentationText != null) {
-            info += DocumentationFormatter.wrapDefinition(
-                    getCallableDefinitionDoc(
-                            true,
-                            declaration.getScriptIdentifier(),
-                            declaration.getFormalParameterList(),
-                            declaration.getDisplayableType()
-                    )
-            );
-            info += DocumentationFormatter.wrapContent(documentationText);
+        if (declaration != null) {
+            String documentationText = service.getFunctionDoc(declaration.getName());
+            if (documentationText != null) {
+                info += DocumentationFormatter.wrapDefinition(
+                        getCallableDefinitionDoc(
+                                true,
+                                declaration.getScriptIdentifier(),
+                                declaration.getFormalParameterList(),
+                                declaration.getDisplayableType()
+                        )
+                );
+                info += DocumentationFormatter.wrapContent(documentationText);
+            }
         }
         return info;
     }

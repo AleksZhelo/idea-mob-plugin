@@ -8,8 +8,8 @@ import com.intellij.codeInsight.lookup.LookupElement;
 public class EIFunctionParenthesesHandler extends ParenthesesInsertHandler<LookupElement> {
     private final EIFunctionDeclaration function;
 
-    public EIFunctionParenthesesHandler(final EIFunctionDeclaration method) {
-        function = method;
+    public EIFunctionParenthesesHandler(final EIFunctionDeclaration functionDeclaration) {
+        function = functionDeclaration;
     }
 
     @Override

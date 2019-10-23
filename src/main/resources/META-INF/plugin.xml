@@ -55,6 +55,8 @@
                                implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.CompletionConfidenceOverride" />
         <codeInsight.parameterInfo language="EIScriptLanguage"
                                    implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIFunctionParameterInfoHandler"/>
+        <projectService
+                serviceImplementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService"/>
     </extensions>
 
     <application-components>

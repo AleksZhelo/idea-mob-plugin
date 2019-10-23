@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.intellij.codeInsight.lookup.LookupElement;
