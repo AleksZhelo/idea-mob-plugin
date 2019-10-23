@@ -8,16 +8,21 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementImpl implements EIScriptNamedElementMixin {
+
     public EIScriptNamedElementMixinImpl(@NotNull ASTNode node) {
         super(node);
+    }
+
+    private ASTNode getNameNode() {
+        return getNode().findChildByType(ScriptTypes.IDENTIFIER);
     }
 
     @NotNull
     @Override
     public String getName() {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
-            return keyNode.getText();
+        ASTNode nameNode = getNameNode();
+        if (nameNode != null) {
+            return nameNode.getText();
         } else {
             return "";
         }
@@ -25,20 +30,20 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
 
     @Override
     public PsiElement setName(@NotNull String newName) {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
+        ASTNode nameNode = getNameNode();
+        if (nameNode != null) {
             PsiElement identifier = EIScriptElementFactory.createIdentifierFromText(getProject(), newName);
-            ASTNode newKeyNode = identifier.getNode();
-            getNode().replaceChild(keyNode, newKeyNode);
+            ASTNode newNameNode = identifier.getNode();
+            getNode().replaceChild(nameNode, newNameNode);
         }
         return this;
     }
 
     @Override
     public PsiElement getNameIdentifier() {
-        ASTNode keyNode = getNode().findChildByType(ScriptTypes.IDENTIFIER);
-        if (keyNode != null) {
-            return keyNode.getPsi();
+        ASTNode nameNode = getNameNode();
+        if (nameNode != null) {
+            return nameNode.getPsi();
         } else {
             return null;
         }
@@ -47,11 +52,13 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
     @NotNull
     @Override
     public PsiElement getNavigationElement() {
-        return getNameIdentifier() != null ? getNameIdentifier() : this;
+        PsiElement nameIdentifier = getNameIdentifier();
+        return nameIdentifier != null ? nameIdentifier : this;
     }
 
     @Override
     public int getTextOffset() {
-        return getNameIdentifier() != null ? getNameIdentifier().getTextOffset() : super.getTextOffset();
+        PsiElement nameIdentifier = getNameIdentifier();
+        return nameIdentifier != null ? nameIdentifier.getTextOffset() : super.getTextOffset();
     }
 }
