@@ -1,9 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
@@ -13,6 +12,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO: ResolveCache.getInstance(getProject()).resolveWithCaching()?
-public class VariableReference extends PsiReferenceBase<PsiElement> {
+public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
     private final String name;
 
-    public VariableReference(@NotNull PsiElement element, TextRange textRange) {
+    public VariableReference(@NotNull EIVariableAccess element, TextRange textRange) {
         super(element, textRange);
         name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
     }
@@ -48,9 +48,16 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
     @NotNull
     @Override
     public Object[] getVariants() {
-        EITypeToken expectedType = EIScriptTypingUtil.getExpectedType(this);
-        List<LookupElement> variants = getGlobalVarVariants(myElement, expectedType);
-        List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(myElement);
+        ScriptPsiFile scriptFile = (ScriptPsiFile) myElement.getContainingFile();
+        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(myElement);
+        List<LookupElement> variants = new ArrayList<>();
+
+        List<LookupElement> globalVars = scriptFile.getGlobalVarLookupElements().get(expectedType);
+        if (globalVars != null) {
+            variants.addAll(globalVars);
+        }
+
+        List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(scriptFile, myElement);
         // TODO: extract?
         if (params != null) {
             for (final EIFormalParameter param : params) {
@@ -64,17 +71,18 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
             }
         }
 
-        return variants.toArray();
-    }
-
-    @NotNull
-    private List<LookupElement> getGlobalVarVariants(PsiElement myElement, EITypeToken expectedType) {
-        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
-        List<LookupElement> variants = new ArrayList<>();
-        if (expectedType != null) {
-            variants.addAll(file.getGlobalVarLookupElements().get(expectedType));
+        PsiElement parent = myElement.getParent();
+        // not directly in assignment, i.e. not on the left side of assignment, and not the first var in a For
+        if (!(parent instanceof EIAssignment) &&
+                !(parent instanceof EIForBlock && ((((EIForBlock) parent).getVariableAccessList().indexOf(myElement) == 0)))) {
+            EIFunctionsService service = EIFunctionsService.getInstance(scriptFile.getProject());
+            List<LookupElement> acceptableFunctions = service.getFunctionLookupElements(expectedType);
+            if (acceptableFunctions != null) {
+                variants.addAll(acceptableFunctions);
+            }
         }
-        return variants;
+
+        return variants.toArray();
     }
 
     private static class MyResolver implements ResolveCache.AbstractResolver<VariableReference, PsiElement> {
@@ -84,12 +92,15 @@ public class VariableReference extends PsiReferenceBase<PsiElement> {
         public PsiElement resolve(@NotNull VariableReference variableReference, boolean incompleteCode) {
             String name = variableReference.name;
             PsiElement myElement = variableReference.myElement;
+            ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
 
-            EIFormalParameter param = EIScriptResolveUtil.matchByName(name, EIScriptResolveUtil.findEnclosingScriptParams(myElement));
+            EIFormalParameter param = EIScriptResolveUtil.matchByName(
+                    name,
+                    EIScriptResolveUtil.findEnclosingScriptParams(file, myElement)
+            );
             if (param != null) {
                 return param;
             } else {
-                ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
                 return file.findGlobalVar(name);
             }
         }

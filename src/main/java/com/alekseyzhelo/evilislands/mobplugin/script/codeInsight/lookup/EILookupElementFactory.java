@@ -48,74 +48,36 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(EIScriptDeclaration scriptDeclaration) {
-        return LookupElementBuilder.create(scriptDeclaration)
-                .withIcon(Icons.SCRIPT_IMPL)
-                .withTypeText(EIScriptNamingUtil.SCRIPT)
-                .withCaseSensitivity(false);
+        // TODO: remove old-style element code?
+//        return LookupElementBuilder.create(scriptDeclaration)
+//                .withIcon(Icons.SCRIPT_IMPL)
+//                .withTypeText(EIScriptNamingUtil.SCRIPT)
+//                .withCaseSensitivity(false);
+
+        return new EICallableLookupElement(
+                scriptDeclaration.getName(),
+                scriptDeclaration.getFormalParameterList(),
+                EITypeToken.VOID,
+                true
+        );
     }
 
-//    @NotNull
-//    public static LookupElement create(EIFunctionDeclaration function) {
+    @NotNull
+    public static EICallableLookupElement create(EIFunctionDeclaration function) {
+        // TODO: remove old-style element code?
 //        return LookupElementBuilder.create(function)
 //                .withCaseSensitivity(false)
 //                .withRenderer(new EICallLookupElementRenderer<>())
 //                .withInsertHandler(new EIFunctionParenthesesHandler(function));
-//    }
 
-    @NotNull
-    // TODO: replace with inline template as in Mathematica's BuiltinSymbolLookupElement.java?
-    public static EIFunctionLookupElement create(EIFunctionDeclaration function) {
-        List<EIFormalParameter> params = function.getFormalParameterList();
-        String argumentStr = params.size() > 0
-                ? params.stream()
-                .reduce("", (u, x) -> u + "$" + x.getName().toUpperCase(Locale.ENGLISH) + "$" + ", ", String::concat)
-                : "";
-//        String argumentStr = params.size() > 0
-//                ? params.stream()
-//                .reduce("", (u, x) -> u + String.format("$__Variable%d$", params.indexOf(x)) + ", ", String::concat)
-//                : "";
-        if (argumentStr.length() > 0) {
-            argumentStr = argumentStr.substring(0, argumentStr.length() - 2);
-        }
-
-        String templateText = function.getName() + "(" + argumentStr + ")";
-
-        TemplateImpl template = new TemplateImpl(function.getName(), "");
-        template.setString(templateText);
-        template.setDescription(function.getName());
-        for (EIFormalParameter parameter : params) {
-            template.addVariable(parameter.getName().toUpperCase(Locale.ENGLISH), new Expression() {
-                @Nullable
-                @Override
-                public Result calculateResult(ExpressionContext context) {
-                    return new TextResult(parameter.getName());
-                }
-
-                @Nullable
-                @Override
-                public Result calculateQuickResult(ExpressionContext context) {
-                    return new TextResult(parameter.getName());
-                }
-
-                @Nullable
-                @Override
-                public LookupElement[] calculateLookupItems(ExpressionContext context) {
-                    return null;
-                    // TODO: the below is likely not necessary, standard lookup rules should apply
-//                    ScriptPsiFile file = (ScriptPsiFile) context.getPsiElementAtStartOffset().getContainingFile();
-//                    return file.findGlobalVars().stream()
-//                            .filter((x) -> x.getType().getTypeToken() == parameter.getType().getTypeToken())
-//                            .map(EILookupElementFactory::create)
-//                            .toArray(LookupElement[]::new);
-                }
-            }, true);
-        }
-//        AutoPopupController.getInstance(function.getProject()).autoPopupParameterInfo();
         EIType type = function.getType();
         EITypeToken typeToken = type != null ? type.getTypeToken() : EITypeToken.VOID;
-        EIFunctionLookupElement element = new EIFunctionLookupElement(typeToken, template, false);
-//        return LookupElementDecorator.withRenderer(element, new EICallLookupElementRenderer());
-        return element;
+        return new EICallableLookupElement(
+                function.getName(),
+                function.getFormalParameterList(),
+                typeToken,
+                false
+        );
     }
 
     @NotNull

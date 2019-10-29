@@ -69,6 +69,7 @@ private scriptThenBody ::= scriptExpression*
 // TODO: how to do references here?
 scriptExpression ::= assignment | functionCall | forBlock {methods=[getType toString]}
 
+// TODO: Sum and ForIf?
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
 
 private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN

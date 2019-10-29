@@ -8,6 +8,7 @@ import com.intellij.codeInsight.lookup.LookupElementRenderer;
 /**
  * Created by Aleks on 02-08-2015.
  */
+// TODO: remove unused?
 public class EICallLookupElementRenderer<T extends LookupElement> extends LookupElementRenderer<T> {
     @Override
     public void renderElement(T element, LookupElementPresentation presentation) {

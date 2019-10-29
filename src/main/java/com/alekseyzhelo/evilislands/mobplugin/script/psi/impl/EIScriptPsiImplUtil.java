@@ -9,6 +9,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -35,6 +36,7 @@ public class EIScriptPsiImplUtil {
     @NotNull
     public static PsiReference getReference(EIScriptImplementation impl) {
         PsiElement ident = impl.getNameIdentifier();
+        // TODO: shouldn't be a FunctionCallReference here, but a ScriptDeclarationReference or something like that
         return new FunctionCallReference(impl, ident != null ? ident.getTextRange().shiftLeft(impl.getTextRange().getStartOffset()) :
                 TextRange.create(0, 0), true);
     }

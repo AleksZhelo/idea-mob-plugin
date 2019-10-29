@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EIFunctionLookupElement;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EICallableLookupElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
@@ -12,6 +12,7 @@ import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,8 +32,8 @@ public class EIFunctionsService {
     private final List<LookupElement> functionLookupElements;
     private final Map<EITypeToken, List<LookupElement>> typeToLookupElements;
 
-    private List<EIFunctionLookupElement> initFunctionLookup() {
-        List<EIFunctionLookupElement> lookupElements = new ArrayList<>(allFunctions.length);
+    private List<EICallableLookupElement> initFunctionLookup() {
+        List<EICallableLookupElement> lookupElements = new ArrayList<>(allFunctions.length);
         for (EIFunctionDeclaration function : allFunctions) {
             lookupElements.add(EILookupElementFactory.create(function));
         }
@@ -94,7 +95,7 @@ public class EIFunctionsService {
         functionNameToDoc = Collections.unmodifiableMap(functionNameToDocInit);
         typeToFunctions = Collections.unmodifiableMap(typeToFunctionsInit);
 
-        List<EIFunctionLookupElement> functionLookupElementsInit = initFunctionLookup();
+        List<EICallableLookupElement> functionLookupElementsInit = initFunctionLookup();
         Map<EITypeToken, List<LookupElement>> typeToLookupElementsInit = new EnumMap<>(EITypeToken.class);
         for (EITypeToken type : EITypeToken.values()) {
             typeToLookupElementsInit.put(type,
@@ -137,8 +138,8 @@ public class EIFunctionsService {
         return functionLookupElements;
     }
 
-    @NotNull
-    public List<LookupElement> getFunctionLookupElements(EITypeToken type) {
+    @Contract("null -> null")
+    public List<LookupElement> getFunctionLookupElements(@Nullable EITypeToken type) {
         return typeToLookupElements.get(type);
     }
 }

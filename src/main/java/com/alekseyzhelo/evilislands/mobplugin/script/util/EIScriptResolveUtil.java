@@ -39,13 +39,12 @@ import java.util.List;
 public class EIScriptResolveUtil {
 
     @Nullable
-    public static List<EIFormalParameter> findEnclosingScriptParams(PsiElement myElement) {
+    public static List<EIFormalParameter> findEnclosingScriptParams(ScriptPsiFile scriptFile, PsiElement myElement) {
         EIScriptImplementation script = UsefulPsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class);
-        if (script == null || script.getName() == null) {
+        if (script == null || script.getName().isEmpty()) {
             return null;
         } else {
-            EIScriptDeclaration declaration =
-                    ((ScriptPsiFile) script.getContainingFile()).findScriptDeclaration(script.getName());
+            EIScriptDeclaration declaration = scriptFile.findScriptDeclaration(script.getName());
             return declaration != null ? declaration.getFormalParameterList() : null;
         }
     }

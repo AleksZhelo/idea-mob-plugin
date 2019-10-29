@@ -5,7 +5,14 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
 import com.intellij.psi.PsiElement;
 
+import java.util.List;
+
 public final class EIScriptTypingUtil {
+
+
+    private EIScriptTypingUtil() {
+
+    }
 
     public static EITypeToken getExpectedType(EIExpression expression) {
         if (expression.getParent() instanceof EIAssignment) {
@@ -26,25 +33,39 @@ public final class EIScriptTypingUtil {
         }
     }
 
-    public static EITypeToken getExpectedType(VariableReference reference) {
-        PsiElement parent = reference.getElement().getParent();
-        if (parent instanceof EIVariableAccess) {
-            return EIScriptTypingUtil.getVariableExpectedType((EIVariableAccess) parent);
-        } else if (parent instanceof EIAssignment) {
-            return EIScriptTypingUtil.getAssigneeExpectedType((EIAssignment) parent);
-        } else {
-            return null;
-        }
-    }
-
     public static EITypeToken getVariableExpectedType(EIVariableAccess variableAccess) {
-        if (variableAccess.getParent() instanceof EIForBlock) {
-            return EITypeToken.OBJECT;
-        } else { // variableAccess is in an EIExpression, which would only happen inside a call
-            EIParams params = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIParams.class);
-            EIExpression expression = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIExpression.class);
-            return getExpectedType(params, expression);
+        PsiElement parent = variableAccess.getParent();
+
+        if (parent instanceof EIForBlock) {
+            int myIndex = ((EIForBlock) parent).getVariableAccessList().indexOf(variableAccess);
+            if (myIndex == 0) {
+                return EITypeToken.OBJECT;
+            } else if (myIndex == 1) {
+                return EITypeToken.GROUP;
+            } else {
+                return null;
+            }
         }
+
+        if (parent instanceof EIExpression) { // either inside a call or on the right side of an assignment
+            PsiElement superParent = parent.getParent();
+            if (superParent instanceof EIAssignment) {
+                EIVariableAccess leftSide = ((EIAssignment) superParent).getVariableAccess();
+                return leftSide.getType();
+            } else {  // in a call
+                EIParams params = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIParams.class);
+                EIExpression expression = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIExpression.class);
+                return getExpectedType(params, expression);
+            }
+        }
+
+        if (parent instanceof EIAssignment) {  // variableAccess on the left side of an assignment
+            EIExpression expression = ((EIAssignment) parent).getExpression();
+            // if expression == null the assignment is incomplete, any type is OK
+            return expression != null ? expression.getType() : null;  // TODO: should be ANY instead of null
+        }
+
+        return null;  // shouldn't happen
     }
 
     public static EITypeToken getAssigneeExpectedType(EIAssignment assignment) {
@@ -64,36 +85,20 @@ public final class EIScriptTypingUtil {
             int index = params.getExpressionList().indexOf(expression);
             if (index >= 0) {
                 EIFunctionCall call = UsefulPsiTreeUtil.getParentOfType(params, EIFunctionCall.class);
-                if (call != null) {
-                    PsiElement resolved = call.getReference().resolve();
-                    if (resolved instanceof EIFunctionDeclaration) {
-                        try {
-                            return ((EIFunctionDeclaration) resolved).getFormalParameterList().get(index).getType().getTypeToken();
-                        } catch (IndexOutOfBoundsException e) { // TODO: better handling?
-                            return null;
-                        }
-                    } else if (resolved instanceof EIScriptDeclaration) {
-                        try {
-                            return ((EIScriptDeclaration) resolved).getFormalParameterList().get(index).getType().getTypeToken();
-                        } catch (IndexOutOfBoundsException e) { // TODO: better handling?
-                            return null;
-                        }
-                    } else {
-                        return null;
+                assert call != null;
+                PsiElement resolved = call.getReference().resolve();
+                if (resolved != null) {
+                    List<EIFormalParameter> formalParameters =
+                            resolved instanceof EIFunctionDeclaration
+                                    ? ((EIFunctionDeclaration) resolved).getFormalParameterList()
+                                    : ((EIScriptDeclaration) resolved).getFormalParameterList();
+                    if (index < formalParameters.size()) {
+                        EIType paramType = formalParameters.get(index).getType();
+                        return paramType != null ? paramType.getTypeToken() : null;
                     }
-                } else {
-                    return null;
                 }
-            } else {
-                return null;
             }
-        } else {
-            return null;
         }
+        return null;
     }
-
-    private EIScriptTypingUtil() {
-
-    }
-
 }

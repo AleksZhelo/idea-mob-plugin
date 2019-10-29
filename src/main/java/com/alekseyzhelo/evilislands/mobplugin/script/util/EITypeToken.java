@@ -9,6 +9,8 @@ public enum EITypeToken {
     STRING(EIScriptNamingUtil.STRING),
     OBJECT(EIScriptNamingUtil.OBJECT),
     GROUP(EIScriptNamingUtil.GROUP);
+    // TODO: add support for ANY?
+//    ANY("ANY");
 
     private final String typeString;
 
@@ -27,6 +29,7 @@ public enum EITypeToken {
             }
         }
 
+        // TODO: or return null?
         return VOID;
     }
 }

@@ -24,14 +24,14 @@ import java.util.Map;
 // TODO: insertHandler-s for script declarations, script implementations, function calls, script calls, etc
 public class EIScriptCompletionContributor extends CompletionContributor {
 
-    private final PsiElementPattern.Capture<PsiElement> hasErrorChild = PlatformPatterns.psiElement()
+    private static final PsiElementPattern.Capture<PsiElement> hasErrorChild = PlatformPatterns.psiElement()
             .withChild(PlatformPatterns.psiElement(PsiErrorElement.class))
             .withLanguage(EIScriptLanguage.INSTANCE);
-
 
     public EIScriptCompletionContributor() {
         // TODO: rework?
         // TODO: basically always triggers, as the error is produced by the IntellijIdeaRulezzz dummy identifier, fix!
+        //  so far changed the position to originalPosition (in the PSI tree without the dummy and the fake error)
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement()
@@ -71,12 +71,12 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                 if (errors != null && errors.length > 0) {
                                     element = errors[0];
                                 }
-                            } else {
-                                element = parameters.getPosition().getParent();
                             }
                         }
-                        String errorDescription = ((PsiErrorElement) element).getErrorDescription();
-                        fillSuggestedTokens(result, parent, errorDescription);
+                        if (element instanceof PsiErrorElement) {
+                            String errorDescription = ((PsiErrorElement) element).getErrorDescription();
+                            fillSuggestedTokens(result, parent, errorDescription);
+                        }
                     }
                 });
         // TODO: uncomment (or remove, depending on whether it's viable to keep GSVars and Areas
@@ -203,11 +203,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         super.fillCompletionVariants(parameters, result);
     }
 
-    @Override
-    public boolean invokeAutoPopup(@NotNull PsiElement position, char typeChar) {
-        return super.invokeAutoPopup(position, typeChar);
-    }
-
     private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String
             errorDescription) {
         if (errorDescription.contains("expected, got")) {
@@ -250,10 +245,11 @@ public class EIScriptCompletionContributor extends CompletionContributor {
     }
 
     private void suggestToken(CompletionResultSet result, String token) {
-        String prefix = "IntellijIdeaRulezzz".equals(result.getPrefixMatcher().getPrefix()) ? "" : result.getPrefixMatcher().getPrefix();
-        if (prefix.length() == 0 || result.getPrefixMatcher().prefixMatches(token)) {
-            result.addElement(LookupElementBuilder.create(token));
-        }
+        PrefixMatcher matcher = result.getPrefixMatcher();
+        LookupElement element = matcher.prefixMatches(token)
+                ? LookupElementBuilder.create(token)
+                : prefixedToken(matcher.getPrefix(), token, spaceForToken(token));
+        result.addElement(element);
     }
 
     private LookupElementBuilder prefixedToken(String prefix, String token, boolean withWhitespace) {
@@ -261,6 +257,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
     }
 
     private boolean spaceForToken(String suggestedToken) {
-        return !("COMMA".equals(suggestedToken) || "LPAREN".equals(suggestedToken) || "RPAREN".equals(suggestedToken));
+        return !(",".equals(suggestedToken) || "(".equals(suggestedToken) || ")".equals(suggestedToken));
     }
 }

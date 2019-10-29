@@ -43,7 +43,7 @@ QFinish( )
 QObjArea( idArea : float )
 QObjGetItem( id : float )
 AlarmTime( nAlarm : float ) : float
-QObjKillGroup( grp : string )
+QObjKillGroup( grp : group )
 QObjKillUnit( UnitName : string )
 QObjSeeObject( ObjectName : string )
 QObjSeeUnit( UnitName : string )

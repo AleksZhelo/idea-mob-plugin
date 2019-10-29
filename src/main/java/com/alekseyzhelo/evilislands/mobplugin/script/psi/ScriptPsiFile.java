@@ -63,6 +63,7 @@ public class ScriptPsiFile extends PsiFileBase {
     }
 
     @Nullable
+    // TODO: implement via Maps for faster access?
     public EIScriptDeclaration findScriptDeclaration(String scriptName) {
         return EIScriptResolveUtil.matchByName(scriptName, findScriptDeclarations());
     }

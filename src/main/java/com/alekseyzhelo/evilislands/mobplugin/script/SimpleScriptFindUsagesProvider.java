@@ -11,20 +11,18 @@ import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO proper
+// TODO improve
 public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
-    private static final DefaultWordsScanner WORDS_SCANNER =
-            new DefaultWordsScanner(
-                    new EILexer(),
-                    TokenSet.create(ScriptTypes.IDENTIFIER),
-                    TokenSet.create(ScriptTypes.COMMENT),
-                    TokenSet.create(ScriptTypes.CHARACTER_STRING, ScriptTypes.FLOATNUMBER)
-            );
 
     @Nullable
     @Override
     public WordsScanner getWordsScanner() {
-        return WORDS_SCANNER;
+        return new DefaultWordsScanner(
+                new EILexer(),
+                TokenSet.create(ScriptTypes.IDENTIFIER),
+                TokenSet.create(ScriptTypes.COMMENT),
+                TokenSet.create(ScriptTypes.CHARACTER_STRING, ScriptTypes.FLOATNUMBER)
+        );
     }
 
     @Override
