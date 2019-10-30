@@ -3,12 +3,10 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.intellij.codeInsight.AutoPopupController;
 import com.intellij.codeInsight.CodeInsightSettings;
-import com.intellij.codeInsight.TailType;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.util.ParenthesesInsertHandler;
 import com.intellij.codeInsight.lookup.Lookup;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -29,9 +27,6 @@ public final class EICompletionUtil {
         final char completionChar = context.getCompletionChar();
         final PsiFile file = context.getFile();
 
-        final TailType tailType = completionChar == '(' ? TailType.NONE :
-                completionChar == ':' ? TailType.COND_EXPR_COLON :
-                        LookupItem.handleCompletionChar(context.getEditor(), item, completionChar);
         final boolean smart = completionChar == Lookup.COMPLETE_STATEMENT_SELECT_CHAR;
 
         if (completionChar == '(' || completionChar == '.' || completionChar == ',' || completionChar == ';' || completionChar == ':' || completionChar == ' ') {
@@ -67,9 +62,7 @@ public final class EICompletionUtil {
             return;
         }
 
-        if (completionChar == '.') {
-            AutoPopupController.getInstance(file.getProject()).autoPopupMemberLookup(context.getEditor(), null);
-        } else if (completionChar == ',') {
+        if (completionChar == ',') {
             AutoPopupController.getInstance(file.getProject()).autoPopupParameterInfo(context.getEditor(), null);
         }
     }
