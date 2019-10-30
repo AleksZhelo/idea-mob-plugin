@@ -28,7 +28,7 @@
         <fileType name="eiscript" patterns="*.eiscript"
                   implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType"/>
         <lang.parserDefinition language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition"/>
-        <lang.syntaxHighlighterFactory key="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptColorSettingsPage"/>
         <lang.refactoringSupport language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptRefactoringSupportProvider"/>
         <lang.findUsagesProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.SimpleScriptFindUsagesProvider"/>

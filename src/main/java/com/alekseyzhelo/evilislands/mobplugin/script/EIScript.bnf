@@ -28,7 +28,7 @@ private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )
 private ignored ::= (WHOLE_LINE_COMMENT COMMENT) // just to generate the ScriptToken
 
 functionDeclaration ::= IDENTIFIER formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getDisplayableType]}
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration" methods=[getActualType getCallableParams getCallableType]}
 // utility end
 
 globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
@@ -48,7 +48,7 @@ globalVar ::= IDENTIFIER COLON type {pin=1 recoverWhile=globalVarRecover mixin="
 
 // TODO: do script params shadow global vars?
 scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[toString]}
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration" methods=[toString getCallableParams getCallableType]}
 
 scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
@@ -78,7 +78,7 @@ formalParameter ::= IDENTIFIER COLON type  {pin=1 mixin="com.alekseyzhelo.evilis
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"}
 
 // TODO: type checking!
-params ::=  <<comma_separated_list (expression)>>   // TODO: how to do references here?
+params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN  // TODO: how to do references here?
 
 // TODO: how to do references here?
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
@@ -86,7 +86,7 @@ expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {m
 variableAccess ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
 implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType toString]}
 
-functionCall ::= IDENTIFIER LPAREN params? RPAREN {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+functionCall ::= IDENTIFIER params {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType getNthArgument toString]}
 
 // TODO: handle no error on right part missing

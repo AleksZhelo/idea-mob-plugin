@@ -3,13 +3,13 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.ScriptImplReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -36,9 +36,8 @@ public class EIScriptPsiImplUtil {
     @NotNull
     public static PsiReference getReference(EIScriptImplementation impl) {
         PsiElement ident = impl.getNameIdentifier();
-        // TODO: shouldn't be a FunctionCallReference here, but a ScriptDeclarationReference or something like that
-        return new FunctionCallReference(impl, ident != null ? ident.getTextRange().shiftLeft(impl.getTextRange().getStartOffset()) :
-                TextRange.create(0, 0), true);
+        return new ScriptImplReference(impl, ident != null ? ident.getTextRange().shiftLeft(impl.getTextRange().getStartOffset()) :
+                TextRange.create(0, 0));
     }
 
     @NotNull
@@ -72,7 +71,7 @@ public class EIScriptPsiImplUtil {
     }
 
     @NotNull
-    public static EITypeToken getDisplayableType(EIFunctionDeclaration element) {
+    public static EITypeToken getActualType(EIFunctionDeclaration element) {
         if (element.getType() != null) {
             return element.getType().getTypeToken();
         } else {
@@ -80,11 +79,31 @@ public class EIScriptPsiImplUtil {
         }
     }
 
+    @NotNull
+    public static List<EIFormalParameter> getCallableParams(EIFunctionDeclaration declaration) {
+        return declaration.getFormalParameterList();
+    }
+
+    @NotNull
+    public static List<EIFormalParameter> getCallableParams(EIScriptDeclaration declaration) {
+        return declaration.getFormalParameterList();
+    }
+
+    @NotNull
+    public static EITypeToken getCallableType(EIFunctionDeclaration declaration) {
+        return declaration.getActualType();
+    }
+
+    @NotNull
+    public static EITypeToken getCallableType(EIScriptDeclaration declaration) {
+        return EITypeToken.VOID;
+    }
+
     @Nullable
     public static EITypeToken getType(EIFunctionCall element) {
         PsiElement resolved = element.getReference().resolve();
         if (resolved instanceof EIFunctionDeclaration) {
-            return ((EIFunctionDeclaration) resolved).getDisplayableType();
+            return ((EIFunctionDeclaration) resolved).getActualType();
         } else if (resolved instanceof EIScriptDeclaration) {
             return EITypeToken.VOID;
         } else {

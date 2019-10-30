@@ -87,7 +87,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
                                 true,
                                 declaration.getNameIdentifier(),
                                 declaration.getFormalParameterList(),
-                                declaration.getDisplayableType()
+                                declaration.getActualType()
                         )
                 );
                 info += DocumentationFormatter.wrapContent(documentationText);

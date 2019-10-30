@@ -5,19 +5,9 @@ import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
-import com.intellij.codeInsight.template.Expression;
-import com.intellij.codeInsight.template.ExpressionContext;
-import com.intellij.codeInsight.template.Result;
-import com.intellij.codeInsight.template.TextResult;
-import com.intellij.codeInsight.template.impl.TemplateImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.Locale;
 
 public final class EILookupElementFactory {
 
@@ -27,10 +17,11 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(EIFormalParameter param) {
+        EIType type = param.getType();
         return LookupElementBuilder.create(param)
                 // TODO: icon
                 .withIcon(Icons.FILE)
-                .withTypeText(param.getType().getText())
+                .withTypeText(type != null ? type.getText() : "unknown")
                 .withCaseSensitivity(false);
     }
 
@@ -48,36 +39,13 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(EIScriptDeclaration scriptDeclaration) {
-        // TODO: remove old-style element code?
-//        return LookupElementBuilder.create(scriptDeclaration)
-//                .withIcon(Icons.SCRIPT_IMPL)
-//                .withTypeText(EIScriptNamingUtil.SCRIPT)
-//                .withCaseSensitivity(false);
-
-        return new EICallableLookupElement(
-                scriptDeclaration.getName(),
-                scriptDeclaration.getFormalParameterList(),
-                EITypeToken.VOID,
-                true
-        );
+        return new EICallableLookupElement(scriptDeclaration, true);
     }
 
     @NotNull
-    public static EICallableLookupElement create(EIFunctionDeclaration function) {
-        // TODO: remove old-style element code?
-//        return LookupElementBuilder.create(function)
-//                .withCaseSensitivity(false)
-//                .withRenderer(new EICallLookupElementRenderer<>())
-//                .withInsertHandler(new EIFunctionParenthesesHandler(function));
-
-        EIType type = function.getType();
-        EITypeToken typeToken = type != null ? type.getTypeToken() : EITypeToken.VOID;
-        return new EICallableLookupElement(
-                function.getName(),
-                function.getFormalParameterList(),
-                typeToken,
-                false
-        );
+    public static LookupElement create(EIFunctionDeclaration function) {
+        return new EICallableLookupElement(function, false);
+//        return new EICallableTemplateLookupElement(function, false);
     }
 
     @NotNull

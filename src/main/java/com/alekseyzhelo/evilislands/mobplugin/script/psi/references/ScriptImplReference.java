@@ -1,14 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.TypedLookupItem;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
@@ -20,13 +15,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-// This is either a function or a script call
-public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
+public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation> {
 
     private final String name;
     private final ScriptPsiFile file;
 
-    public FunctionCallReference(@NotNull EIFunctionCall element, TextRange textRange) {
+    public ScriptImplReference(@NotNull EIScriptImplementation element, TextRange textRange) {
         super(element, textRange);
         name = element.getName();
         file = (ScriptPsiFile) element.getContainingFile();
@@ -34,10 +28,6 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        PsiElement element = resolve();
-        if (element instanceof EIFunctionDeclaration) {
-            throw new IncorrectOperationException();
-        }
         return EIScriptRenameUtil.renameElement(myElement, newElementName);
     }
 
@@ -54,25 +44,19 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
     @NotNull
     @Override
-    // TODO: typing here too?
     // TODO: cache as well?
     public Object[] getVariants() {
         List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
-
-        EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
-        variants.addAll(service.getFunctionLookupElements());
         return variants.toArray();
     }
 
-    private static class MyResolver implements ResolveCache.AbstractResolver<FunctionCallReference, PsiElement> {
+    private static class MyResolver implements ResolveCache.AbstractResolver<ScriptImplReference, PsiElement> {
         static final MyResolver INSTANCE = new MyResolver();
 
         @Override
         // TODO: what is the use of incompleteCode?
-        public PsiElement resolve(@NotNull FunctionCallReference ref, boolean incompleteCode) {
-            EIFunctionsService service = EIFunctionsService.getInstance(ref.file.getProject());
-            EIFunctionDeclaration function = service.getFunctionDeclaration(ref.name);
-            return function != null ? function : ref.file.findScriptDeclaration(ref.name);
+        public PsiElement resolve(@NotNull ScriptImplReference reference, boolean incompleteCode) {
+            return reference.file.findScriptDeclaration(reference.name);
         }
     }
 }

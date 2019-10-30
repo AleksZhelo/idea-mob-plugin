@@ -5,6 +5,7 @@ import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.util.ParenthesesInsertHandler;
 import com.intellij.codeInsight.lookup.LookupElement;
 
+// TODO: remove unused?
 public class EIFunctionParenthesesHandler extends ParenthesesInsertHandler<LookupElement> {
     private final EIFunctionDeclaration function;
 

@@ -1,13 +1,14 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EICallableLookupElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EITypedLookupItem;
 import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInsight.lookup.LookupItem;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
@@ -32,8 +33,8 @@ public class EIFunctionsService {
     private final List<LookupElement> functionLookupElements;
     private final Map<EITypeToken, List<LookupElement>> typeToLookupElements;
 
-    private List<EICallableLookupElement> initFunctionLookup() {
-        List<EICallableLookupElement> lookupElements = new ArrayList<>(allFunctions.length);
+    private List<LookupElement> initFunctionLookup() {
+        List<LookupElement> lookupElements = new ArrayList<>(allFunctions.length);
         for (EIFunctionDeclaration function : allFunctions) {
             lookupElements.add(EILookupElementFactory.create(function));
         }
@@ -95,13 +96,13 @@ public class EIFunctionsService {
         functionNameToDoc = Collections.unmodifiableMap(functionNameToDocInit);
         typeToFunctions = Collections.unmodifiableMap(typeToFunctionsInit);
 
-        List<EICallableLookupElement> functionLookupElementsInit = initFunctionLookup();
+        List<LookupElement> functionLookupElementsInit = initFunctionLookup();
         Map<EITypeToken, List<LookupElement>> typeToLookupElementsInit = new EnumMap<>(EITypeToken.class);
         for (EITypeToken type : EITypeToken.values()) {
             typeToLookupElementsInit.put(type,
                     Collections.unmodifiableList(
                             functionLookupElementsInit.stream()
-                                    .filter((x) -> x.getType() == type)
+                                    .filter((x) -> x.as(EITypedLookupItem.class).getType() == type)
                                     .collect(Collectors.toList()))
             );
         }
