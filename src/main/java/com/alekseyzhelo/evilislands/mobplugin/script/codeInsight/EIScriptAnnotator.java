@@ -29,6 +29,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     private static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
     private static final String SCRIPT_NOT_DECLARED_ERROR = "Script '%s' not declared";
     private static final String SCRIPT_NOT_IMPLEMENTED_WARNING = "Declared script '%s' not implemented";
+
     private static final String GS_VAR_ONLY_READ_WARNING = "Variable never written to";
     private static final String GS_VAR_ONLY_WRITTEN_WARNING = "Variable only written to, never read";
     private static final String GS_VAR_ONLY_READ_AND_ONCE_WARNING = GS_VAR_ONLY_READ_WARNING + ", read only once";

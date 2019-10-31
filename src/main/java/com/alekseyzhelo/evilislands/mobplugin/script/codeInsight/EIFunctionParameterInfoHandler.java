@@ -73,6 +73,10 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
     public void updateUI(List<EIFormalParameter> parameters, @NotNull ParameterInfoUIContext context) {
         // seems like "parameterIndex" here should refer to the function overload variant index,
         // but I will (mis)use it as the following
+        if (parameters.isEmpty()) {
+            return;
+        }
+
         int paramIndex = context.getCurrentParameterIndex();
 
         if (context.isSingleParameterInfo()) {

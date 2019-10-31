@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.formatting.codeStyle;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeStyle;
 
 import com.alekseyzhelo.evilislands.mobplugin.IOUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
