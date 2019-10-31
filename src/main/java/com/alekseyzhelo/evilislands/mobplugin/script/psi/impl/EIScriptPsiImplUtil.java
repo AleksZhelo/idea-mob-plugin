@@ -12,6 +12,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +21,11 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
+
+    public static final TokenSet COULD_HAVE_MOB_OBJECT_REF = TokenSet.create(
+            ScriptTypes.FLOATNUMBER,
+            ScriptTypes.CHARACTER_STRING
+    );
 
 //    @NotNull
 //    public static PsiReference getReference(EIAssignment assignment) {
@@ -50,24 +56,21 @@ public class EIScriptPsiImplUtil {
     public static PsiReference getReference(EIExpression expression) {
         ASTNode firstChild = expression.getNode().getFirstChildNode();
         final IElementType elementType = firstChild.getElementType();
-        if (elementType == ScriptTypes.FLOATNUMBER) {
+
+        if (COULD_HAVE_MOB_OBJECT_REF.contains(elementType)) {
+            boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
+            final String functionName = isFloat ? "getobject" : "getobjectbyid";
+
             EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
-            if (parentCall != null && parentCall.getName().equalsIgnoreCase("getobject")) {
-                return new MobObjectReference(expression, new TextRange(0, firstChild.getTextLength()));
-            } else {
-                return null;
+            if (parentCall != null && parentCall.getName().equalsIgnoreCase(functionName)) {
+                TextRange range = isFloat
+                        ? new TextRange(0, firstChild.getTextLength())
+                        : new TextRange(1, firstChild.getTextLength() - 1);
+                return new MobObjectReference(expression, range);
             }
-        } else if (elementType == ScriptTypes.CHARACTER_STRING) {
-            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
-            // TODO: extract magic string?
-            if (parentCall != null && parentCall.getName().equalsIgnoreCase("getobjectbyid")) {
-                return new MobObjectReference(expression, new TextRange(1, firstChild.getTextLength() - 1));
-            } else {
-                return null;
-            }
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     @NotNull
