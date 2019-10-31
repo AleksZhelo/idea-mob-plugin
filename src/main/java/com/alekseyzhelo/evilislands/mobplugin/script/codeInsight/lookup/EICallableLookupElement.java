@@ -8,7 +8,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIParams;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInsight.AutoPopupController;
 import com.intellij.codeInsight.CodeInsightSettings;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.completion.OffsetKey;
@@ -19,19 +18,13 @@ import com.intellij.codeInsight.lookup.Lookup;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.codeInsight.lookup.LookupItem;
-import com.intellij.codeInsight.template.*;
-import com.intellij.codeInsight.template.impl.*;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.event.DocumentEvent;
-import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiDocumentManager;
@@ -39,10 +32,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 // see JavaMethodCallElement
 // TODO: why no param name boxes?  | seems like too much effort to figure them out, tbh

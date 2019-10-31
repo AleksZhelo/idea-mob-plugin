@@ -134,7 +134,7 @@ public class ScriptPsiFile extends PsiFileBase {
                     declarations == null
                             ? Collections.emptyList()
                             : PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class),
-                    declarations
+                    declarations != null ? declarations : ScriptPsiFile.this
             );
         }
     }

@@ -6,7 +6,10 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInspection.*;
+import com.intellij.codeInspection.InspectionManager;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.ProblemDescriptor;
+import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
@@ -18,14 +21,14 @@ import org.jetbrains.annotations.NotNull;
 // TODO finish, proper
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
-    private static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function";
-    private static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script";
-    private static final String UNDEFINED_VARIABLE_ERROR = "Cannot resolve variable";
-    private static final String WRONG_OBJECT_ID_ERROR = "Object with given ID does not exist";
+    private static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function '%s'";
+    private static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script '%s'";
+    private static final String UNDEFINED_VARIABLE_ERROR = "Cannot resolve variable '%s'";
+    private static final String WRONG_OBJECT_ID_ERROR = "Object with ID '%s' does not exist";
     private static final String SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR = "Script call not allowed here";
     private static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
-    private static final String SCRIPT_NOT_DECLARED_ERROR = "Script not declared";
-    private static final String SCRIPT_NOT_IMPLEMENTED_WARNING = "Declared script not implemented";
+    private static final String SCRIPT_NOT_DECLARED_ERROR = "Script '%s' not declared";
+    private static final String SCRIPT_NOT_IMPLEMENTED_WARNING = "Declared script '%s' not implemented";
     private static final String GS_VAR_ONLY_READ_WARNING = "Variable never written to";
     private static final String GS_VAR_ONLY_WRITTEN_WARNING = "Variable only written to, never read";
     private static final String GS_VAR_ONLY_READ_AND_ONCE_WARNING = GS_VAR_ONLY_READ_WARNING + ", read only once";
@@ -58,7 +61,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (psiFile.findScriptImplementation(scriptDeclaration.getName()) == null) {
             PsiElement ident = scriptDeclaration.getNameIdentifier();
             if (ident != null) {
-                Annotation annotation = markAsWarning(myHolder, ident, SCRIPT_NOT_IMPLEMENTED_WARNING);
+                Annotation annotation = markAsWarning(myHolder, ident,
+                        String.format(SCRIPT_NOT_IMPLEMENTED_WARNING, scriptDeclaration.getName()));
                 LocalQuickFix fix = new ImplementScriptQuickFix();
                 InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
@@ -76,7 +80,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (reference.resolve() == null) {
             PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
-                markAsError(myHolder, ident, SCRIPT_NOT_DECLARED_ERROR);
+                markAsError(myHolder, ident, String.format(SCRIPT_NOT_DECLARED_ERROR, scriptImplementation.getName()));
             }
         }
     }
@@ -160,7 +164,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         if (access.getReference().resolve() == null) {
             markAsError(myHolder, access.getNameIdentifier(),
-                    UNDEFINED_VARIABLE_ERROR + " " + singleQuote(access.getName()));
+                    String.format(UNDEFINED_VARIABLE_ERROR, access.getName()));
         }
     }
 
@@ -170,13 +174,13 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = expression.getReference();
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
-            markAsError(myHolder, expression, WRONG_OBJECT_ID_ERROR);
+            markAsError(myHolder, expression, String.format(WRONG_OBJECT_ID_ERROR, reference.getCanonicalText()));
         }
     }
 
     private void handleFunctionCallInIfBlock(@NotNull AnnotationHolder holder, PsiElement nameElement, EIFunctionDeclaration function) {
         if (function == null) {
-            markAsError(holder, nameElement, UNRESOLVED_FUNCTION_ERROR);
+            markAsError(holder, nameElement, String.format(UNRESOLVED_FUNCTION_ERROR, nameElement.getText()));
         } else {
             if (function.getType() == null || function.getType().getTypeToken() != EITypeToken.FLOAT) {
                 markAsError(holder, nameElement, NOT_ALLOWED_IN_SCRIPT_IF_ERROR);
@@ -186,7 +190,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, PsiElement call) {
         if (call == null) {
-            markAsError(holder, nameElement, UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR);
+            markAsError(holder, nameElement, String.format(UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR, nameElement.getText()));
         }
     }
 
@@ -202,9 +206,5 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
         holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
-    }
-
-    private String singleQuote(String str) {
-        return "'" + str + "'";
     }
 }

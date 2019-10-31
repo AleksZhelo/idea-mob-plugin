@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
 import com.intellij.psi.PsiElement;
 
 import java.util.List;

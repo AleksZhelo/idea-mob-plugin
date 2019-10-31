@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.util.*;
+import com.intellij.psi.util.PsiTreeUtil;
 
 public class EIScriptElementFactory {
 

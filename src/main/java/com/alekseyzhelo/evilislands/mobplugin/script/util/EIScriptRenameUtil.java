@@ -5,7 +5,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiTreeUtil;
 
 public final class EIScriptRenameUtil {
 
