@@ -1,11 +1,13 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.DeclareScriptQuickFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.ImplementScriptQuickFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -14,6 +16,7 @@ import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
@@ -64,11 +67,14 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             if (ident != null) {
                 Annotation annotation = markAsWarning(myHolder, ident,
                         String.format(SCRIPT_NOT_IMPLEMENTED_WARNING, scriptDeclaration.getName()));
+
                 LocalQuickFix fix = new ImplementScriptQuickFix();
                 InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
                         ProblemHighlightType.WARNING, true);
-                annotation.registerFix(fix, null, null, descriptor);
+                TextRange range = scriptDeclaration.getTextRange();
+                annotation.registerFix(fix, range, null, descriptor);
+                annotation.registerFix(new DeleteElementFix(scriptDeclaration, "Remove element"), range);
             }
         }
     }
@@ -81,7 +87,20 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (reference.resolve() == null) {
             PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
-                markAsError(myHolder, ident, String.format(SCRIPT_NOT_DECLARED_ERROR, scriptImplementation.getName()));
+                Annotation annotation = markAsError(myHolder, ident,
+                        String.format(SCRIPT_NOT_DECLARED_ERROR, scriptImplementation.getName()));
+
+                // TODO: move to local quick fix provider in reference?
+                InspectionManager inspectionManager = InspectionManager.getInstance(scriptImplementation.getProject());
+                LocalQuickFix fix = new DeclareScriptQuickFix(scriptImplementation);
+                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
+                        ProblemHighlightType.ERROR, true);
+                TextRange range = new TextRange(
+                        scriptImplementation.getTextRange().getStartOffset(),
+                        ident.getTextRange().getEndOffset()
+                );
+                annotation.registerFix(fix, range, null, descriptor);
+                annotation.registerFix(new DeleteElementFix(scriptImplementation, "Remove element"), range);
             }
         }
     }
@@ -195,8 +214,10 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         }
     }
 
-    private void markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
-        holder.createErrorAnnotation(nameElement.getTextRange(), errorString).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+    private Annotation markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
+        Annotation annotation = holder.createErrorAnnotation(nameElement.getTextRange(), errorString);
+        annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+        return annotation;
     }
 
     private Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {

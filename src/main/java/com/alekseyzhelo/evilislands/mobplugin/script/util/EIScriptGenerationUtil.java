@@ -14,6 +14,10 @@ final class EIScriptGenerationUtil {
         return "Script " + trimDummy(name) + "(if () then ())" + "WorldScript()";
     }
 
+    static String scriptDeclarationText(String name) {
+        return "DeclareScript " + trimDummy(name) + " (this : object)";
+    }
+
     private static String trimDummy(String text) {
         if (text.endsWith(CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED)) {
             text = text.substring(0, text.length() - CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED.length());
@@ -24,5 +28,4 @@ final class EIScriptGenerationUtil {
     private EIScriptGenerationUtil() {
 
     }
-
 }

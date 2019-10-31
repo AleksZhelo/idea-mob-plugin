@@ -1,9 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
@@ -23,10 +21,35 @@ public class EIScriptElementFactory {
         return PsiTreeUtil.findChildOfType(file.getFirstChild(), EIGlobalVar.class);
     }
 
-    public static EIScriptImplementation createScriptImplementation(Project project, String name) {
+    private static EIScripts createScripts(Project project, String name, boolean reformat) {
         final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.scriptImplementationText(name));
-        EIScriptImplementation scriptImpl = PsiTreeUtil.findChildOfType(file.getFirstChild(), EIScriptImplementation.class);
+        EIScripts scripts = (EIScripts) file.getFirstChild();
+        return reformat ? (EIScripts) CodeStyleManager.getInstance(project).reformat(scripts) : scripts;
+    }
+
+    public static EIScripts createScripts(Project project, String name) {
+        return createScripts(project, name, true);
+    }
+
+    public static EIScriptImplementation createScriptImplementation(Project project, String name) {
+        EIScripts scripts = createScripts(project, name, false);
+        EIScriptImplementation scriptImpl = scripts.getScriptImplementationList().get(0);
         return (EIScriptImplementation) CodeStyleManager.getInstance(project).reformat(scriptImpl);
+    }
+
+    private static EIDeclarations createDeclarations(Project project, String name, boolean reformat) {
+        final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.scriptDeclarationText(name));
+        EIDeclarations declarations = (EIDeclarations) file.getFirstChild();
+        return reformat ? (EIDeclarations) CodeStyleManager.getInstance(project).reformat(declarations) : declarations;
+    }
+
+    public static EIDeclarations createDeclarations(Project project, String name) {
+        return createDeclarations(project, name, true);
+    }
+
+    public static EIScriptDeclaration createScriptDeclaration(Project project, String name) {
+        EIScriptDeclaration declaration = createDeclarations(project, name, false).getScriptDeclarationList().get(0);
+        return (EIScriptDeclaration) CodeStyleManager.getInstance(project).reformat(declaration);
     }
 
     public static ScriptPsiFile createDummyScriptFile(Project project, String text) {
