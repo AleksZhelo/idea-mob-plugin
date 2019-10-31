@@ -1,11 +1,13 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.ImplementScriptQuickFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInspection.ProblemHighlightType;
+import com.intellij.codeInspection.*;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
@@ -18,7 +20,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function";
     private static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script";
-    private static final String UNDEFINED_VARIABLE_ERROR = "Undefined variable";
+    private static final String UNDEFINED_VARIABLE_ERROR = "Cannot resolve variable";
     private static final String WRONG_OBJECT_ID_ERROR = "Object with given ID does not exist";
     private static final String SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR = "Script call not allowed here";
     private static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
@@ -40,8 +42,11 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
         if (element instanceof EIScriptPsiElement) {
             myHolder = holder;
-            element.accept(this);
-            myHolder = null;
+            try {
+                element.accept(this);
+            } finally {
+                myHolder = null;
+            }
         }
     }
 
@@ -53,7 +58,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (psiFile.findScriptImplementation(scriptDeclaration.getName()) == null) {
             PsiElement ident = scriptDeclaration.getNameIdentifier();
             if (ident != null) {
-                markAsWarning(myHolder, ident, SCRIPT_NOT_IMPLEMENTED_WARNING);
+                Annotation annotation = markAsWarning(myHolder, ident, SCRIPT_NOT_IMPLEMENTED_WARNING);
+                LocalQuickFix fix = new ImplementScriptQuickFix();
+                InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
+                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
+                        ProblemHighlightType.WARNING, true);
+                annotation.registerFix(fix, null, null, descriptor);
             }
         }
     }
@@ -149,7 +159,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitVariableAccess(access);
 
         if (access.getReference().resolve() == null) {
-            markAsError(myHolder, access.getNameIdentifier(), UNDEFINED_VARIABLE_ERROR);
+            markAsError(myHolder, access.getNameIdentifier(),
+                    UNDEFINED_VARIABLE_ERROR + " " + singleQuote(access.getName()));
         }
     }
 
@@ -183,11 +194,17 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         holder.createErrorAnnotation(nameElement.getTextRange(), errorString).setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
     }
 
-    private void markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
-        holder.createWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WARNING);
+    private Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
+        Annotation annotation = holder.createWarningAnnotation(nameElement.getTextRange(), warningString);
+        annotation.setHighlightType(ProblemHighlightType.WARNING);
+        return annotation;
     }
 
     private void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
         holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
+    }
+
+    private String singleQuote(String str) {
+        return "'" + str + "'";
     }
 }

@@ -23,6 +23,10 @@ final class EISpacingBuilderProvider {
         return new SpacingBuilder(settings, EIScriptLanguage.INSTANCE)
                 .around(other).spaces(1)
                 .after(ScriptTypes.COMMA).spaces(1)
+                .beforeInside(ScriptTypes.LPAREN, TokenSet.create(ScriptTypes.SCRIPT_DECLARATION)).spaces(1)
+                .before(ScriptTypes.DECLARATIONS).blankLines(1)
+                .before(ScriptTypes.SCRIPT_IMPLEMENTATION).blankLines(1)
+                .before(ScriptTypes.WORLD_SCRIPT).blankLines(1)
                 ;
     }
 }

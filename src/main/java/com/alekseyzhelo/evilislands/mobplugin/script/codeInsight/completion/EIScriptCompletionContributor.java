@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
@@ -28,6 +28,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
             .withChild(PlatformPatterns.psiElement(PsiErrorElement.class))
             .withLanguage(EIScriptLanguage.INSTANCE);
 
+    // TODO: DUMMY_IDENTIFIER_TRIMMED?
     public EIScriptCompletionContributor() {
         // TODO: rework?
         // TODO: basically always triggers, as the error is produced by the IntellijIdeaRulezzz dummy identifier, fix!

@@ -36,7 +36,7 @@
         <annotator language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptHighlightingAnnotator"/>
         <annotator language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptAnnotator"/>
         <lang.documentationProvider language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptDocumentationProvider"/>
-        <completion.contributor language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIScriptCompletionContributor"/>
+        <completion.contributor language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion.EIScriptCompletionContributor"/>
         <lang.psiStructureViewFactory language="EIScriptLanguage"
                                       implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
         <lang.formatter language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.formatting.EIFormattingModelBuilder"/>
@@ -50,7 +50,7 @@
         <treeStructureProvider
                 implementation="com.alekseyzhelo.evilislands.mobplugin.projectView.EIMobStructureProvider"/>
         <completion.confidence language="EIScriptLanguage" order="before javaSkipAutopopupInStrings"
-                               implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.CompletionConfidenceOverride" />
+                               implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion.CompletionConfidenceOverride" />
         <codeInsight.parameterInfo language="EIScriptLanguage"
                                    implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIFunctionParameterInfoHandler"/>
         <projectService

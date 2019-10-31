@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition;
 import com.intellij.codeInsight.completion.CompletionConfidence;

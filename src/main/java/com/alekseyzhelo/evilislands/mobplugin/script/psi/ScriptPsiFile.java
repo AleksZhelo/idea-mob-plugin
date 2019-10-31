@@ -119,7 +119,7 @@ public class ScriptPsiFile extends PsiFileBase {
                     globalVars == null
                             ? Collections.emptyList()
                             : PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class),
-                    globalVars
+                    globalVars != null ? globalVars : ScriptPsiFile.this
             );
         }
     }
@@ -149,7 +149,7 @@ public class ScriptPsiFile extends PsiFileBase {
                     implementations == null
                             ? Collections.emptyList()
                             : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class),
-                    implementations
+                    implementations != null ? implementations : ScriptPsiFile.this
             );
         }
     }

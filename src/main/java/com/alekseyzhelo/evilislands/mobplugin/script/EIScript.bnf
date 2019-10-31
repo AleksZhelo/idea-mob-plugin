@@ -35,9 +35,9 @@ globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
 
 // apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
 // such disorder will not stand, of course
-declarations ::= scriptDeclaration*  {methods=[toString]}
+declarations ::= scriptDeclaration+  {methods=[toString]}
 
-scripts ::= scriptImplementation*  {methods=[toString]}
+scripts ::= scriptImplementation+  {methods=[toString]}
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=2 recoverWhile=worldScriptRecover methods=[toString]}
 
@@ -98,6 +98,7 @@ type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mo
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
 private scriptIfBlockRecover ::= !(THEN)  // can't get this kind of stuff to work :(
+// TODO: fails when there is only one script in file
 private scriptThenBlockRecover ::= !(IF | RPAREN SCRIPT | RPAREN WORLDSCRIPT)  // can't get this kind of stuff to work :(
 private worldScriptRecover ::= !(RPAREN)
 private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers!

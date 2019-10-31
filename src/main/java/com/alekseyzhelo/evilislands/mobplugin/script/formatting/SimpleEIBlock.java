@@ -7,16 +7,33 @@ import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes.*;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 
 // TODO: alignment?
 // TODO: add a function block with nice argument indentation?
 class SimpleEIBlock extends AbstractBlock implements BlockEx {
+
+    private static final TokenSet WRAPPABLE = TokenSet.create(
+            GLOBAL_VAR,
+            SCRIPT_DECLARATION,
+            SCRIPT_IMPLEMENTATION,
+            SCRIPT_IF_BLOCK,
+            SCRIPT_THEN_BLOCK,
+            WORLDSCRIPT
+    );
+
+    private static final TokenSet WRAPPABLE_CHILDREN = TokenSet.create(
+            LPAREN,
+            RPAREN
+    );
+
 
     final SpacingBuilder mySpacingBuilder;
     private final Indent myIndent;
@@ -42,7 +59,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
             blocks.add(
                     EIBlockFactory.createEIBlock(
                             child,
-                            myWrap,
+                            shouldWrap(childType) ? Wrap.createWrap(WrapType.ALWAYS, true) : null,
                             null,
 //                            EIIndentProcessor.NO_INDENT_ELEMENTS.contains(childType) || childType.equals(ScriptTypes.COMMENT)
 //                                    ? null
@@ -52,6 +69,12 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
             );
         }
         return blocks;
+    }
+
+    private boolean shouldWrap(IElementType childType) {
+        return WRAPPABLE.contains(childType) ||
+                (!getElementType().equals(SCRIPT_DECLARATION) &&
+                        WRAPPABLE.contains(getElementType()) && WRAPPABLE_CHILDREN.contains(childType));
     }
 
     @Override

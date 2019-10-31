@@ -48,7 +48,6 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
     @Override
     public void showParameterInfo(@NotNull EIParams element, @NotNull CreateParameterInfoContext context) {
         context.showHint(element, context.getOffset(), this);
-//        context.setHighlightedElement(element);
     }
 
     @Nullable
@@ -66,6 +65,7 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
         }
 
         int paramIndex = calculateCurrentParamIndex(parameterOwner, context.getFile().findElementAt(context.getOffset()));
+        int testIndex = ParameterInfoUtils.getCurrentParameterIndex(parameterOwner.getNode(), context.getOffset(), ScriptTypes.COMMA);
         context.setCurrentParameter(paramIndex);
     }
 
