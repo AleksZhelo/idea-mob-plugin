@@ -57,6 +57,10 @@
                                    implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIFunctionParameterInfoHandler"/>
         <projectService
                 serviceImplementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService"/>
+
+        <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$EIGeneric" />
+        <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptAllowed" />
+        <defaultLiveTemplatesProvider implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EILiveTemplatesProvider" />
     </extensions>
 
     <application-components>

@@ -53,7 +53,7 @@ scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams {pin=1 recoverWhile=
 scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
 
-private scriptBody ::= scriptBlock+
+private scriptBody ::= scriptBlock+  // or *?
 
 // TODO: flatten this out as well?
 scriptBlock ::= scriptIfBlock scriptThenBlock {methods=[toString]}
