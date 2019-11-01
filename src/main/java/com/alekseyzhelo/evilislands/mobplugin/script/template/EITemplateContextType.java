@@ -45,7 +45,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
     public static class EIGeneric extends EITemplateContextType {
 
         public EIGeneric() {
-            super("EI", "EIScript generic", EverywhereContextType.class);
+            super("EI", "EIScript", EverywhereContextType.class);
         }
 
         @Override
