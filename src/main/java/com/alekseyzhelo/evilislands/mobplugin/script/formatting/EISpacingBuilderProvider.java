@@ -25,6 +25,7 @@ final class EISpacingBuilderProvider {
                 .after(ScriptTypes.COMMA).spaces(1)
                 .beforeInside(ScriptTypes.LPAREN, TokenSet.create(ScriptTypes.SCRIPT_DECLARATION)).spaces(1)
                 .before(ScriptTypes.DECLARATIONS).blankLines(1)
+                // TODO: ignore comments
                 .before(ScriptTypes.SCRIPT_IMPLEMENTATION).blankLines(1)
                 .before(ScriptTypes.WORLD_SCRIPT).blankLines(1)
                 ;

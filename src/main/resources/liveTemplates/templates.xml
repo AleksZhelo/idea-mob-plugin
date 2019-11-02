@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSet group="EIScript">
-    <template name="script" value="Script $NAME$( if (&#10;$END$&#10;)  then ())"
+    <template name="script" value="Script $NAME$( if (&#10;$END$&#10;)  then (&#10;KillScript()&#10;))"
               toReformat="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
         <context>

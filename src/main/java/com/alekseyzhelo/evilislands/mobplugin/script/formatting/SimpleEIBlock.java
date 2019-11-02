@@ -20,7 +20,7 @@ import static com.intellij.psi.TokenType.WHITE_SPACE;
 // TODO: add a function block with nice argument indentation?
 class SimpleEIBlock extends AbstractBlock implements BlockEx {
 
-    private static final TokenSet WRAPPABLE = TokenSet.create(
+    private static final TokenSet WRAP_TOP_LEVEL = TokenSet.create(
             GLOBAL_VAR,
             SCRIPT_DECLARATION,
             SCRIPT_IMPLEMENTATION,
@@ -29,9 +29,11 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
             WORLDSCRIPT
     );
 
-    private static final TokenSet WRAPPABLE_CHILDREN = TokenSet.create(
+    private static final TokenSet WRAP_SECOND_LEVEL = TokenSet.create(
             LPAREN,
-            RPAREN
+            RPAREN,
+            FUNCTION_CALL,
+            SCRIPT_EXPRESSION
     );
 
 
@@ -72,9 +74,9 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     }
 
     private boolean shouldWrap(IElementType childType) {
-        return WRAPPABLE.contains(childType) ||
+        return WRAP_TOP_LEVEL.contains(childType) ||
                 (!getElementType().equals(SCRIPT_DECLARATION) &&
-                        WRAPPABLE.contains(getElementType()) && WRAPPABLE_CHILDREN.contains(childType));
+                        WRAP_TOP_LEVEL.contains(getElementType()) && WRAP_SECOND_LEVEL.contains(childType));
     }
 
     @Override

@@ -84,7 +84,10 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     private void processScriptBlock(@NotNull EIScriptBlock block, @NotNull List<FoldingDescriptor> descriptors) {
         foldFromLParenToEnd(descriptors, block.getScriptIfBlock());
-        foldFromLParenToEnd(descriptors, block.getScriptThenBlock());
+        // TODO:
+        if (block.getScriptThenBlock() != null){
+            foldFromLParenToEnd(descriptors, block.getScriptThenBlock());
+        }
     }
 
     private void processWorldScript(@NotNull PsiElement root, @NotNull List<FoldingDescriptor> descriptors) {

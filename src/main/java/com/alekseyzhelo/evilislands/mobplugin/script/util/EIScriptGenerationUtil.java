@@ -11,7 +11,7 @@ final class EIScriptGenerationUtil {
 
     static String scriptImplementationText(String name) {
         // TODO: world script is a workaround for script_then_block recoverUntil deficiency
-        return "Script " + trimDummy(name) + "(if () then ())" + "WorldScript()";
+        return "Script " + trimDummy(name) + "(if () then (KillScript()))" + "WorldScript()";
     }
 
     static String scriptDeclarationText(String name) {

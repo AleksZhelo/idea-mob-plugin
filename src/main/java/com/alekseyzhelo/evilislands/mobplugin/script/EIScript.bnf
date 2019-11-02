@@ -56,12 +56,13 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN {pin=1 mixin
 private scriptBody ::= scriptBlock+  // or *?
 
 // TODO: flatten this out as well?
-scriptBlock ::= scriptIfBlock scriptThenBlock {methods=[toString]}
+scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
 
 scriptIfBlock ::= IF LPAREN ifConjunction RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
 private ifConjunction ::= functionCall*
 
+//  recoverWhile=scriptThenBlockRecover
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
 private scriptThenBody ::= scriptExpression*
@@ -77,17 +78,17 @@ private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAR
 formalParameter ::= IDENTIFIER COLON type  {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"}
 
-// TODO: type checking!
-params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN  // TODO: how to do references here?
-
 // TODO: how to do references here?
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
 
 variableAccess ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
 implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType toString]}
 
-functionCall ::= IDENTIFIER params {pin=2 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+functionCall ::= IDENTIFIER params {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType getNthArgument toString]}
+
+// TODO: type checking!
+params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
 
 // TODO: handle no error on right part missing
 assignment ::= variableAccess EQUALS expression {pin=2 methods=[toString]} // TODO: this pin and error recovery stuff
@@ -98,7 +99,7 @@ type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mo
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
 private scriptIfBlockRecover ::= !(THEN)  // can't get this kind of stuff to work :(
-// TODO: fails when there is only one script in file
-private scriptThenBlockRecover ::= !(IF | RPAREN SCRIPT | RPAREN WORLDSCRIPT)  // can't get this kind of stuff to work :(
+private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)  // can't get this kind of stuff to work :(
+private scriptBlockRecover ::= !(IF | RPAREN)  // can't get this kind of stuff to work :(
 private worldScriptRecover ::= !(RPAREN)
 private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers!
