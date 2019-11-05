@@ -58,13 +58,7 @@ class MobFileViewProvider extends SingleRootFileViewProvider {
     @Nullable
     @Override
     protected PsiFile createFile(@NotNull Language lang) {
-        try {
-            return new PsiMobFile((PsiManagerImpl) getManager(), this);
-        } catch (MobException | IOException e) {
-            // TODO: show in event log?
-            LOG.error(e);
-            return null;
-        }
+        return new PsiMobFile((PsiManagerImpl) getManager(), this);
     }
 
     @NotNull
