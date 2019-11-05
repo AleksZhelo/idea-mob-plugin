@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
 
-public class ImplementScriptQuickFix implements LocalQuickFix {
+public class ImplementScriptFix implements LocalQuickFix {
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull
@@ -40,7 +40,6 @@ public class ImplementScriptQuickFix implements LocalQuickFix {
         PsiElement element = descriptor.getEndElement();
         ScriptPsiFile file = (ScriptPsiFile) element.getContainingFile();
 
-        // TODO: needed?
         if (!FileModificationService.getInstance().preparePsiElementForWrite(file)) return;
 
         EIScripts implementations = file.findChildByClass(EIScripts.class);

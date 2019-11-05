@@ -6,7 +6,11 @@ import com.intellij.codeInsight.completion.CompletionInitializationContext;
 final class EIScriptGenerationUtil {
 
     static String globalVarText(String name) {
-        return "GlobalVars(" + trimDummy(name) + ":" + EITypeToken.GROUP.getTypeString() + ")";
+        return globalVarText(name, EITypeToken.GROUP);
+    }
+
+    static String globalVarText(String name, EITypeToken type) {
+        return "GlobalVars(" + trimDummy(name) + ":" + type.getTypeString() + ")";
     }
 
     static String scriptImplementationText(String name) {

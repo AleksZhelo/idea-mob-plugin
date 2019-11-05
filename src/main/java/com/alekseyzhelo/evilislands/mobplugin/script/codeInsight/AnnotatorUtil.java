@@ -16,7 +16,7 @@ public final class AnnotatorUtil {
 
     }
 
-    @Nullable
+    @NotNull
     static Annotation createIncompatibleTypesAnnotation(@NotNull AnnotationHolder holder,
                                                         @NotNull TextRange textRange,
                                                         EITypeToken lType,

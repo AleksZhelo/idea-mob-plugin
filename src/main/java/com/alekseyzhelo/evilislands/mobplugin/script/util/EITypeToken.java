@@ -33,6 +33,7 @@ public enum EITypeToken {
             }
         }
 
+        // TODO: maybe null would do better?
         return VOID;
     }
 }

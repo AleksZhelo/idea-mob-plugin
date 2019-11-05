@@ -12,7 +12,7 @@ public final class EIScriptRenameUtil {
 
     public static PsiElement renameElement(PsiElement element, String newElementName) {
         final PsiElement identifierNew =
-                EIScriptElementFactory.createIdentifierFromText(element.getProject(), newElementName);
+                EIScriptElementFactory.createIdentifier(element.getProject(), newElementName);
         if (element.getNode().getElementType().equals(ScriptTypes.IDENTIFIER) && element.getParent() != null) {
             element.getParent().getNode().replaceChild(element.getNode(), identifierNew.getNode());
         } else {

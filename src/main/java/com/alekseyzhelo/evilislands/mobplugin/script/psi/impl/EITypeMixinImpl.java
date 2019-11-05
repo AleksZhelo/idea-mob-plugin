@@ -13,19 +13,15 @@ import java.util.Locale;
 public class EITypeMixinImpl extends EIScriptPsiElementImpl
         implements EITypeMixin {
 
-    @NotNull
-    private final EITypeToken type;
-
     EITypeMixinImpl(ASTNode node) {
         super(node);
-        String typeText = node.getText().toLowerCase(Locale.ENGLISH);
-        type = EITypeToken.fromString(typeText);
     }
 
     @Override
     @NotNull
     public EITypeToken getTypeToken() {
-        return type;
+        // TODO: cache?
+        return EITypeToken.fromString(getText().toLowerCase(Locale.ENGLISH));
     }
 
     @Override

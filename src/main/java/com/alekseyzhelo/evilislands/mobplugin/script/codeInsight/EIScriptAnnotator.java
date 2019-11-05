@@ -1,7 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.DeclareScriptQuickFix;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.ImplementScriptQuickFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ChangeVariableTypeFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareScriptFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ImplementScriptFix;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
@@ -19,6 +20,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,7 +54,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                 Annotation annotation = markAsWarning(myHolder, ident,
                         EIMessages.message("warn.script.not.implemented", scriptDeclaration.getName()));
 
-                LocalQuickFix fix = new ImplementScriptQuickFix();
+                LocalQuickFix fix = new ImplementScriptFix();
                 InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
                         ProblemHighlightType.WARNING, true);
@@ -79,7 +81,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
                 // TODO: move to local quick fix provider in reference?
                 InspectionManager inspectionManager = InspectionManager.getInstance(scriptImplementation.getProject());
-                LocalQuickFix fix = new DeclareScriptQuickFix(scriptImplementation);
+                LocalQuickFix fix = new DeclareScriptFix(scriptImplementation);
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(ident, annotation.getMessage(), fix,
                         ProblemHighlightType.ERROR, true);
                 TextRange range = new TextRange(
@@ -183,10 +185,27 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitAssignment(@NotNull EIAssignment assignment) {
         super.visitAssignment(assignment);
 
-        EITypeToken lType = assignment.getVariableAccess().getType();
+        EIVariableAccess access = assignment.getVariableAccess();
+        EITypeToken lType = access.getType();
         EITypeToken rType = assignment.getExpression() != null ? assignment.getExpression().getType() : null;
         if (lType == null || !lType.equals(rType)) {
-            AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
+            Annotation annotation =
+                    AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
+
+            PsiElement target = access.getReference().resolve();
+            if (lType != null && rType != null && target != null) {
+                // TODO: move to local quick fix provider in reference?
+                InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
+                LocalQuickFix fix = new ChangeVariableTypeFix((PsiNamedElement) target, rType);
+                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
+                        access.getNameIdentifier(),
+                        EIMessages.message("fix.change.variable.type", access.getName(), rType.getTypeString()),
+                        fix,
+                        ProblemHighlightType.ERROR,
+                        true
+                );
+                annotation.registerFix(fix, assignment.getTextRange(), null, descriptor);
+            }
         }
     }
 
