@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilderEx;
@@ -30,8 +31,9 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     @Nullable
     @Override
+    // TODO: improve?
     public String getPlaceholderText(@NotNull ASTNode node) {
-        return "\\u2026";
+        return "\u2026";
     }
 
     @Override
@@ -43,14 +45,13 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIGlobalVars globals = PsiTreeUtil.getChildOfType(root, EIGlobalVars.class);
         if (globals != null) {
             final int variablesCount = globals.getGlobalVarList().size();
-            @SuppressWarnings("ConstantConditions")
-            final int lParenOffset = globals.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
+            @SuppressWarnings("ConstantConditions") final int lParenOffset = globals.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
             descriptors.add(new FoldingDescriptor(globals.getNode(),
                     new TextRange(lParenOffset,
                             globals.getTextRange().getEndOffset()), null) {
                 @Override
                 public String getPlaceholderText() {
-                    return "(" + variablesCount + " declarations)";
+                    return "(" + variablesCount + " " + EIMessages.message("folding.globalVarDeclarations") + ")";
                 }
             });
         }
@@ -60,7 +61,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIDeclarations declarations = PsiTreeUtil.getChildOfType(root, EIDeclarations.class);
         if (declarations != null) {
             final int declarationsCount = declarations.getScriptDeclarationList().size();
-            foldWholeElement(descriptors, declarations, "{" + declarationsCount + " script declarations}");
+            foldWholeElement(descriptors, declarations, "{" + declarationsCount + " " + EIMessages.message("folding.scriptDeclarations") + "}");
         }
     }
 
@@ -68,7 +69,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIScripts scripts = PsiTreeUtil.getChildOfType(root, EIScripts.class);
         if (scripts != null) {
             final int implementationsCount = scripts.getScriptImplementationList().size();
-            foldWholeElement(descriptors, scripts, "{" + implementationsCount + " script implementations}");
+            foldWholeElement(descriptors, scripts, "{" + implementationsCount + " " + EIMessages.message("folding.scriptImplementations") + "}");
             for (EIScriptImplementation scriptImplementation : scripts.getScriptImplementationList()) {
                 processScriptImplementation(scriptImplementation, descriptors);
             }
@@ -85,7 +86,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
     private void processScriptBlock(@NotNull EIScriptBlock block, @NotNull List<FoldingDescriptor> descriptors) {
         foldFromLParenToEnd(descriptors, block.getScriptIfBlock());
         // TODO:
-        if (block.getScriptThenBlock() != null){
+        if (block.getScriptThenBlock() != null) {
             foldFromLParenToEnd(descriptors, block.getScriptThenBlock());
         }
     }
@@ -128,7 +129,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
                             element.getTextRange().getEndOffset()), null) {
                 @Override
                 public String getPlaceholderText() {
-                    return "(...)";
+                    return "(\u2026)";
                 }
             });
         }

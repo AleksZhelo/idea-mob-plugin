@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobFlame;
 import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +15,7 @@ public class PsiMobFlame extends PsiMobObjectDataHolder<MobFlame> {
     @Override
     @NotNull
     public String getObjectKind() {
-        return "Flame";
+        return EIMessages.message("mob.flame");
     }
 
     @NotNull

@@ -29,10 +29,8 @@ public class PsiMobFile extends PsiBinaryFileImpl {
 
     private PsiElement[] children = new PsiElement[1];
 
-    public PsiMobFile(@NotNull PsiManagerImpl manager, @NotNull FileViewProvider viewProvider) throws MobException, IOException {
+    public PsiMobFile(@NotNull PsiManagerImpl manager, @NotNull FileViewProvider viewProvider) {
         super(manager, viewProvider);
-//        // TODO: should really be done in background (with "indexing" progressbar)
-//        myMob = new MobFile(getVirtualFile().getPath(), getVirtualFile().contentsToByteArray());
     }
 
     public MobFile getMobFile() {

@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -41,7 +42,7 @@ public class UnpackMobAction extends AnAction {
         PsiFile psiFile = e.getData(PlatformDataKeys.PSI_FILE);
         if (psiFile != null && !psiFile.isDirectory() && psiFile instanceof PsiMobFile) {
             e.getPresentation().setEnabledAndVisible(true);
-            e.getPresentation().setText(isPacked(psiFile) ? "Unpack Script" : "Pack Script");
+            e.getPresentation().setText(EIMessages.message(isPacked(psiFile) ? "action.unpack.script" : "action.pack.script"));
         } else {
             e.getPresentation().setEnabledAndVisible(false);
         }

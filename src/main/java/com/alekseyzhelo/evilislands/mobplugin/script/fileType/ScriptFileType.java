@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.fileType;
 
 import com.alekseyzhelo.eimob.MobFile;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.intellij.openapi.fileTypes.LanguageFileType;
@@ -19,6 +20,7 @@ public class ScriptFileType extends LanguageFileType {
 
     @NotNull
     @Override
+    // TODO: change?
     public String getName() {
         return "Script text file";
     }
@@ -26,7 +28,7 @@ public class ScriptFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "Evil Islands scripting language file";
+        return EIMessages.message("file.eiscript.desc");
     }
 
     @NotNull

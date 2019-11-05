@@ -17,6 +17,7 @@ public abstract class PsiMobEntityBase extends PsiMobElement {
 
     protected abstract String getDocHeader();
 
+    // TODO: move field names to EIMessages
     protected abstract String getDocContent();
 
     public abstract int getId();

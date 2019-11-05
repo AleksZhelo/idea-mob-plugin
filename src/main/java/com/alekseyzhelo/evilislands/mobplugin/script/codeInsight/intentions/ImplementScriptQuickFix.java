@@ -1,10 +1,10 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.codeInsight.FileModificationService;
 import com.intellij.codeInsight.editorActions.smartEnter.PlainEnterProcessor;
-import com.intellij.codeInsight.intention.HighPriorityAction;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
 import com.intellij.openapi.editor.Editor;
@@ -25,7 +25,7 @@ public class ImplementScriptQuickFix implements LocalQuickFix {
     @NotNull
     @Override
     public String getName() {
-        return "Implement script";
+        return EIMessages.message("fix.implement.script");
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)

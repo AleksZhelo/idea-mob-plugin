@@ -2,7 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.DeclareScriptQuickFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.ImplementScriptQuickFix;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EIErrorMessages;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
@@ -50,7 +50,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement ident = scriptDeclaration.getNameIdentifier();
             if (ident != null) {
                 Annotation annotation = markAsWarning(myHolder, ident,
-                        EIErrorMessages.message("script.not.implemented", scriptDeclaration.getName()));
+                        EIMessages.message("warn.script.not.implemented", scriptDeclaration.getName()));
 
                 LocalQuickFix fix = new ImplementScriptQuickFix();
                 InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
@@ -58,7 +58,10 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                         ProblemHighlightType.WARNING, true);
                 TextRange range = scriptDeclaration.getTextRange();
                 annotation.registerFix(fix, range, null, descriptor);
-                annotation.registerFix(new DeleteElementFix(scriptDeclaration, "Remove element"), range);
+                annotation.registerFix(
+                        new DeleteElementFix(scriptDeclaration, EIMessages.message("fix.remove.element")),
+                        range
+                );
             }
         }
     }
@@ -72,7 +75,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
                 Annotation annotation = markAsError(myHolder, ident,
-                        EIErrorMessages.message("script.not.declared", scriptImplementation.getName()));
+                        EIMessages.message("warn.script.not.declared", scriptImplementation.getName()));
 
                 // TODO: move to local quick fix provider in reference?
                 InspectionManager inspectionManager = InspectionManager.getInstance(scriptImplementation.getProject());
@@ -84,7 +87,10 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                         ident.getTextRange().getEndOffset()
                 );
                 annotation.registerFix(fix, range, null, descriptor);
-                annotation.registerFix(new DeleteElementFix(scriptImplementation, "Remove element"), range);
+                annotation.registerFix(
+                        new DeleteElementFix(scriptImplementation, EIMessages.message("fix.remove.element")),
+                        range
+                );
             }
         }
     }
@@ -144,7 +150,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         PsiElement resolved = reference.resolve();
         if (call.getParent() instanceof EIScriptIfBlock) {
             if (resolved instanceof EIScriptDeclaration) {
-                markAsError(myHolder, nameElement, EIErrorMessages.message("not.allowed.in.script.if"));
+                markAsError(myHolder, nameElement, EIMessages.message("error.not.allowed.in.script.if"));
             } else {
                 handleFunctionCallInIfBlock(myHolder, nameElement, (EIFunctionDeclaration) resolved);
             }
@@ -159,7 +165,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         if (access.getReference().resolve() == null) {
             markAsError(myHolder, access.getNameIdentifier(),
-                    EIErrorMessages.message("undefined.variable", access.getName()));
+                    EIMessages.message("error.undefined.variable", access.getName()));
         }
     }
 
@@ -169,7 +175,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = expression.getReference();
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
-            markAsError(myHolder, expression, EIErrorMessages.message("wrong.object.id", reference.getCanonicalText()));
+            markAsError(myHolder, expression, EIMessages.message("error.wrong.object.id", reference.getCanonicalText()));
         }
     }
 
@@ -186,17 +192,17 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private void handleFunctionCallInIfBlock(@NotNull AnnotationHolder holder, PsiElement nameElement, EIFunctionDeclaration function) {
         if (function == null) {
-            markAsError(holder, nameElement, EIErrorMessages.message("unresolved.function", nameElement.getText()));
+            markAsError(holder, nameElement, EIMessages.message("error.unresolved.function", nameElement.getText()));
         } else {
             if (function.getType() == null || function.getType().getTypeToken() != EITypeToken.FLOAT) {
-                markAsError(holder, nameElement, EIErrorMessages.message("not.allowed.in.script.if"));
+                markAsError(holder, nameElement, EIMessages.message("error.not.allowed.in.script.if"));
             }
         }
     }
 
     private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, PsiElement call) {
         if (call == null) {
-            markAsError(holder, nameElement, EIErrorMessages.message("unresolved.function.or.script", nameElement.getText()));
+            markAsError(holder, nameElement, EIMessages.message("error.unresolved.function.or.script", nameElement.getText()));
         }
     }
 

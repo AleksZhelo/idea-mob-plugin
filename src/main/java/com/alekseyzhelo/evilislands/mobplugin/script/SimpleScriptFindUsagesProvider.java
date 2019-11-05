@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
@@ -38,18 +39,17 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
 
     @NotNull
     @Override
-    // TODO: move these string to naming
     public String getType(@NotNull PsiElement element) {
         if (element instanceof EIGlobalVar) {
-            return "global variable";
+            return EIMessages.message("fu.element.globalVar");
         } else if (element instanceof EIScriptDeclaration) {
-            return "script";
+            return  EIMessages.message("fu.element.scriptDeclaration");
         } else if (element instanceof EIScriptImplementation) {
-            return "script";
+            return  EIMessages.message("fu.element.scriptImplementation");
         } else if (element instanceof EIFunctionCall) {
-            return "function call";
+            return  EIMessages.message("fu.element.functionCall");
         } else if (element instanceof EIFunctionDeclaration) {
-            return "function";
+            return EIMessages.message("fu.element.functionDeclaration");
         } else {
             return "";
         }

@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.IOUtil;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -18,17 +19,17 @@ import static com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScrip
 
 public class EIScriptColorSettingsPage implements ColorSettingsPage {
     private static final AttributesDescriptor[] DESCRIPTORS = new AttributesDescriptor[]{
-            new AttributesDescriptor("Equals sign", EQUALS),
-            new AttributesDescriptor("Comma", COMMA),
-            new AttributesDescriptor("Parentheses", PARENTHESES),
-            new AttributesDescriptor("Keyword", KEYWORD),
-            new AttributesDescriptor("Type", TYPE),
-            new AttributesDescriptor("String", STRING),
-            new AttributesDescriptor("Number", NUMBER),
-            new AttributesDescriptor("Identifier", IDENTIFIER),
-            new AttributesDescriptor("Function call", FUNCTION_CALL),
-            new AttributesDescriptor("Variable access", VARIABLE_ACCESS),
-            new AttributesDescriptor("Comment", COMMENT),
+            new AttributesDescriptor(EIMessages.message("color.settings.equals"), EQUALS),
+            new AttributesDescriptor(EIMessages.message("color.settings.comma"), COMMA),
+            new AttributesDescriptor(EIMessages.message("color.settings.parentheses"), PARENTHESES),
+            new AttributesDescriptor(EIMessages.message("color.settings.keyword"), KEYWORD),
+            new AttributesDescriptor(EIMessages.message("color.settings.type"), TYPE),
+            new AttributesDescriptor(EIMessages.message("color.settings.string"), STRING),
+            new AttributesDescriptor(EIMessages.message("color.settings.number"), NUMBER),
+            new AttributesDescriptor(EIMessages.message("color.settings.identifier"), IDENTIFIER),
+            new AttributesDescriptor(EIMessages.message("color.settings.functionCall"), FUNCTION_CALL),
+            new AttributesDescriptor(EIMessages.message("color.settings.variableAccess"), VARIABLE_ACCESS),
+            new AttributesDescriptor(EIMessages.message("color.settings.comment"), COMMENT),
     };
 
     private static final Map<String, TextAttributesKey> ATTRIBUTES_KEY_MAP = new HashMap<>();
@@ -76,6 +77,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
 
     @NotNull
     @Override
+    // TODO: extract EIScript string from everywhere
     public String getDisplayName() {
         return "EIScript";
     }

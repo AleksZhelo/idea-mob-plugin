@@ -1,21 +1,21 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util;
+package com.alekseyzhelo.evilislands.mobplugin;
 
 import com.intellij.AbstractBundle;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.PropertyKey;
 
-public class EIErrorMessages extends AbstractBundle {
+public class EIMessages extends AbstractBundle {
 
   public static String message(@NotNull @PropertyKey(resourceBundle = BUNDLE) String key, @NotNull Object... params) {
     return INSTANCE.getMessage(key, params);
   }
 
-  public static final EIErrorMessages INSTANCE = new EIErrorMessages();
+  public static final EIMessages INSTANCE = new EIMessages();
   @NonNls
-  public static final String BUNDLE = "messages.EIErrorMessages";
+  public static final String BUNDLE = "messages.EIMessages";
 
-  private EIErrorMessages() {
+  private EIMessages() {
     super(BUNDLE);
   }
 }

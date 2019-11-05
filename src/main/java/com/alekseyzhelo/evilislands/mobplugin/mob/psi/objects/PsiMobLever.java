@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobLever;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,6 @@ public class PsiMobLever extends PsiMobObjectDataHolder<MobLever> {
     @Override
     @NotNull
     public String getObjectKind() {
-        return "Lever";
+        return EIMessages.message("mob.lever");
     }
 }

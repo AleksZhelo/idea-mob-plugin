@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobSound;
 import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +19,7 @@ public class PsiMobSound extends PsiMobEntityBase {
     @Override
     @NotNull
     public String getObjectKind() {
-        return "Sound";
+        return EIMessages.message("mob.sound");
     }
 
     @Override

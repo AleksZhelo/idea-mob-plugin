@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.fileType;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -25,7 +26,7 @@ public class MobFileType implements FileType {
     @NotNull
     @Override
     public String getDescription() {
-        return "Evil Islands composite map description file";
+        return EIMessages.message("file.mob.desc");
     }
 
     @NotNull

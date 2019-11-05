@@ -1,9 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.codeInsight.FileModificationService;
-import com.intellij.codeInsight.intention.HighPriorityAction;
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -25,7 +25,14 @@ public class DeclareScriptQuickFix extends LocalQuickFixOnPsiElement {
     @NotNull
     @Override
     public String getText() {
-        return "Declare script";
+        return EIMessages.message("fix.declare.script");
+    }
+
+    @Nls(capitalization = Nls.Capitalization.Sentence)
+    @NotNull
+    @Override
+    public String getFamilyName() {
+        return getText();
     }
 
     @Override
@@ -63,12 +70,5 @@ public class DeclareScriptQuickFix extends LocalQuickFixOnPsiElement {
         editor.getCaretModel().moveToOffset(offset);
         editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
         editor.getSelectionModel().removeSelection();
-    }
-
-    @Nls(capitalization = Nls.Capitalization.Sentence)
-    @NotNull
-    @Override
-    public String getFamilyName() {
-        return "Declare script";
     }
 }

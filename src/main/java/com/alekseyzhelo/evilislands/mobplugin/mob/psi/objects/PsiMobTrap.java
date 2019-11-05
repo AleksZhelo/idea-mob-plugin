@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobTrap;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +14,6 @@ public class PsiMobTrap extends PsiMobObjectDataHolder<MobTrap> {
     @Override
     @NotNull
     public String getObjectKind() {
-        return "Trap";
+        return EIMessages.message("mob.trap");
     }
 }

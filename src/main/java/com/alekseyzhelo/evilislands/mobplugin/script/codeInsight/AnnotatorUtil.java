@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EIErrorMessages;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -22,12 +21,14 @@ public final class AnnotatorUtil {
                                                         @NotNull TextRange textRange,
                                                         EITypeToken lType,
                                                         EITypeToken rType) {
-        boolean assignable = lType == null || rType == null || lType.equals(rType);
-        String toolTip = EIErrorMessages.message("incompatible.types.html.tooltip",
+        boolean assignable = lType != null && lType.equals(rType);
+        String toolTip = EIMessages.message("incompatible.types.html.tooltip",
                 redIfNotMatch(lType, assignable),
-                redIfNotMatch(rType, assignable));
-        String message = EIErrorMessages.message(
-                "incompatible.types", getName(lType), getName(rType));
+                redIfNotMatch(rType, assignable)
+        );
+        String message = EIMessages.message(
+                "error.incompatible.types", getName(lType), getName(rType)
+        );
 
         return holder.createAnnotation(HighlightSeverity.ERROR, textRange, message, toolTip);
     }

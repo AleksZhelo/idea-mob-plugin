@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
@@ -32,7 +33,7 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
     private String getFunctionCallQuickNavigateInfo(EIFunctionCall element) {
         EIFunctionsService service = EIFunctionsService.getInstance(element.getProject());
         EIFunctionDeclaration declaration = service.getFunctionDeclaration(element.getName());
-        return declaration != null ? declaration.getText() : "Unknown function";
+        return declaration != null ? declaration.getText() : EIMessages.message("doc.unknown.function");
     }
 
     @Override
@@ -60,7 +61,9 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
     }
 
     private String getGlobalVarDoc(EIGlobalVar element) {
-        String doc = DocumentationFormatter.wrapDefinition(DocumentationFormatter.wrapKeyword("GlobalVar") + " " + DocumentationFormatter.bold(element.getName()));
+        String doc = DocumentationFormatter.wrapDefinition(
+                DocumentationFormatter.wrapKeyword(EIMessages.message("doc.keyword.globalVar")
+                ) + " " + DocumentationFormatter.bold(element.getName()));
         PsiElement next = UsefulPsiTreeUtil.getNextSiblingSkipWhiteSpacesAndCommas(element, true);
         if (next instanceof PsiComment) {
             doc += DocumentationFormatter.wrapContent(next.getText().substring(2, next.getTextLength()));
@@ -102,7 +105,9 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
             List<EIFormalParameter> parameterList,
             EITypeToken returnType
     ) {
-        String prefix = DocumentationFormatter.wrapKeyword(isFunction ? "Function" : "Script");
+        String prefix = DocumentationFormatter.wrapKeyword(
+                EIMessages.message(isFunction ? "doc.keyword.function" : "doc.keyword.script")
+        );
         String name = DocumentationFormatter.bold(nameElement.getText().trim());
         String arguments = parameterList.size() > 0
                 ? parameterList.stream().reduce("", (u, x) -> u + x.getText() + ", ", String::concat)
@@ -129,5 +134,4 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
         }
         return doc;
     }
-
 }
