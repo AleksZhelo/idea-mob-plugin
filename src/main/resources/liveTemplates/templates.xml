@@ -1,8 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSet group="EIScript">
     <template name="script" value="Script $NAME$( if (&#10;$END$&#10;)  then (&#10;KillScript()&#10;))"
-              toReformat="true">
+              description="New script" toReformat="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="EI_SCRIPT_ALLOWED" value="true"/>
+        </context>
+    </template>
+
+    <template name="frvst"
+              value="Script FirstVisit&#10;// Первое посещение зоны.&#10;(&#10;  if&#10;  (&#10;    // Если в зоне первый раз.&#10;    IsEqual(GSGetVar(0, &quot;$zone$_visited&quot; ), 0)&#10;  )&#10;  then&#10;  (&#10;    KillScript()&#10;    // Поставить отметку о визите...&#10;    GsSetVar(0, &quot;$zone$_visited&quot;, 1)&#10;    $END$&#10;  )&#10;)"
+              description="First visit script" toReformat="true">
+        <variable name="zone" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="EI_SCRIPT_ALLOWED" value="true"/>
+        </context>
+    </template>
+
+    <template name="dnm"
+              value="Script DoNameObjects&#10;// Поименовать объекты.&#10;(&#10;  if&#10;  (&#10;    // Безусловный вызов.&#10;  )&#10;  then&#10;  (&#10;    KillScript()&#10;&#10;    $END$&#10;  )&#10;)"
+              description="Name objects script" toReformat="true">
+        <context>
+            <option name="EI_SCRIPT_ALLOWED" value="true"/>
+        </context>
+    </template>
+
+    <template name="init"
+              value="Script Initialization&#10;// Инициализация разных переменных и всего такого прочего.&#10;(&#10;  if&#10;  (&#10;    // Безусловный вызов.&#10;  )&#10;  then&#10;  (&#10;    // Инициализировать переменные...&#10;    $END$&#10;    // Инициализировать зоны...&#10;    &#10;  )&#10;)"
+              description="Initialization script" toReformat="true">
         <context>
             <option name="EI_SCRIPT_ALLOWED" value="true"/>
         </context>

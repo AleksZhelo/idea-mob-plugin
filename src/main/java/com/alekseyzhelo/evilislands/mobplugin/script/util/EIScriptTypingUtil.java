@@ -61,7 +61,7 @@ public final class EIScriptTypingUtil {
         if (parent instanceof EIAssignment) {  // variableAccess on the left side of an assignment
             EIExpression expression = ((EIAssignment) parent).getExpression();
             // if expression == null the assignment is incomplete, any type is OK
-            return expression != null ? expression.getType() : null;  // TODO: should be ANY instead of null
+            return expression != null ? expression.getType() : EITypeToken.ANY;
         }
 
         return null;  // shouldn't happen
@@ -75,15 +75,15 @@ public final class EIScriptTypingUtil {
     /**
      * Get the expected type of an expression in a parameters sequence.
      *
-     * @param params     the parameters containing the expression
-     * @param expression the expression to process
+     * @param paramOwner     the parameters containing the expression
+     * @param param the expression to process
      * @return the expected type token
      */
-    public static EITypeToken getExpectedType(EIParams params, EIExpression expression) {
-        if (params != null && expression != null) {
-            int index = params.getExpressionList().indexOf(expression);
+    public static EITypeToken getExpectedType(EIParams paramOwner, EIExpression param) {
+        if (paramOwner != null && param != null) {
+            int index = paramOwner.getExpressionList().indexOf(param);
             if (index >= 0) {
-                EIFunctionCall call = UsefulPsiTreeUtil.getParentOfType(params, EIFunctionCall.class);
+                EIFunctionCall call = UsefulPsiTreeUtil.getParentOfType(paramOwner, EIFunctionCall.class);
                 assert call != null;
                 PsiElement resolved = call.getReference().resolve();
                 if (resolved != null) {

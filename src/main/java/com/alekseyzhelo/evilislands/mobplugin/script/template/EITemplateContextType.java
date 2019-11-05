@@ -2,16 +2,15 @@ package com.alekseyzhelo.evilislands.mobplugin.script.template;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIDeclarations;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScripts;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIWorldScript;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.codeInsight.template.EverywhereContextType;
 import com.intellij.codeInsight.template.TemplateContextType;
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.patterns.PsiElementPattern;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -64,15 +63,34 @@ public abstract class EITemplateContextType extends TemplateContextType {
         protected boolean isInContext(@NotNull PsiElement element) {
             ScriptPsiFile file = (ScriptPsiFile) element.getContainingFile();
             PsiElement parent = element.getParent();
+            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
+                parent = parent.getParent();
+            }
             int elementOffset = element.getTextOffset();
 
             EIDeclarations declarations = file.findChildByClass(EIDeclarations.class);
             EIWorldScript worldScript = file.findChildByClass(EIWorldScript.class);
+            final boolean topLevel = parent instanceof EIScripts || parent instanceof ScriptPsiFile;
+            final boolean beforeWorldScript = (worldScript == null || elementOffset < worldScript.getTextRange().getStartOffset());
 
-            boolean topLevelAfterDeclarations = declarations != null &&
-                    (parent instanceof EIScripts || parent instanceof ScriptPsiFile) &&
-                    elementOffset > declarations.getTextRange().getEndOffset();
-            return topLevelAfterDeclarations && (worldScript == null || elementOffset < worldScript.getTextRange().getStartOffset());
+            if (!beforeWorldScript) {
+                return false;
+            }
+            if (topLevel) {
+                if (declarations == null) {
+                    EIGlobalVars globalVars = file.findChildByClass(EIGlobalVars.class);
+                    return globalVars == null || elementOffset > globalVars.getTextRange().getEndOffset();
+                } else {
+                    return elementOffset > declarations.getTextRange().getEndOffset();
+                }
+            } else if (parent instanceof EIScriptDeclaration) {
+                assert declarations != null;
+                if (declarations.getLastChild() == parent) {
+                    ASTNode rParen = parent.getNode().findChildByType(ScriptTypes.RPAREN);
+                    return rParen != null && elementOffset > rParen.getTextRange().getEndOffset();
+                }
+            }
+            return false;
         }
     }
 }

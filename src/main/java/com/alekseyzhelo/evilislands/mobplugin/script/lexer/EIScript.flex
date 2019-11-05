@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.lexer;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
 

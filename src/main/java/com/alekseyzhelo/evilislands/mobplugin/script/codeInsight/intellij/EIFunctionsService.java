@@ -91,6 +91,7 @@ public class EIFunctionsService {
         typeToFunctionsInit.put(EITypeToken.STRING, stringFunctions);
         typeToFunctionsInit.put(EITypeToken.OBJECT, objectFunctions);
         typeToFunctionsInit.put(EITypeToken.GROUP, groupFunctions);
+        typeToFunctionsInit.put(EITypeToken.ANY, Arrays.asList(allFunctions));
         functionNameToPsi = Collections.unmodifiableMap(functionNameToPsiInit);
         functionNameToDoc = Collections.unmodifiableMap(functionNameToDocInit);
         typeToFunctions = Collections.unmodifiableMap(typeToFunctionsInit);
@@ -105,6 +106,7 @@ public class EIFunctionsService {
                                     .collect(Collectors.toList()))
             );
         }
+        typeToLookupElementsInit.put(EITypeToken.ANY, Collections.unmodifiableList(functionLookupElementsInit));
         functionLookupElements = Collections.unmodifiableList(functionLookupElementsInit);
         typeToLookupElements = Collections.unmodifiableMap(typeToLookupElementsInit);
     }

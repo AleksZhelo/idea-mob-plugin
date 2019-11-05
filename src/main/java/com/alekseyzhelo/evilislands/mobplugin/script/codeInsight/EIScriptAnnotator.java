@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.DeclareScriptQuickFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intentions.ImplementScriptQuickFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EIErrorMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
@@ -23,23 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 // TODO finish, proper
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
-
-    private static final String UNRESOLVED_FUNCTION_ERROR = "Unresolved function '%s'";
-    private static final String UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR = "Unresolved function or script '%s'";
-    private static final String UNDEFINED_VARIABLE_ERROR = "Cannot resolve variable '%s'";
-    private static final String WRONG_OBJECT_ID_ERROR = "Object with ID '%s' does not exist";
-    private static final String SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR = "Script call not allowed here";
-    private static final String NOT_ALLOWED_IN_SCRIPT_IF_ERROR = "Only float-valued functions allowed in this block";
-    private static final String SCRIPT_NOT_DECLARED_ERROR = "Script '%s' not declared";
-    private static final String SCRIPT_NOT_IMPLEMENTED_WARNING = "Declared script '%s' not implemented";
-
-    private static final String GS_VAR_ONLY_READ_WARNING = "Variable never written to";
-    private static final String GS_VAR_ONLY_WRITTEN_WARNING = "Variable only written to, never read";
-    private static final String GS_VAR_ONLY_READ_AND_ONCE_WARNING = GS_VAR_ONLY_READ_WARNING + ", read only once";
-    private static final String GS_VAR_ONLY_WRITTEN_AND_ONCE_WARNING = "Variable is written to only once and never read";
-    // TODO: need "once" stuff for areas?
-    private static final String AREA_ONLY_READ_WARNING = "Area not defined";
-    private static final String AREA_ONLY_WRITTEN_WARNING = "Area defined, but never used";
 
     private static final Logger LOG = Logger.getInstance(EIScriptAnnotator.class);
 
@@ -66,7 +50,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement ident = scriptDeclaration.getNameIdentifier();
             if (ident != null) {
                 Annotation annotation = markAsWarning(myHolder, ident,
-                        String.format(SCRIPT_NOT_IMPLEMENTED_WARNING, scriptDeclaration.getName()));
+                        EIErrorMessages.message("script.not.implemented", scriptDeclaration.getName()));
 
                 LocalQuickFix fix = new ImplementScriptQuickFix();
                 InspectionManager inspectionManager = InspectionManager.getInstance(psiFile.getProject());
@@ -88,7 +72,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
                 Annotation annotation = markAsError(myHolder, ident,
-                        String.format(SCRIPT_NOT_DECLARED_ERROR, scriptImplementation.getName()));
+                        EIErrorMessages.message("script.not.declared", scriptImplementation.getName()));
 
                 // TODO: move to local quick fix provider in reference?
                 InspectionManager inspectionManager = InspectionManager.getInstance(scriptImplementation.getProject());
@@ -160,7 +144,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         PsiElement resolved = reference.resolve();
         if (call.getParent() instanceof EIScriptIfBlock) {
             if (resolved instanceof EIScriptDeclaration) {
-                markAsError(myHolder, nameElement, SCRIPT_CALL_NOT_ALLOWED_HERE_ERROR);
+                markAsError(myHolder, nameElement, EIErrorMessages.message("not.allowed.in.script.if"));
             } else {
                 handleFunctionCallInIfBlock(myHolder, nameElement, (EIFunctionDeclaration) resolved);
             }
@@ -169,22 +153,13 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         }
     }
 
-//    @Override
-//    public void visitAssignment(@NotNull EIAssignment assignment) {
-//        super.visitAssignment(assignment);
-//
-//        if (assignment.getReference().resolve() == null) {
-//            markAsError(myHolder, assignment.getScriptIdentifier(), UNDEFINED_VARIABLE_ERROR);
-//        }
-//    }
-
     @Override
     public void visitVariableAccess(@NotNull EIVariableAccess access) {
         super.visitVariableAccess(access);
 
         if (access.getReference().resolve() == null) {
             markAsError(myHolder, access.getNameIdentifier(),
-                    String.format(UNDEFINED_VARIABLE_ERROR, access.getName()));
+                    EIErrorMessages.message("undefined.variable", access.getName()));
         }
     }
 
@@ -194,28 +169,40 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = expression.getReference();
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
-            markAsError(myHolder, expression, String.format(WRONG_OBJECT_ID_ERROR, reference.getCanonicalText()));
+            markAsError(myHolder, expression, EIErrorMessages.message("wrong.object.id", reference.getCanonicalText()));
+        }
+    }
+
+    @Override
+    public void visitAssignment(@NotNull EIAssignment assignment) {
+        super.visitAssignment(assignment);
+
+        EITypeToken lType = assignment.getVariableAccess().getType();
+        EITypeToken rType = assignment.getExpression() != null ? assignment.getExpression().getType() : null;
+        if (lType == null || !lType.equals(rType)) {
+            AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
         }
     }
 
     private void handleFunctionCallInIfBlock(@NotNull AnnotationHolder holder, PsiElement nameElement, EIFunctionDeclaration function) {
         if (function == null) {
-            markAsError(holder, nameElement, String.format(UNRESOLVED_FUNCTION_ERROR, nameElement.getText()));
+            markAsError(holder, nameElement, EIErrorMessages.message("unresolved.function", nameElement.getText()));
         } else {
             if (function.getType() == null || function.getType().getTypeToken() != EITypeToken.FLOAT) {
-                markAsError(holder, nameElement, NOT_ALLOWED_IN_SCRIPT_IF_ERROR);
+                markAsError(holder, nameElement, EIErrorMessages.message("not.allowed.in.script.if"));
             }
         }
     }
 
     private void handleFunctionOrScriptCall(@NotNull PsiElement element, @NotNull AnnotationHolder holder, PsiElement nameElement, PsiElement call) {
         if (call == null) {
-            markAsError(holder, nameElement, String.format(UNRESOLVED_FUNCTION_OR_SCRIPT_ERROR, nameElement.getText()));
+            markAsError(holder, nameElement, EIErrorMessages.message("unresolved.function.or.script", nameElement.getText()));
         }
     }
 
     private Annotation markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
         Annotation annotation = holder.createErrorAnnotation(nameElement.getTextRange(), errorString);
+        // TODO: should I keep this?
         annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
         return annotation;
     }

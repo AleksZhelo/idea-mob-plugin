@@ -177,6 +177,7 @@ public class ScriptPsiFile extends PsiFileBase {
             List<LookupElement> stringVars = new ArrayList<>();
             List<LookupElement> objectVars = new ArrayList<>();
             List<LookupElement> groupVars = new ArrayList<>();
+            List<LookupElement> allVars = new ArrayList<>();
             for (final EIGlobalVar globalVar : findGlobalVars()) {
                 if (globalVar.getName().length() > 0 && globalVar.getType() != null) {
                     LookupElement lookupElement = EILookupElementFactory.create(globalVar);
@@ -198,11 +199,16 @@ public class ScriptPsiFile extends PsiFileBase {
                     }
                 }
             }
+            allVars.addAll(floatVars);
+            allVars.addAll(stringVars);
+            allVars.addAll(objectVars);
+            allVars.addAll(groupVars);
             result.put(EITypeToken.VOID, Collections.emptyList());
             result.put(EITypeToken.FLOAT, Collections.unmodifiableList(floatVars));
             result.put(EITypeToken.STRING, Collections.unmodifiableList(stringVars));
             result.put(EITypeToken.OBJECT, Collections.unmodifiableList(objectVars));
             result.put(EITypeToken.GROUP, Collections.unmodifiableList(groupVars));
+            result.put(EITypeToken.ANY, Collections.unmodifiableList(allVars));
             return new Result<>(result, ScriptPsiFile.this);
         }
     }

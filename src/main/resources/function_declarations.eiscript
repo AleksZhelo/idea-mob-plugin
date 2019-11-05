@@ -98,7 +98,6 @@ Stand( Unit : object )
 StartAnimation( Unit : object , PathAnimation : string )
 Sub( A : float , B : float ) : float
 BlockUnit( Unit : object , Block : float )
-Dummy0() //Sum (???)
 SwitchLeverState( Lever : object , State : float )
 SwitchLeverStateEx( Lever : object , State : float , Delay : float )
 UMAg( Unit : object , Ag : float )
@@ -158,8 +157,6 @@ FixItems( )
 FixWorldTime( Time : float )
 Follow( UnitA : object , UnitB : object )
 AddMob( FileNameMob : string )
-Dummy1() //For( GlobalVariable : object , grp : group ) ( Command )
-Dummy2() //ForIf( цикл )
 GetAIClass( Unit : object ) : float
 GetBSZValue( x : float , y : float ) : float
 GetDiplomacy( nDiplomacyGroupA : float , nDiplomacyGroupB : float ) : float

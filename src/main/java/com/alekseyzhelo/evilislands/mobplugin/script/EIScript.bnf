@@ -68,7 +68,7 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scrip
 private scriptThenBody ::= scriptExpression*
 
 // TODO: how to do references here?
-scriptExpression ::= assignment | functionCall | forBlock {methods=[getType toString]}
+scriptExpression ::=  functionCall | forBlock | assignment {methods=[getType toString]}
 
 // TODO: Sum and ForIf?
 forBlock ::= FOR LPAREN variableAccess COMMA variableAccess RPAREN LPAREN scriptThenBody RPAREN
@@ -81,6 +81,7 @@ formalParameter ::= IDENTIFIER COLON type  {pin=1 mixin="com.alekseyzhelo.evilis
 // TODO: how to do references here?
 expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
 
+// TODO: append !LPAREN ?
 variableAccess ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
 implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType toString]}
 
@@ -91,7 +92,7 @@ functionCall ::= IDENTIFIER params {mixin="com.alekseyzhelo.evilislands.mobplugi
 params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
 
 // TODO: handle no error on right part missing
-assignment ::= variableAccess EQUALS expression {pin=2 methods=[toString]} // TODO: this pin and error recovery stuff
+assignment ::= variableAccess EQUALS expression {pin=1 recoverWhile=scriptAssignmentRecover methods=[toString]} // TODO: this pin and error recovery stuff
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"}
@@ -100,6 +101,7 @@ private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
 private scriptIfBlockRecover ::= !(THEN)  // can't get this kind of stuff to work :(
 private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)  // can't get this kind of stuff to work :(
+private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER)
 private scriptBlockRecover ::= !(IF | RPAREN)  // can't get this kind of stuff to work :(
 private worldScriptRecover ::= !(RPAREN)
 private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers!

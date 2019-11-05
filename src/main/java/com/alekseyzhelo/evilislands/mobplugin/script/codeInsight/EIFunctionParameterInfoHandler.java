@@ -64,9 +64,7 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
             return;
         }
 
-        int paramIndex = calculateCurrentParamIndex(parameterOwner, context.getFile().findElementAt(context.getOffset()));
-        int testIndex = ParameterInfoUtils.getCurrentParameterIndex(parameterOwner.getNode(), context.getOffset(), ScriptTypes.COMMA);
-        context.setCurrentParameter(paramIndex);
+        context.setCurrentParameter(ParameterInfoUtils.getCurrentParameterIndex(parameterOwner.getNode(), context.getOffset(), ScriptTypes.COMMA));
     }
 
     @Override
@@ -112,41 +110,42 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
         return null;
     }
 
-    private int calculateCurrentParamIndex(@NotNull EIParams params, PsiElement element) {
-        if (element == null) {
-            return -1;
-        }
-
-        List<EIExpression> paramList = params.getExpressionList();
-        IElementType elementType = element.getNode().getElementType();
-
-        if (elementType == ScriptTypes.RPAREN) {
-            return paramList.size() - 1;
-        }
-        if (elementType == ScriptTypes.LPAREN) {
-            return 0;
-        }
-
-        if (PsiTreeUtil.getParentOfType(element, EIExpression.class, false, EIParams.class) == null) {
-            if (elementType == ScriptTypes.COMMA) {
-                element = PsiTreeUtil.getPrevSiblingOfType(element, EIExpression.class);
-            } else {
-                element = PsiTreeUtil.getNextSiblingOfType(element, EIExpression.class);
-            }
-        }
-        final PsiElement finalElement = element;
-
-        // TODO: or 0 for empty parentheses with > 0 formal params?
-        if (finalElement != null) {
-            Optional<EIExpression> expression = paramList.stream()
-                    .filter((x) -> PsiTreeUtil.isAncestor(x, finalElement, false))
-                    .findFirst();
-
-            return expression.map(paramList::indexOf).orElse(-1);
-        } else {
-            return -1;
-        }
-    }
+    // TODO: remove when sure that ParameterInfoUtils.getCurrentParameterIndex is fine for me
+//    private int calculateCurrentParamIndex(@NotNull EIParams params, PsiElement element) {
+//        if (element == null) {
+//            return -1;
+//        }
+//
+//        List<EIExpression> paramList = params.getExpressionList();
+//        IElementType elementType = element.getNode().getElementType();
+//
+//        if (elementType == ScriptTypes.RPAREN) {
+//            return paramList.size() - 1;
+//        }
+//        if (elementType == ScriptTypes.LPAREN) {
+//            return 0;
+//        }
+//
+//        if (PsiTreeUtil.getParentOfType(element, EIExpression.class, false, EIParams.class) == null) {
+//            if (elementType == ScriptTypes.COMMA) {
+//                element = PsiTreeUtil.getPrevSiblingOfType(element, EIExpression.class);
+//            } else {
+//                element = PsiTreeUtil.getNextSiblingOfType(element, EIExpression.class);
+//            }
+//        }
+//        final PsiElement finalElement = element;
+//
+//        // TODO: or 0 for empty parentheses with > 0 formal params?
+//        if (finalElement != null) {
+//            Optional<EIExpression> expression = paramList.stream()
+//                    .filter((x) -> PsiTreeUtil.isAncestor(x, finalElement, false))
+//                    .findFirst();
+//
+//            return expression.map(paramList::indexOf).orElse(-1);
+//        } else {
+//            return -1;
+//        }
+//    }
 
     @NotNull
     @Override

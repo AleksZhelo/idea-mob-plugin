@@ -8,6 +8,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
@@ -18,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil.HAS_ERROR_CHILD;
 
 // TODO: ResolveCache.getInstance(getProject()).resolveWithCaching()?
 public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
@@ -48,6 +51,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
     @Override
     public Object[] getVariants() {
         ScriptPsiFile scriptFile = (ScriptPsiFile) myElement.getContainingFile();
+        // TODO: ANY type;
         EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(myElement);
         List<LookupElement> variants = new ArrayList<>();
 
@@ -58,11 +62,11 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
 
         List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(scriptFile, myElement);
         // TODO: extract?
-        if (params != null) {
+        if (params != null && expectedType != null) {
             for (final EIFormalParameter param : params) {
                 EIType paramType = param.getType();
                 if (param.getName().length() > 0 && paramType != null) {
-                    if (expectedType != null && paramType.getTypeToken() != expectedType) {
+                    if (expectedType != EITypeToken.ANY && paramType.getTypeToken() != expectedType) {
                         continue;
                     }
                     variants.add(EILookupElementFactory.create(param));
@@ -71,17 +75,29 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         }
 
         PsiElement parent = myElement.getParent();
-        // not directly in assignment, i.e. not on the left side of assignment, and not the first var in a For
+        // incomplete assignment -> may be a void function or a script
+        if (parent instanceof EIAssignment) {
+            if (((EIAssignment) parent).getExpression() == null || HAS_ERROR_CHILD.accepts(parent)){
+                suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
+                List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
+                variants.addAll(scriptsLookup);
+            }
+        }
+        // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
         if (!(parent instanceof EIAssignment) &&
                 !(parent instanceof EIForBlock && ((((EIForBlock) parent).getVariableAccessList().indexOf(myElement) == 0)))) {
-            EIFunctionsService service = EIFunctionsService.getInstance(scriptFile.getProject());
-            List<LookupElement> acceptableFunctions = service.getFunctionLookupElements(expectedType);
-            if (acceptableFunctions != null) {
-                variants.addAll(acceptableFunctions);
-            }
+            suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
         }
 
         return variants.toArray();
+    }
+
+    private void suggestFunctionsOfType(Project project, List<LookupElement> variants, EITypeToken expectedType) {
+        EIFunctionsService service = EIFunctionsService.getInstance(project);
+        List<LookupElement> acceptableFunctions = service.getFunctionLookupElements(expectedType);
+        if (acceptableFunctions != null) {
+            variants.addAll(acceptableFunctions);
+        }
     }
 
     private static class MyResolver implements ResolveCache.AbstractResolver<VariableReference, PsiElement> {

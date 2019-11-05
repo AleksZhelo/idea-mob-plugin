@@ -34,6 +34,7 @@ public class EIScriptPsiImplUtil {
 //    }
 
     @NotNull
+    // TODO: cache for getReference as well?
     public static PsiReference getReference(EIFunctionCall call) {
         PsiElement ident = call.getNameIdentifier();
         return new FunctionCallReference(call, TextRange.create(0, ident.getTextLength()));

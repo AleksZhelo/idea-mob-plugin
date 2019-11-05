@@ -18,16 +18,15 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Condition;
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
-import com.intellij.psi.PsiComment;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiWhiteSpace;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ArrayUtil;
 import com.intellij.util.SmartList;
@@ -41,6 +40,10 @@ import java.util.*;
  */
 // TODO: remove?
 public class UsefulPsiTreeUtil {
+
+    public static final PsiElementPattern.Capture<PsiElement> HAS_ERROR_CHILD = PlatformPatterns.psiElement()
+            .withChild(PlatformPatterns.psiElement(PsiErrorElement.class));
+
     @Nullable
     public static PsiElement getFirstChildSkipWhiteSpacesAndComments(@Nullable PsiElement root) {
         if (root == null) return null;
