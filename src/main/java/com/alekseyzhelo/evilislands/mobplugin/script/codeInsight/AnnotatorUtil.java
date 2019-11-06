@@ -28,6 +28,34 @@ final class AnnotatorUtil {
     }
 
     @NotNull
+    static Annotation createBadForArgumentsAnnotation(@NotNull AnnotationHolder holder,
+                                                      @NotNull TextRange textRange,
+                                                      EITypeToken firstArgType,
+                                                      EITypeToken secondArgType) {
+
+        EITypeToken[] expected = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP};
+        EITypeToken[] actual = new EITypeToken[]{firstArgType, secondArgType};
+        StringBuilder ms = new StringBuilder();
+        for (int i = 0; i < expected.length; i++) {
+            boolean assignable = EIScriptTypingUtil.matchingType(expected[i], actual[i]);
+            String mismatchColor = assignable ? null : getFittingRed();
+            ms.append("<td> " + "<b><nobr>");
+            ms.append(i == 0 ? "(" : "");
+            ms.append("<font ");
+            if (!assignable) ms.append("color=").append(mismatchColor);
+            ms.append(">");
+            ms.append(XmlStringUtil.escapeString(getName(actual[i])));
+            ms.append("</font>");
+            ms.append(i == expected.length - 1 ? ")" : ",");
+            ms.append("</nobr></b></td>");
+        }
+        // TODO: message needed here?
+        Annotation annotation = holder.createErrorAnnotation(textRange, "");
+        annotation.setTooltip(EIMessages.message("for.block.argument.mismatch.html.tooltip", ms.toString()));
+        return annotation;
+    }
+
+    @NotNull
     static Annotation createIncompatibleCallTypesAnnotation(@NotNull AnnotationHolder holder,
                                                             @NotNull List<EIFormalParameter> parameters,
                                                             @NotNull List<EIExpression> arguments,

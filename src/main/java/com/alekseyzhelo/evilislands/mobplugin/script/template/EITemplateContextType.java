@@ -93,4 +93,21 @@ public abstract class EITemplateContextType extends TemplateContextType {
             return false;
         }
     }
+
+    public static class ScriptExpressionAllowed extends EITemplateContextType {
+        
+        public ScriptExpressionAllowed() {
+            super("EI_SCRIPT_EXPRESSION_ALLOWED", "Script expression allowed", EIGeneric.class);
+        }
+
+        @Override
+        protected boolean isInContext(@NotNull PsiElement element) {
+            PsiElement parent = element.getParent();
+            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
+                parent = parent.getParent();
+            }
+
+            return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;
+        }
+    }
 }

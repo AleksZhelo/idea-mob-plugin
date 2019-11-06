@@ -10,6 +10,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.intellij.codeInsight.daemon.JavaErrorMessages;
 import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -107,6 +108,27 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (scriptExpression.getType() != EITypeToken.VOID) {
             markAsWarning(myHolder, scriptExpression,
                     EIMessages.message("warn.script.expression.result.ignored", scriptExpression.getText()));
+        }
+    }
+
+    @Override
+    public void visitForBlock(@NotNull EIForBlock forBlock) {
+        super.visitForBlock(forBlock);
+
+        List<EIVariableAccess> variableAccessList = forBlock.getVariableAccessList();
+        EIVariableAccess firstArg = variableAccessList.get(0);
+        // TODO: baaaad
+        PsiElement secondArg = variableAccessList.size() > 1 ? variableAccessList.get(1) : forBlock.getFunctionCall();
+        if (firstArg != null && secondArg != null) {
+            EITypeToken typeFirst = firstArg.getType();
+            EITypeToken typeSecond = secondArg instanceof EIFunctionCall ? ((EIFunctionCall) secondArg).getType() : ((EIVariableAccess) secondArg).getType();
+            if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP) {
+                AnnotatorUtil.createBadForArgumentsAnnotation(
+                        myHolder,
+                        TextRange.create(firstArg.getTextOffset(), secondArg.getTextOffset() + secondArg.getTextLength()),
+                        typeFirst,
+                        typeSecond);
+            }
         }
     }
 

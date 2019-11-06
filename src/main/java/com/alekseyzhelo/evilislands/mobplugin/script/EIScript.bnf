@@ -71,6 +71,7 @@ private scriptThenBody ::= scriptExpression*
 scriptExpression ::=  functionCall | forBlock | assignment {methods=[getType toString]}
 
 // TODO: Sum and ForIf?
+// TODO: pin=2?
 forBlock ::= FOR LPAREN variableAccess COMMA (functionCall | variableAccess) RPAREN LPAREN scriptThenBody RPAREN
 
 private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
