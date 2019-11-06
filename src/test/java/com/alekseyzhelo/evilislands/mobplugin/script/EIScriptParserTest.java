@@ -33,8 +33,10 @@ public class EIScriptParserTest extends ParsingTestCase {
             String text = loadFile(name + "." + myFileExt);
             final int reps = 20;
             int ms = 0;
+            final Stopwatch stopwatch = Stopwatch.createUnstarted();
             for (int i = 0; i < reps; i++) {
-                final Stopwatch stopwatch = Stopwatch.createStarted();
+                stopwatch.reset();
+                stopwatch.start();
                 doParse(name, text);
                 ms += stopwatch.stop().elapsed(TimeUnit.MILLISECONDS);
             }
