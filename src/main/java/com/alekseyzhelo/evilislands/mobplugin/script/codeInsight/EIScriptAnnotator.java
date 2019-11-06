@@ -159,7 +159,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 //            }
 //        }
 
-        // TODO: optimize?
         FunctionCallReference reference = (FunctionCallReference) call.getReference();
         PsiElement nameElement = call.getNameIdentifier();
         PsiElement resolved = reference.resolve();
@@ -173,6 +172,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             handleFunctionOrScriptCall(call, myHolder, nameElement, resolved);
         }
 
+        // TODO: same for For args!
         if (resolved instanceof EICallableDeclaration) {
             EICallableDeclaration callable = (EICallableDeclaration) resolved;
             List<EIFormalParameter> formalParameters = callable.getCallableParams();
