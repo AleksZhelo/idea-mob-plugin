@@ -5,6 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareSc
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ImplementScriptFix;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
@@ -23,6 +24,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 // TODO finish, proper
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
@@ -159,6 +162,32 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         } else {
             handleFunctionOrScriptCall(call, myHolder, nameElement, resolved);
         }
+
+        if (resolved instanceof EICallableDeclaration) {
+            EICallableDeclaration callable = (EICallableDeclaration) resolved;
+            List<EIFormalParameter> formalParameters= callable.getCallableParams();
+            List<EIExpression> actualArguments = call.getParams() != null ? call.getParams().getExpressionList() : null;
+            assert actualArguments != null;
+            boolean isError = formalParameters.size() != actualArguments.size();
+            if (!isError){
+                for (int i = 0; i < actualArguments.size(); i++) {
+                    EIType expectedType = formalParameters.get(i).getType();
+                    EITypeToken actualType = actualArguments.get(i).getType();
+                    if (actualType == null || expectedType == null || !expectedType.getTypeToken().equals(actualType)){
+                        isError = true;
+                        break;
+                    }
+                }
+            }
+            if (isError) {
+                Annotation annotation = AnnotatorUtil.createWrongArgumentsAnnotation(
+                        myHolder,
+                        call.getParams().getTextRange(),
+                        callable,
+                        call.getParams()
+                );
+            }
+        }
     }
 
     @Override
@@ -209,6 +238,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         }
     }
 
+    // TODO: redo, as well as markAsError
     private void handleFunctionCallInIfBlock(@NotNull AnnotationHolder holder, PsiElement nameElement, EIFunctionDeclaration function) {
         if (function == null) {
             markAsError(holder, nameElement, EIMessages.message("error.unresolved.function", nameElement.getText()));
