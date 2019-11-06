@@ -1,6 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,4 +80,11 @@ public final class EIScriptNamingUtil {
 
     }
 
+    public static String getName(@Nullable EITypeToken type) {
+        return type == null ? "" : type.getTypeString();
+    }
+
+    public static String getName(@Nullable EIType type) {
+        return type == null ? "" : getName(type.getTypeToken());
+    }
 }

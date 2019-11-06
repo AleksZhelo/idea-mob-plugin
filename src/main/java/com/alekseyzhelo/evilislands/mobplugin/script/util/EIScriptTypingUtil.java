@@ -75,8 +75,8 @@ public final class EIScriptTypingUtil {
     /**
      * Get the expected type of an expression in a parameters sequence.
      *
-     * @param paramOwner     the parameters containing the expression
-     * @param param the expression to process
+     * @param paramOwner the parameters containing the expression
+     * @param param      the expression to process
      * @return the expected type token
      */
     public static EITypeToken getExpectedType(EIParams paramOwner, EIExpression param) {
@@ -99,5 +99,15 @@ public final class EIScriptTypingUtil {
             }
         }
         return null;
+    }
+
+    public static boolean matchingType(EIFormalParameter parameter, EIExpression expression) {
+        if (parameter == null || expression == null) return false;
+        EIType paramType = parameter.getType();
+        return matchingType(paramType != null ? paramType.getTypeToken() : null, expression.getType());
+    }
+
+    public static boolean matchingType(EITypeToken lType, EITypeToken rType) {
+        return lType != null && lType.equals(rType);
     }
 }

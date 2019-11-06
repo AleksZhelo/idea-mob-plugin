@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ChangeVariableTypeFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ChangeLvalueTypeFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareScriptFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ImplementScriptFix;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
@@ -101,6 +101,16 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
+    public void visitScriptExpression(@NotNull EIScriptExpression scriptExpression) {
+        super.visitScriptExpression(scriptExpression);
+
+        if (scriptExpression.getType() != EITypeToken.VOID) {
+            markAsWarning(myHolder, scriptExpression,
+                    EIMessages.message("warn.script.expression.result.ignored", scriptExpression.getText()));
+        }
+    }
+
+    @Override
     public void visitFunctionCall(@NotNull EIFunctionCall call) {
         super.visitFunctionCall(call);
 
@@ -165,27 +175,50 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         if (resolved instanceof EICallableDeclaration) {
             EICallableDeclaration callable = (EICallableDeclaration) resolved;
-            List<EIFormalParameter> formalParameters= callable.getCallableParams();
-            List<EIExpression> actualArguments = call.getParams() != null ? call.getParams().getExpressionList() : null;
+            List<EIFormalParameter> formalParameters = callable.getCallableParams();
+            EIParams argumentHolder = call.getParams();
+            List<EIExpression> actualArguments = argumentHolder != null ? argumentHolder.getExpressionList() : null;
             assert actualArguments != null;
-            boolean isError = formalParameters.size() != actualArguments.size();
-            if (!isError){
-                for (int i = 0; i < actualArguments.size(); i++) {
-                    EIType expectedType = formalParameters.get(i).getType();
-                    EITypeToken actualType = actualArguments.get(i).getType();
-                    if (actualType == null || expectedType == null || !expectedType.getTypeToken().equals(actualType)){
-                        isError = true;
-                        break;
-                    }
+            int numErrors = 0;
+            int firstWrong = Integer.MAX_VALUE;
+            for (int i = 0; i < Math.max(formalParameters.size(), actualArguments.size()); i++) {
+                EIFormalParameter parameter = i < formalParameters.size() ? formalParameters.get(i) : null;
+                EIExpression expression = i < actualArguments.size() ? actualArguments.get(i) : null;
+                EIType expectedType = parameter != null ? parameter.getType() : null;
+                EITypeToken actualType = expression != null ? expression.getType() : null;
+                if (actualType == null || expectedType == null || !expectedType.getTypeToken().equals(actualType)) {
+                    numErrors++;
+                    firstWrong = Math.min(firstWrong, i);
                 }
             }
-            if (isError) {
-                Annotation annotation = AnnotatorUtil.createWrongArgumentsAnnotation(
-                        myHolder,
-                        call.getParams().getTextRange(),
-                        callable,
-                        call.getParams()
-                );
+            if (numErrors > 0) {
+                if (numErrors > 1 || formalParameters.size() != actualArguments.size()) {
+                    Annotation annotation = AnnotatorUtil.createBadCallArgumentsAnnotation(
+                            myHolder,
+                            callable,
+                            argumentHolder
+                    );
+                } else {
+                    Annotation annotation = AnnotatorUtil.createIncompatibleCallTypesAnnotation(
+                            myHolder,
+                            formalParameters,
+                            actualArguments,
+                            firstWrong);
+                    if (resolved instanceof EIScriptDeclaration) {
+                        EIFormalParameter parameter = formalParameters.get(firstWrong);
+                        EIExpression expression = actualArguments.get(firstWrong);
+                        InspectionManager inspectionManager = InspectionManager.getInstance(resolved.getProject());
+                        LocalQuickFix fix = new ChangeLvalueTypeFix(parameter, expression.getType());
+                        ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
+                                expression,
+                                annotation.getMessage(),
+                                fix,
+                                ProblemHighlightType.ERROR,
+                                true
+                        );
+                        annotation.registerFix(fix, expression.getTextRange(), null, descriptor);
+                    }
+                }
             }
         }
     }
@@ -225,10 +258,10 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             if (lType != null && rType != null && target != null) {
                 // TODO: move to local quick fix provider in reference?
                 InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
-                LocalQuickFix fix = new ChangeVariableTypeFix((PsiNamedElement) target, rType);
+                LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
                         access.getNameIdentifier(),
-                        EIMessages.message("fix.change.variable.type", access.getName(), rType.getTypeString()),
+                        annotation.getMessage(),
                         fix,
                         ProblemHighlightType.ERROR,
                         true
@@ -262,10 +295,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         return annotation;
     }
 
-    private Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
-        Annotation annotation = holder.createWarningAnnotation(nameElement.getTextRange(), warningString);
-        annotation.setHighlightType(ProblemHighlightType.WARNING);
-        return annotation;
+    private Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull String warningString) {
+        return holder.createWarningAnnotation(element.getTextRange(), warningString);
     }
 
     private void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {

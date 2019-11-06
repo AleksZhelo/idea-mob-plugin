@@ -5,6 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.FileModificationService;
+import com.intellij.codeInsight.daemon.impl.quickfix.RemoveRedundantArgumentsFix;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.LocalQuickFixAndIntentionActionOnPsiElement;
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement;
@@ -17,28 +18,30 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-public class ChangeVariableTypeFix extends LocalQuickFixOnPsiElement {
+public class ChangeLvalueTypeFix extends LocalQuickFixOnPsiElement {
 
     private final String varName;
     private final EITypeToken newType;
+    private final boolean isParameter;
 
-    public ChangeVariableTypeFix(@NotNull PsiNamedElement element, EITypeToken newType) {
+    public ChangeLvalueTypeFix(@NotNull PsiNamedElement element, EITypeToken newType) {
         super(element);
         varName = element.getName();
         this.newType = newType;
+        isParameter = element instanceof EIFormalParameter;
     }
 
     @NotNull
     @Override
     public String getText() {
-        return EIMessages.message("fix.change.variable.type", varName, newType.getTypeString());
+        return EIMessages.message(isParameter ? "fix.change.parameter.type" : "fix.change.variable.type", varName, newType.getTypeString());
     }
 
     @Nls(capitalization = Nls.Capitalization.Sentence)
     @NotNull
     @Override
     public String getFamilyName() {
-        return EIMessages.message("fix.change.variable.type.base");
+        return EIMessages.message("fix.change.type.base");
     }
 
     @Override

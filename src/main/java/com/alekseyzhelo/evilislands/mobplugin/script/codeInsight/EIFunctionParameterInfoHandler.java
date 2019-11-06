@@ -78,7 +78,7 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
         int paramIndex = context.getCurrentParameterIndex();
 
         if (context.isSingleParameterInfo()) {
-            if (paramIndex != -1) {
+            if (paramIndex != -1 && paramIndex < parameters.size()) {
                 String hint = parameters.get(paramIndex).getText().trim();
                 context.setupUIComponentPresentation(hint, 0, hint.length(), false,
                         false, false, context.getDefaultParameterColor());
@@ -87,7 +87,9 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
             String hint = parameters.stream()
                     .reduce("", (u, x) -> u + x.getText().trim() + ", ", String::concat);
             hint = hint.substring(0, hint.length() - 2);
-            String currentParamText = paramIndex != -1 ? parameters.get(paramIndex).getText().trim() : "";
+            String currentParamText = paramIndex != -1 && paramIndex < parameters.size()
+                    ? parameters.get(paramIndex).getText().trim()
+                    : "";
             int currentParamStart = hint.indexOf(currentParamText);
             context.setupUIComponentPresentation(hint, currentParamStart, currentParamStart + currentParamText.length(),
                     false, false, false, context.getDefaultParameterColor());
