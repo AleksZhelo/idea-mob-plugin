@@ -51,7 +51,6 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
     @Override
     public Object[] getVariants() {
         ScriptPsiFile scriptFile = (ScriptPsiFile) myElement.getContainingFile();
-        // TODO: ANY type;
         EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(myElement);
         List<LookupElement> variants = new ArrayList<>();
 

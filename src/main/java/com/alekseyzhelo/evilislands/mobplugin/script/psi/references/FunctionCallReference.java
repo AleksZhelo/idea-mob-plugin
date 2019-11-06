@@ -1,10 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -51,13 +50,22 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
     @NotNull
     @Override
-    // TODO: typing here too?
+    // TODO: typing here too
     // TODO: cache as well?
     public Object[] getVariants() {
-        List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
-
+        PsiElement parent = myElement.getParent();
+        List<LookupElement> variants = new ArrayList<>();
         EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
-        variants.addAll(service.getFunctionLookupElements());
+
+        if (parent instanceof EIScriptIfBlock){
+            variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
+        } else if (parent instanceof EIForBlock) {
+            variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
+        } else {
+            variants.addAll(file.getScriptLookupElements());
+            variants.addAll(service.getFunctionLookupElements());
+        }
+
         return variants.toArray();
     }
 
