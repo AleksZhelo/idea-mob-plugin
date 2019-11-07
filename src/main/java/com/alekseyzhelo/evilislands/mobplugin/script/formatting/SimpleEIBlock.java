@@ -34,7 +34,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
             LPAREN,
             RPAREN,
             FUNCTION_CALL,
-            SCRIPT_EXPRESSION
+            SCRIPT_STATEMENT
     );
 
 

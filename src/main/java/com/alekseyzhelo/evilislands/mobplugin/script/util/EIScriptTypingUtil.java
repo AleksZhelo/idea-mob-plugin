@@ -36,7 +36,7 @@ public final class EIScriptTypingUtil {
         PsiElement parent = variableAccess.getParent();
 
         if (parent instanceof EIForBlock) {
-            int myIndex = ((EIForBlock) parent).getVariableAccessList().indexOf(variableAccess);
+            int myIndex = ((EIForBlock) parent).getExpressionList().indexOf(variableAccess);
             if (myIndex == 0) {
                 return EITypeToken.OBJECT;
             } else if (myIndex == 1) {
@@ -46,30 +46,26 @@ public final class EIScriptTypingUtil {
             }
         }
 
-        if (parent instanceof EIExpression) { // either inside a call or on the right side of an assignment
-            PsiElement superParent = parent.getParent();
-            if (superParent instanceof EIAssignment) {
-                EIVariableAccess leftSide = ((EIAssignment) superParent).getVariableAccess();
+        if (parent instanceof EIAssignment) {
+            List<EIExpression> expressions = ((EIAssignment) parent).getExpressionList();
+            int myIndex = expressions.indexOf(variableAccess);
+            if (myIndex == 0) { // left side
+                EIExpression rightSide = expressions.size() > 1 ? expressions.get(1) : null;
+                // if rightSide == null the assignment is incomplete, any type is OK
+                return rightSide != null ? rightSide.getType() : EITypeToken.ANY;
+            } else if (myIndex == 1) {
+                EIExpression leftSide = expressions.get(0);
                 return leftSide.getType();
-            } else {  // in a call
-                EIParams params = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIParams.class);
-                EIExpression expression = UsefulPsiTreeUtil.getParentOfType(variableAccess, EIExpression.class);
-                return getExpectedType(params, expression);
+            } else {
+                return null;
             }
         }
 
-        if (parent instanceof EIAssignment) {  // variableAccess on the left side of an assignment
-            EIExpression expression = ((EIAssignment) parent).getExpression();
-            // if expression == null the assignment is incomplete, any type is OK
-            return expression != null ? expression.getType() : EITypeToken.ANY;
+        if (parent instanceof EIParams) {
+            return getExpectedType((EIParams) parent, variableAccess);
         }
 
         return null;  // shouldn't happen
-    }
-
-    public static EITypeToken getAssigneeExpectedType(EIAssignment assignment) {
-        EIExpression expression = assignment.getExpression();
-        return expression != null ? expression.getType() : null;
     }
 
     /**

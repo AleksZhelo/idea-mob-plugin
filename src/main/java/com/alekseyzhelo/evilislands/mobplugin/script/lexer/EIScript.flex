@@ -23,6 +23,7 @@ LINE_TERMINATOR = \r|\n|\r\n
 INPUT_CHARACTER = [^\r\n]
 STRING_CHARACTER = [^\r\n\"]
 WHITE_SPACE = [\ \t\f]
+WHITE_SPACE_OR_TERMINATOR = {WHITE_SPACE} | {LINE_TERMINATOR}
 COMMENT = "//" {INPUT_CHARACTER}*
 FLOAT = "float"
 STRING = "string"
@@ -61,10 +62,9 @@ FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
     ")"                                          { return ScriptTypes.RPAREN; }
     ","                                          { return ScriptTypes.COMMA; }
     ":"                                          { return ScriptTypes.COLON; }
-    {WHITE_SPACE}                                { return TokenType.WHITE_SPACE; }
+    {WHITE_SPACE_OR_TERMINATOR}+                 { return TokenType.WHITE_SPACE; }
     ^{COMMENT}                                   { return ScriptTypes.WHOLE_LINE_COMMENT; }
     {COMMENT}                                    { return ScriptTypes.COMMENT; }
-    {LINE_TERMINATOR}                            { return TokenType.WHITE_SPACE; }
     \"                                           { yybegin(STRING); }
 }
 

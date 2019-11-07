@@ -76,7 +76,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         PsiElement parent = myElement.getParent();
         // incomplete assignment -> may be a void function or a script
         if (parent instanceof EIAssignment) {
-            if (((EIAssignment) parent).getExpression() == null || HAS_ERROR_CHILD.accepts(parent)){
+            if (((EIAssignment) parent).getExpressionList().size() == 1 || HAS_ERROR_CHILD.accepts(parent)){
                 suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
                 List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
                 variants.addAll(scriptsLookup);
@@ -84,7 +84,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         }
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
         if (!(parent instanceof EIAssignment) &&
-                !(parent instanceof EIForBlock && ((((EIForBlock) parent).getVariableAccessList().indexOf(myElement) == 0)))) {
+                !(parent instanceof EIForBlock && ((((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0)))) {
             suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
         }
 

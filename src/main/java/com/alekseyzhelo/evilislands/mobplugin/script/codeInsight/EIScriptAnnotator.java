@@ -10,7 +10,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInsight.daemon.JavaErrorMessages;
 import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
@@ -102,12 +101,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
-    public void visitScriptExpression(@NotNull EIScriptExpression scriptExpression) {
-        super.visitScriptExpression(scriptExpression);
+    public void visitExpressionStatement(@NotNull EIExpressionStatement expressionStatement) {
+        super.visitExpressionStatement(expressionStatement);
 
-        if (scriptExpression.getType() != EITypeToken.VOID) {
-            markAsWarning(myHolder, scriptExpression,
-                    EIMessages.message("warn.script.expression.result.ignored", scriptExpression.getText()));
+        if (expressionStatement.getType() != EITypeToken.VOID) {
+            markAsWarning(myHolder, expressionStatement,
+                    EIMessages.message("warn.script.expression.result.ignored", expressionStatement.getText()));
         }
     }
 
@@ -115,19 +114,21 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitForBlock(@NotNull EIForBlock forBlock) {
         super.visitForBlock(forBlock);
 
-        List<EIVariableAccess> variableAccessList = forBlock.getVariableAccessList();
-        EIVariableAccess firstArg = variableAccessList.get(0);
-        // TODO: baaaad
-        PsiElement secondArg = variableAccessList.size() > 1 ? variableAccessList.get(1) : forBlock.getFunctionCall();
-        if (firstArg != null && secondArg != null) {
-            EITypeToken typeFirst = firstArg.getType();
-            EITypeToken typeSecond = secondArg instanceof EIFunctionCall ? ((EIFunctionCall) secondArg).getType() : ((EIVariableAccess) secondArg).getType();
-            if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP) {
-                AnnotatorUtil.createBadForArgumentsAnnotation(
-                        myHolder,
-                        TextRange.create(firstArg.getTextOffset(), secondArg.getTextOffset() + secondArg.getTextLength()),
-                        typeFirst,
-                        typeSecond);
+        List<EIExpression> expressions = forBlock.getExpressionList();
+        // TODO: need to do anything otherwise?
+        if (expressions.size() == 2) {
+            EIExpression firstArg = expressions.get(0);
+            PsiElement secondArg = expressions.get(1);
+            if (firstArg != null && secondArg != null) {
+                EITypeToken typeFirst = firstArg.getType();
+                EITypeToken typeSecond = secondArg instanceof EIFunctionCall ? ((EIFunctionCall) secondArg).getType() : ((EIVariableAccess) secondArg).getType();
+                if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP) {
+                    AnnotatorUtil.createBadForArgumentsAnnotation(
+                            myHolder,
+                            TextRange.create(firstArg.getTextOffset(), secondArg.getTextOffset() + secondArg.getTextLength()),
+                            typeFirst,
+                            typeSecond);
+                }
             }
         }
     }
@@ -269,20 +270,21 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitAssignment(@NotNull EIAssignment assignment) {
         super.visitAssignment(assignment);
 
-        EIVariableAccess access = assignment.getVariableAccess();
-        EITypeToken lType = access.getType();
-        EITypeToken rType = assignment.getExpression() != null ? assignment.getExpression().getType() : null;
+        List<EIExpression> expressions = assignment.getExpressionList();
+        EIExpression left = expressions.get(0);
+        EITypeToken lType = expressions.get(0).getType();
+        EITypeToken rType = expressions.size() > 1 ? expressions.get(1).getType() : null;
         if (lType == null || !lType.equals(rType)) {
             Annotation annotation =
                     AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
 
-            PsiElement target = access.getReference().resolve();
+            PsiElement target = left.getReference().resolve();
             if (lType != null && rType != null && target != null) {
                 // TODO: move to local quick fix provider in reference?
                 InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
                 LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
-                        access.getNameIdentifier(),
+                        left,
                         annotation.getMessage(),
                         fix,
                         ProblemHighlightType.ERROR,

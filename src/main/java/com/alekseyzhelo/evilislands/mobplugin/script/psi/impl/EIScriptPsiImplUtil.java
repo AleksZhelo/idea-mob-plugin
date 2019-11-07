@@ -54,22 +54,22 @@ public class EIScriptPsiImplUtil {
     }
 
     @Nullable
-    public static PsiReference getReference(EIExpression expression) {
-        ASTNode firstChild = expression.getNode().getFirstChildNode();
+    public static PsiReference getReference(EILiteral literal) {
+        ASTNode firstChild = literal.getNode().getFirstChildNode();
         final IElementType elementType = firstChild.getElementType();
-
-        if (COULD_HAVE_MOB_OBJECT_REF.contains(elementType)) {
+//
+//        if (COULD_HAVE_MOB_OBJECT_REF.contains(elementType)) {
             boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
             final String functionName = isFloat ? "getobject" : "getobjectbyid";
 
-            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(expression, EIFunctionCall.class);
+            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(literal, EIFunctionCall.class);
             if (parentCall != null && parentCall.getName().equalsIgnoreCase(functionName)) {
                 TextRange range = isFloat
                         ? new TextRange(0, firstChild.getTextLength())
                         : new TextRange(1, firstChild.getTextLength() - 1);
-                return new MobObjectReference(expression, range);
+                return new MobObjectReference(literal, range);
             }
-        }
+//        }
 
         return null;
     }
@@ -128,33 +128,30 @@ public class EIScriptPsiImplUtil {
     }
 
     @Nullable
-    public static EITypeToken getType(EIExpression element) {
+    public static EITypeToken getType(EILiteral element) {
         ASTNode firstChild = element.getNode().getFirstChildNode();
         final IElementType elementType = firstChild.getElementType();
         if (elementType == ScriptTypes.FLOATNUMBER) {
             return EITypeToken.FLOAT;
         } else if (elementType == ScriptTypes.CHARACTER_STRING) {
             return EITypeToken.STRING;
-        } else if (element.getFunctionCall() != null) {
-            return element.getFunctionCall().getType();
-        } else if (element.getVariableAccess() != null) {
-            return element.getVariableAccess().getType();
         } else {
             return null;
         }
     }
 
+    public static EITypeToken getType(EIAssignment element) {
+        return EITypeToken.VOID;
+    }
+
     @Nullable
-    public static EITypeToken getType(EIScriptExpression element) {
-        if (element.getAssignment() != null) {
-            return EITypeToken.VOID;
-        } else if (element.getForBlock() != null) {
-            return EITypeToken.VOID;
-        } else if (element.getFunctionCall() != null) {
-            return element.getFunctionCall().getType();
-        } else {
-            return null;
-        }
+    public static EITypeToken getType(EIExpressionStatement element) {
+        return element.getExpression().getType();
+    }
+
+    @NotNull
+    public static EITypeToken getType(EIForBlock element) {
+        return EITypeToken.VOID;
     }
 
     @Nullable
@@ -176,33 +173,35 @@ public class EIScriptPsiImplUtil {
     }
 
     public static String toString(EIScriptDeclaration declaration) {
-//        return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
-        return declaration.getName();
+        return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
+//        return declaration.getName();
+    }
+
+    public static String toString(EIScriptImplementation implementation) {
+        return EIScriptNamingUtil.NAME_SCRIPT_IMPL + implementation.getName();
+//        return implementation.getName();
     }
 
     public static String toString(EIGlobalVar globalVar) {
-//        return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
-        return globalVar.getName();
+        return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
+//        return globalVar.getName();
     }
 
     public static String toString(EIFunctionCall functionCall) {
-//        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getScriptIdentifier().getText();
-        return functionCall.getName();
+        return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getName();
+//        return functionCall.getName();
     }
 
     public static String toString(EIVariableAccess variableAccess) {
-//        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getScriptIdentifier().getText();
-        return variableAccess.getName();
+        return EIScriptNamingUtil.NAME_VAR_ACCESS + variableAccess.getName();
     }
 
     public static String toString(EIAssignment assignment) {
-//        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getScriptIdentifier().getText();
-        // TODO: simply "EIAssignment"? or what?
-        return assignment.getText();
+        return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getExpressionList().get(0).getText();
     }
 
-    public static String toString(EIScriptExpression scriptExpression) {
-        return EIScriptNamingUtil.NAME_SCRIPT_EXPRESSION;
+    public static String toString(EIScriptStatement scriptStatement) {
+        return EIScriptNamingUtil.NAME_SCRIPT_STATEMENT;
     }
 
     public static String toString(EIScriptBlock scriptBlock) {

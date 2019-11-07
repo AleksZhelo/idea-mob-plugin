@@ -20,21 +20,39 @@
 //                     |
 //                    \|/
 scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldScript?
+// apparently this structure is not enforced by game.exe,
+// declarations and implementations can be interspersed through the script text
+// such disorder will not stand, of course
 
 // utility
-private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )*)) {pin(".*")=1 recoverWhile=comma_separated_list_recover}
+private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )*))
+{
+  pin(".*")=1
+  recoverWhile=comma_separated_list_recover
+}
 
 //noinspection BnfUnusedRule
 private ignored ::= (WHOLE_LINE_COMMENT COMMENT) // just to generate the ScriptToken
 
-functionDeclaration ::= IDENTIFIER formalParams (COLON type)? {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration" methods=[getActualType getCallableParams getCallableType]}
+functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
+{
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration"
+  methods=[getActualType getCallableParams getCallableType]
+}
 // utility end
+
+private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
+
+formalParameter ::= IDENTIFIER COLON type
+{
+  pin=1
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+}
 
 globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
 
-// apparently this structure is not enforced by game.exe, declarations and implementations can be interspersed through the script text
-// such disorder will not stand, of course
 declarations ::= scriptDeclaration+  {methods=[toString]}
 
 scripts ::= scriptImplementation+  {methods=[toString]}
@@ -43,15 +61,32 @@ worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=2 recoverWhile=wor
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
-globalVar ::= IDENTIFIER COLON type {pin=1 recoverWhile=globalVarRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[toString]}
+globalVar ::= IDENTIFIER COLON type
+{
+  pin=1
+  recoverWhile=globalVarRecover
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  methods=[toString]
+}
 
 // TODO: do script params shadow global vars?
-scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams {pin=1 recoverWhile=scriptDeclarationRecover mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration" methods=[toString getCallableParams getCallableType]}
+scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
+{
+  pin=1
+  recoverWhile=scriptDeclarationRecover
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration"
+  methods=[getCallableParams getCallableType toString]
+}
 
-scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference]} // TODO implements own interface?
+scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
+{
+  pin=1
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  methods=[getReference toString]
+} // TODO implements own interface?
 
 private scriptBody ::= scriptBlock+  // or *?
 
@@ -65,36 +100,71 @@ private ifConjunction ::= functionCall*
 //  recoverWhile=scriptThenBlockRecover
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
-private scriptThenBody ::= scriptExpression*
+private scriptThenBody ::= scriptStatement*
 
 // TODO: how to do references here?
-scriptExpression ::=  functionCall | forBlock | assignment {methods=[getType toString]}
+// TODO: should be called a statement, actually
+scriptStatement ::= forBlock
+                  | expressionStatement
+{
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIStatementBase"
+}
 
 // TODO: Sum and ForIf?
 // TODO: pin=2?
 // TODO: annotation for For arguments!  | more or less done
-forBlock ::= FOR LPAREN variableAccess COMMA (functionCall | variableAccess) RPAREN LPAREN scriptThenBody RPAREN
-
-private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
-
-formalParameter ::= IDENTIFIER COLON type  {pin=1 mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"}
+expressionStatement ::= functionCall | assignment {extends=scriptStatement methods=[getType toString]}
+forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN scriptThenBody RPAREN
+{
+  pin=1
+  extends=scriptStatement
+  methods=[getType toString]
+}
 
 // TODO: how to do references here?
-expression ::= FLOATNUMBER | CHARACTER_STRING | functionCall | variableAccess {methods=[getReference getType toString]}
+expression ::= reference_expression
+             | literal
+{
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExpressionBase"
+  consumeTokenMethod="consumeTokenFast"
+}
+
+literal ::= FLOATNUMBER | CHARACTER_STRING
+{
+  extends=expression
+  methods=[getType getReference toString]
+  consumeTokenMethod="consumeTokenFast"
+}
+private reference_expression ::= functionCall | variableAccess
 
 // TODO: append !LPAREN ?
-variableAccess ::= IDENTIFIER {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType toString]}
+variableAccess ::= IDENTIFIER
+{
+  extends=expression
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  methods=[getReference getType toString]
+  consumeTokenMethod="consumeTokenFast"
+}
 
-functionCall ::= IDENTIFIER params {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin" methods=[getReference getType getNthArgument toString]}
+functionCall ::= IDENTIFIER params
+{
+  extends=expression
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  methods=[getReference getType getNthArgument toString]
+  consumeTokenMethod="consumeTokenFast"
+}
 
 // TODO: type checking!
-params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
+params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1 consumeTokenMethod="consumeTokenFast"}
 
 // TODO: handle no error on right part missing
-assignment ::= variableAccess EQUALS expression {pin=1 recoverWhile=scriptAssignmentRecover methods=[toString]} // TODO: this pin and error recovery stuff
+assignment ::= variableAccess EQUALS expression {extends=expression
+                                                 pin=1
+                                                 recoverWhile=scriptAssignmentRecover
+                                                 methods=[getType toString]
+                                                 consumeTokenMethod="consumeTokenFast"} // TODO: this pin and error recovery stuff
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"}

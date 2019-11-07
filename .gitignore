@@ -49,7 +49,6 @@ gradle-app.setting
 
 # IntelliJ
 /out/
-/gen/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
@@ -82,6 +81,9 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Generated code
+src/main/gen
 
 # Test data
 src/test/resources/testScripts
