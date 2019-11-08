@@ -76,19 +76,26 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         PsiElement parent = myElement.getParent();
         // incomplete assignment -> may be a void function or a script
         if (parent instanceof EIAssignment) {
-            if (((EIAssignment) parent).getExpressionList().size() == 1 || HAS_ERROR_CHILD.accepts(parent)){
-                suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
-                List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
-                variants.addAll(scriptsLookup);
+            if (!((EIAssignment) parent).isComplete() || HAS_ERROR_CHILD.accepts(parent)) {
+                suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
             }
         }
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
-        if (!(parent instanceof EIAssignment) &&
+        if (!(parent instanceof EIAssignment && ((EIAssignment) parent).indexOf(myElement) == 0) &&
                 !(parent instanceof EIForBlock && ((((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0)))) {
             suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
         }
+        if (parent instanceof EIScriptStatement) { // weird parser behaviour workaround
+            suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
+        }
 
         return variants.toArray();
+    }
+
+    private void suggestForIncompleteAssignmentLeftSide(ScriptPsiFile scriptFile, List<LookupElement> variants) {
+        suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
+        List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
+        variants.addAll(scriptsLookup);
     }
 
     private void suggestFunctionsOfType(Project project, List<LookupElement> variants, EITypeToken expectedType) {

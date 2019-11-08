@@ -2,9 +2,11 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.intellij.psi.PsiElement;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class EIScriptTypingUtil {
 
@@ -47,15 +49,15 @@ public final class EIScriptTypingUtil {
         }
 
         if (parent instanceof EIAssignment) {
-            List<EIExpression> expressions = ((EIAssignment) parent).getExpressionList();
-            int myIndex = expressions.indexOf(variableAccess);
+            EIAssignment assignment = (EIAssignment) parent;
+            int myIndex = assignment.indexOf(variableAccess);
             if (myIndex == 0) { // left side
-                EIExpression rightSide = expressions.size() > 1 ? expressions.get(1) : null;
-                // if rightSide == null the assignment is incomplete, any type is OK
-                return rightSide != null ? rightSide.getType() : EITypeToken.ANY;
+                // if assignment is incomplete any type is OK
+                return assignment.isComplete()
+                        ? Objects.requireNonNull(assignment.getRightSide()).getType()
+                        : EITypeToken.ANY;
             } else if (myIndex == 1) {
-                EIExpression leftSide = expressions.get(0);
-                return leftSide.getType();
+                return assignment.getLeftSide().getType();
             } else {
                 return null;
             }
@@ -63,6 +65,10 @@ public final class EIScriptTypingUtil {
 
         if (parent instanceof EIParams) {
             return getExpectedType((EIParams) parent, variableAccess);
+        }
+
+        if (parent instanceof EIScriptStatement) { // weird parser behaviour workaround
+            return EITypeToken.ANY;
         }
 
         return null;  // shouldn't happen
@@ -82,11 +88,9 @@ public final class EIScriptTypingUtil {
                 EIFunctionCall call = UsefulPsiTreeUtil.getParentOfType(paramOwner, EIFunctionCall.class);
                 assert call != null;
                 PsiElement resolved = call.getReference().resolve();
-                if (resolved != null) {
+                if (resolved instanceof EICallableDeclaration) {
                     List<EIFormalParameter> formalParameters =
-                            resolved instanceof EIFunctionDeclaration
-                                    ? ((EIFunctionDeclaration) resolved).getFormalParameterList()
-                                    : ((EIScriptDeclaration) resolved).getFormalParameterList();
+                            ((EICallableDeclaration) resolved).getCallableParams();
                     if (index < formalParameters.size()) {
                         EIType paramType = formalParameters.get(index).getType();
                         return paramType != null ? paramType.getTypeToken() : null;

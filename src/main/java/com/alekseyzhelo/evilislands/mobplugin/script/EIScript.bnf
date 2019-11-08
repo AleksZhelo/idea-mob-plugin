@@ -14,6 +14,7 @@
   tokenTypeClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTokenType"
 
   psiImplUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptPsiImplUtil"
+  generateTokenAccessors=false
 }
 
 //utility---------------
@@ -103,17 +104,16 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scrip
 private scriptThenBody ::= scriptStatement*
 
 // TODO: how to do references here?
-// TODO: should be called a statement, actually
 scriptStatement ::= forBlock
                   | expressionStatement
 {
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIStatementBase"
 }
 
+expressionStatement ::= functionCall | assignment {extends=scriptStatement methods=[getType toString]}
 // TODO: Sum and ForIf?
 // TODO: pin=2?
 // TODO: annotation for For arguments!  | more or less done
-expressionStatement ::= functionCall | assignment {extends=scriptStatement methods=[getType toString]}
 forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN scriptThenBody RPAREN
 {
   pin=1
@@ -147,6 +147,7 @@ variableAccess ::= IDENTIFIER
   consumeTokenMethod="consumeTokenFast"
 }
 
+// TODO: incomplete call (no LPAREN) breaks following calls in ifBlock - is that a problem?
 functionCall ::= IDENTIFIER params
 {
   extends=expression
@@ -157,23 +158,27 @@ functionCall ::= IDENTIFIER params
 }
 
 // TODO: type checking!
-params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1 consumeTokenMethod="consumeTokenFast"}
+params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
 
 // TODO: handle no error on right part missing
-assignment ::= variableAccess EQUALS expression {extends=expression
-                                                 pin=1
-                                                 recoverWhile=scriptAssignmentRecover
-                                                 methods=[getType toString]
-                                                 consumeTokenMethod="consumeTokenFast"} // TODO: this pin and error recovery stuff
+assignment ::= variableAccess EQUALS expression
+{
+  extends=expression
+  pin=1
+  recoverWhile=scriptAssignmentRecover
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIAssignmentMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIAssignmentMixin"
+  methods=[getType toString]
+}
 
 type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"}
 
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
-private scriptIfBlockRecover ::= !(THEN)  // can't get this kind of stuff to work :(
-private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)  // can't get this kind of stuff to work :(
-private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER)
-private scriptBlockRecover ::= !(IF | RPAREN)  // can't get this kind of stuff to work :(
+private scriptIfBlockRecover ::= !(THEN)
+private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)
+private scriptAssignmentRecover ::= !(RPAREN | functionCall | scriptStatement | IDENTIFIER) // TODO: this one is useless
+private scriptBlockRecover ::= !(IF | RPAREN)
 private worldScriptRecover ::= !(RPAREN)
-private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers!
+private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers! // TODO: still relevant?

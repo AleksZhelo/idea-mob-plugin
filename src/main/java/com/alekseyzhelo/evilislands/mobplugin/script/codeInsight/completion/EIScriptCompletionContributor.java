@@ -154,10 +154,12 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                    }
 //                }
 //        );
+        // TODO: no longer works either  | how did it ever work?
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
-                        .withParent(EIScriptIfBlock.class),
+                        .withSuperParent(2, EIScriptIfBlock.class),
+//                        .withParent(EIScriptIfBlock.class),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,
@@ -167,6 +169,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     }
                 }
         );
+        // TODO: no longer works, the IDENTIFIER is inside a VariableAccess now
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
@@ -187,6 +190,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                         for (EITypeToken type : EITypeToken.values()) {
                             resultSet.addAllElements(globalVarLookup.get(type));
                         }
+                        // TODO: local vars missing
                         resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.VOID));
                         resultSet.addAllElements(psiFile.getScriptLookupElements());
                     }
