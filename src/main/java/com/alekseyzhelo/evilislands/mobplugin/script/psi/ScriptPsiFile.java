@@ -8,6 +8,8 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.google.common.base.Stopwatch;
+import com.intellij.codeHighlighting.HighlightingPass;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.diagnostic.Logger;
@@ -15,12 +17,14 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.util.Key;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 // TODO: processChildren implementation needed?
 public class ScriptPsiFile extends PsiFileBase {
@@ -113,14 +117,16 @@ public class ScriptPsiFile extends PsiFileBase {
         @Nullable
         @Override
         public Result<List<EIGlobalVar>> compute() {
+            Stopwatch watch = Stopwatch.createStarted();
             final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);
-            LOG.warn("CacheGlobalVarsProvider");
-            return new Result<>(
-                    globalVars == null
-                            ? Collections.emptyList()
-                            : PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class),
-                    globalVars != null ? globalVars : ScriptPsiFile.this
+            List<EIGlobalVar> globalVarElements = PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class);
+            Result<List<EIGlobalVar>> result = new Result<>(
+                    globalVarElements,
+                    // TODO: useless?
+                    !globalVarElements.isEmpty() ? globalVarElements.toArray() : (globalVars != null ? globalVars : ScriptPsiFile.this)
             );
+            LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedGlobalVarsProvider");
+            return result;
         }
     }
 
@@ -128,14 +134,16 @@ public class ScriptPsiFile extends PsiFileBase {
         @Nullable
         @Override
         public Result<List<EIScriptDeclaration>> compute() {
+            Stopwatch watch = Stopwatch.createStarted();
             final EIDeclarations declarations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIDeclarations.class);
-            LOG.warn("CachedScriptDeclarationsProvider");
-            return new Result<>(
+            Result<List<EIScriptDeclaration>> result = new Result<>(
                     declarations == null
                             ? Collections.emptyList()
                             : PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class),
                     declarations != null ? declarations : ScriptPsiFile.this
             );
+            LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedScriptDeclarationsProvider");
+            return result;
         }
     }
 
@@ -143,14 +151,16 @@ public class ScriptPsiFile extends PsiFileBase {
         @Nullable
         @Override
         public Result<List<EIScriptImplementation>> compute() {
+            Stopwatch watch = Stopwatch.createStarted();
             final EIScripts implementations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIScripts.class);
-            LOG.warn("CachedScriptImplementationsProvider");
-            return new Result<>(
+            Result<List<EIScriptImplementation>> result = new Result<>(
                     implementations == null
                             ? Collections.emptyList()
                             : PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class),
                     implementations != null ? implementations : ScriptPsiFile.this
             );
+            LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedScriptImplementationsProvider");
+            return result;
         }
     }
 
@@ -219,33 +229,33 @@ public class ScriptPsiFile extends PsiFileBase {
         @Override
         public Result<Map<String, EIGSVar>> compute() {
             Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
-//            acceptChildren(new EIVisitor() {
-//                @Override
-//                public void visitFunctionCall(@NotNull EIFunctionCall call) {
-//                    super.visitFunctionCall(call);
-//
-//                    if (EIGSVar.isReadOrWrite(call)) {
-//                        PsiElement nameElement = EIGSVar.getVarNameElement(call);
-//                        if (nameElement != null &&
-//                                // TODO: can also be an expression, how to handle then? a reference goes to a formal param
-//                                //  for instance, instead of the actual parameter
-//                                nameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-//                            String varName = EIGSVar.getVarName(nameElement.getText());
-//                            EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
-//                            stats.processCall(call);
-//                            if (stats.isValid()) {
-//                                result.put(varName, stats);
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void visitElement(PsiElement element) {
-//                    super.visitElement(element);
-//                    element.acceptChildren(this);
-//                }
-//            });
+            acceptChildren(new EIVisitor() {
+                @Override
+                public void visitFunctionCall(@NotNull EIFunctionCall call) {
+                    super.visitFunctionCall(call);
+
+                    if (EIGSVar.isReadOrWrite(call)) {
+                        PsiElement nameElement = EIGSVar.getVarNameElement(call);
+                        if (nameElement != null &&
+                                // TODO: can also be an expression, how to handle then? a reference goes to a formal param
+                                //  for instance, instead of the actual parameter
+                                nameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+                            String varName = EIGSVar.getVarName(nameElement.getText());
+                            EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
+                            stats.processCall(call);
+                            if (stats.isValid()) {
+                                result.put(varName, stats);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    element.acceptChildren(this);
+                }
+            });
             LOG.warn("CachedGSVarsProvider");
             return new Result<>(result, ScriptPsiFile.this);
         }
@@ -255,37 +265,37 @@ public class ScriptPsiFile extends PsiFileBase {
         @Override
         public Result<Map<Integer, EIArea>> compute() {
             Map<Integer, EIArea> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
-//            acceptChildren(new EIVisitor() {
-//                @Override
-//                public void visitFunctionCall(@NotNull EIFunctionCall call) {
-//                    super.visitFunctionCall(call);
-//
-//                    if (EIArea.isReadOrWrite(call)) {
-//                        PsiElement areaIdElement = EIArea.getAreaIdElement(call);
-//                        if (areaIdElement != null &&
-//                                // TODO: same as with GSVars
-//                                areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
-//                            try {
-//                                // TODO: also extract parsing to EIArea?
-//                                int areaId = Integer.parseInt(areaIdElement.getText());
-//                                EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
-//                                stats.processCall(call);
-//                                if (stats.isValid()) {
-//                                    result.put(areaId, stats);
-//                                }
-//                            } catch (NumberFormatException ignored) {
-//                                //don't really care
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                @Override
-//                public void visitElement(PsiElement element) {
-//                    super.visitElement(element);
-//                    element.acceptChildren(this);
-//                }
-//            });
+            acceptChildren(new EIVisitor() {
+                @Override
+                public void visitFunctionCall(@NotNull EIFunctionCall call) {
+                    super.visitFunctionCall(call);
+
+                    if (EIArea.isReadOrWrite(call)) {
+                        PsiElement areaIdElement = EIArea.getAreaIdElement(call);
+                        if (areaIdElement != null &&
+                                // TODO: same as with GSVars
+                                areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
+                            try {
+                                // TODO: also extract parsing to EIArea?
+                                int areaId = Integer.parseInt(areaIdElement.getText());
+                                EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
+                                stats.processCall(call);
+                                if (stats.isValid()) {
+                                    result.put(areaId, stats);
+                                }
+                            } catch (NumberFormatException ignored) {
+                                //don't really care
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void visitElement(PsiElement element) {
+                    super.visitElement(element);
+                    element.acceptChildren(this);
+                }
+            });
             LOG.warn("CachedAreasProvider");
             return new Result<>(result, ScriptPsiFile.this);
         }

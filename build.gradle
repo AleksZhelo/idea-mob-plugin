@@ -32,3 +32,18 @@ patchPluginXml {
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
 }
+
+//test {
+//    maxHeapSize = "2g"
+//    jvmArgs = ['-XX:+UnlockCommercialFeatures', '-XX:+FlightRecorder', '-XX:+UnlockDiagnosticVMOptions', '-XX:+DebugNonSafepoints']
+//
+//    def jfrOptions = [
+//            defaultrecording: true,
+//            dumponexit      : true,
+//            dumponexitpath  : "${project.buildDir}/dumponexit.jfr",
+//            globalbuffersize: '10M',
+//            disk            : true,
+//            settings        : "${System.getProperty("java.home")}/lib/jfr/profile.jfc".toString()
+//    ]
+//    jvmArgs += ["-XX:FlightRecorderOptions=${jfrOptions.collect { k, v -> "$k=$v".toString() }.join(',')}"]
+//}

@@ -18,6 +18,7 @@ public class ArgumentPositionPatternCondition extends PatternCondition<PsiElemen
 
     private int position;
 
+    // TODO: flag whether function call parent is already detected? (different stop element if not)
     public ArgumentPositionPatternCondition(int position) {
         super("ArgumentPositionPatternCondition");
         this.position = position;

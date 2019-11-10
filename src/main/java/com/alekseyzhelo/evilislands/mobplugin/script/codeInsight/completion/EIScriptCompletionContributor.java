@@ -3,6 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
@@ -14,6 +17,7 @@ import com.intellij.patterns.PsiElementPattern;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,89 +80,94 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                        }
 //                    }
 //                });
-        // TODO: uncomment (or remove, depending on whether it's viable to keep GSVars and Areas
-//        extend(CompletionType.BASIC, PlatformPatterns
-//                        .psiElement(ScriptTypes.CHARACTER_STRING)
-//                        .withLanguage(EIScriptLanguage.INSTANCE)
-//                        .withSuperParent(3, PlatformPatterns
-//                                .psiElement(EIFunctionCall.class)
-//                                .withFirstChild(PlatformPatterns
-//                                        .psiElement()
-//                                        .withText(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
-//                                )
-//                        )
-//                        .with(new ArgumentPositionPatternCondition(1)),
-//                new CompletionProvider<CompletionParameters>() {
-//                    @Override
-//                    protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-//                        Map<String, EIGSVar> vars = ((ScriptPsiFile) parameters.getOriginalFile()).findGSVars();
-//                        PsiElement element = parameters.getOriginalPosition();
-//                        EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
-//
-//                        assert element != null;
-//                        assert call != null;
-//                        String varName = EIGSVar.getVarName(element.getText());
-//                        boolean isRead = EIGSVar.isGSVarRead(call);
-//                        EIGSVar myVar = vars.get(varName);
-//
-//                        for (EIGSVar gsVar : vars.values()) {
-//                            if (gsVar == myVar && ((isRead && (myVar.getReads() == 1 && myVar.getWrites() == 0))
-//                                    || (!isRead && (myVar.getWrites() == 1 && myVar.getReads() == 0)))) {
-//                                continue;
-//                            }
-//                            suggestToken(result, gsVar.toString());
-//                        }
-//                    }
-//                }
-//        );
+        if (EIScriptLanguage.GS_VARS_ENABLED) {
+            extend(CompletionType.BASIC, PlatformPatterns
+                            .psiElement(ScriptTypes.CHARACTER_STRING)
+                            .withLanguage(EIScriptLanguage.INSTANCE)
+                            .withSuperParent(3, PlatformPatterns
+                                    .psiElement(EIFunctionCall.class)
+                                    .withFirstChild(PlatformPatterns
+                                            .psiElement()
+                                            .withText(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
+                                    )
+                            )
+                            // TODO: could optimize by checking argument position first? (would need to improve ArgumentPositionPatternCondition)
+                            .with(ArgumentPositionPatternCondition.SECOND_ARGUMENT),
+                    new CompletionProvider<CompletionParameters>() {
+                        @Override
+                        protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+                            Map<String, EIGSVar> vars = ((ScriptPsiFile) parameters.getOriginalFile()).findGSVars();
+                            PsiElement element = parameters.getOriginalPosition();
+                            EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
+
+                            assert element != null;
+                            assert call != null;
+                            String varName = EIGSVar.getVarName(element.getText());
+                            boolean isRead = EIGSVar.isGSVarRead(call);
+                            EIGSVar myVar = vars.get(varName);
+
+                            for (EIGSVar gsVar : vars.values()) {
+                                if (gsVar == myVar && ((isRead && (myVar.getReads() == 1 && myVar.getWrites() == 0))
+                                        || (!isRead && (myVar.getWrites() == 1 && myVar.getReads() == 0)))) {
+                                    continue;
+                                }
+                                suggestToken(result, gsVar.toString());
+                            }
+                        }
+                    }
+            );
+        }
 //        // TODO: try GetObject completion here? also areas
 //        // TODO: wonky, fix grammar and dummy and try again
-//        extend(CompletionType.BASIC, PlatformPatterns
-//                        .psiElement()
-//                        .withLanguage(EIScriptLanguage.INSTANCE)
-//                        .withSuperParent(3, PlatformPatterns
-//                                .psiElement(EIFunctionCall.class)
-//                                .withFirstChild(PlatformPatterns
-//                                        .psiElement()
-//                                        .withText(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
-//                                )
-//                        ),
-//                new CompletionProvider<CompletionParameters>() {
-//                    @Override
-//                    protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-//                        Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
-//                        PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
-//                        if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
-//                            return;
-//                        }
-//
-//                        EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
-//
-//                        assert element != null;
-//                        assert call != null;
-//                        try {
-//                            int areaId = Integer.parseInt(element.getText());
-//                            boolean isRead = EIArea.isAreaRead(call);
-//                            EIArea myArea = areas.get(areaId);
-//
-//                            for (EIArea area : areas.values()) {
-//                                if (area == myArea && ((isRead && (myArea.getReads() == 1 && myArea.getWrites() == 0))
-//                                        || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
-//                                    continue;
-//                                }
-//                                suggestToken(result, area.toString());
+        if (EIScriptLanguage.AREAS_ENABLED) {
+            // TODO: as far as I remember this doesn't work anyway
+//            extend(CompletionType.BASIC, PlatformPatterns
+//                            .psiElement()
+//                            .withLanguage(EIScriptLanguage.INSTANCE)
+//                            .withSuperParent(3, PlatformPatterns
+//                                    .psiElement(EIFunctionCall.class)
+//                                    .withFirstChild(PlatformPatterns
+//                                            .psiElement()
+//                                            .withText(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
+//                                    )
+//                            ),
+//                    new CompletionProvider<CompletionParameters>() {
+//                        @Override
+//                        protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+//                            Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
+//                            PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
+//                            if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
+//                                return;
 //                            }
-//                        } catch (NumberFormatException ignored) {
-//                            //whatewz
+//
+//                            EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
+//
+//                            assert element != null;
+//                            assert call != null;
+//                            try {
+//                                int areaId = Integer.parseInt(element.getText());
+//                                boolean isRead = EIArea.isAreaRead(call);
+//                                EIArea myArea = areas.get(areaId);
+//
+//                                for (EIArea area : areas.values()) {
+//                                    if (area == myArea && ((isRead && (myArea.getReads() == 1 && myArea.getWrites() == 0))
+//                                            || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
+//                                        continue;
+//                                    }
+//                                    suggestToken(result, area.toString());
+//                                }
+//                            } catch (NumberFormatException ignored) {
+//                                //whatewz
+//                            }
 //                        }
 //                    }
-//                }
-//        );
-        // TODO: no longer works either  | how did it ever work?
+//            );
+        }
+        // TODO: no longer works either  | did it ever work?
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
-                        .withSuperParent(2, EIScriptIfBlock.class),
+                        .withParent(EIScriptIfBlock.class),
 //                        .withParent(EIScriptIfBlock.class),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,

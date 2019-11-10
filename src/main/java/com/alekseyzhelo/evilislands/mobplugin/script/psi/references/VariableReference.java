@@ -68,6 +68,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
                     if (expectedType != EITypeToken.ANY && paramType.getTypeToken() != expectedType) {
                         continue;
                     }
+                    // TODO: icon!
                     variants.add(EILookupElementFactory.create(param));
                 }
             }

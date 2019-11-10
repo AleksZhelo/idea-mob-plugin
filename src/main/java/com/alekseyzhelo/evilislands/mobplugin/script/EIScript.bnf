@@ -52,13 +52,13 @@ formalParameter ::= IDENTIFIER COLON type
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
 }
 
-globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {methods=[toString]}
+globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {pin=1 methods=[toString]}
 
 declarations ::= scriptDeclaration+  {methods=[toString]}
 
 scripts ::= scriptImplementation+  {methods=[toString]}
 
-worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=2 recoverWhile=worldScriptRecover methods=[toString]}
+worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=1 recoverWhile=worldScriptRecover methods=[toString]}
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
@@ -81,7 +81,7 @@ scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
   methods=[getCallableParams getCallableType toString]
 }
 
-scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
+scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
 {
   pin=1
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
@@ -89,17 +89,13 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBody RPAREN
   methods=[getReference toString]
 } // TODO implements own interface?
 
-private scriptBody ::= scriptBlock+  // or *?
-
 // TODO: flatten this out as well?
 scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
 
-scriptIfBlock ::= IF LPAREN ifConjunction RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
-
-private ifConjunction ::= functionCall*
+scriptIfBlock ::= IF LPAREN functionCall* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
 //  recoverWhile=scriptThenBlockRecover
-scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=2 recoverWhile=scriptThenBlockRecover methods=[toString]}
+scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
 private scriptThenBody ::= scriptStatement*
 
@@ -114,7 +110,7 @@ expressionStatement ::= functionCall | assignment {extends=scriptStatement metho
 // TODO: Sum and ForIf?
 // TODO: pin=2?
 // TODO: annotation for For arguments!  | more or less done
-forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN scriptThenBody RPAREN
+forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN expressionStatement* RPAREN
 {
   pin=1
   extends=scriptStatement
@@ -178,7 +174,7 @@ private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
 private scriptIfBlockRecover ::= !(THEN)
 private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)
-private scriptAssignmentRecover ::= !(RPAREN | functionCall | scriptStatement | IDENTIFIER) // TODO: this one is useless
+private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER)
 private scriptBlockRecover ::= !(IF | RPAREN)
 private worldScriptRecover ::= !(RPAREN)
 private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers! // TODO: still relevant?
