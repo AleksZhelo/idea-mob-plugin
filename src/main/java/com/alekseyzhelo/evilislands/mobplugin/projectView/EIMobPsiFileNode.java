@@ -14,7 +14,7 @@ import java.util.Collections;
 // TODO: red underline for script file when errors detected?
 public class EIMobPsiFileNode extends PsiFileNode {
 
-    private Collection<AbstractTreeNode> children;
+    private final Collection<AbstractTreeNode> children;
 
     public EIMobPsiFileNode(Project project, @NotNull PsiFile value, ViewSettings viewSettings, PsiFileNode scriptNode) {
         super(project, value, viewSettings);

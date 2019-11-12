@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class EIExtraVarBase<T> {
 
-    private T variable;
+    private final T variable;
     private int reads = 0;
     private int writes = 0;
 

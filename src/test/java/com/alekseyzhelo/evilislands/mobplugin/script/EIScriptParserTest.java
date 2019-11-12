@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.google.common.base.Stopwatch;
 import com.intellij.openapi.util.io.FileUtil;
-import com.intellij.openapi.vfs.CharsetToolkit;
 import com.intellij.testFramework.ParsingTestCase;
 import com.intellij.testFramework.TestDataFile;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import static java.util.Objects.requireNonNull;
 
 public class EIScriptParserTest extends ParsingTestCase {
 

@@ -18,7 +18,6 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
@@ -56,24 +55,6 @@ public class UsefulPsiTreeUtil {
     }
 
     @Nullable
-    public static PsiElement getPrevSiblingSkipWhiteSpacesAndComments(@Nullable PsiElement sibling, boolean strictly) {
-        return getPrevSiblingSkippingCondition(
-                sibling,
-                UsefulPsiTreeUtil::isWhitespaceOrComment,
-                strictly
-        );
-    }
-
-    @Nullable
-    public static PsiElement getPrevSiblingSkipWhiteSpaces(@Nullable PsiElement sibling, boolean strictly) {
-        return getPrevSiblingSkippingCondition(
-                sibling,
-                element -> element instanceof PsiWhiteSpace,
-                strictly
-        );
-    }
-
-    @Nullable
     public static PsiElement getPrevSiblingSkippingCondition(@Nullable PsiElement sibling, Condition<PsiElement> condition, boolean strictly) {
         if (sibling == null) return null;
         PsiElement result = strictly ? sibling.getPrevSibling() : sibling;
@@ -102,49 +83,8 @@ public class UsefulPsiTreeUtil {
         return result;
     }
 
-    @Nullable
-    public static ASTNode getPrevSiblingSkipWhiteSpacesAndComments(@Nullable ASTNode sibling) {
-        if (sibling == null) return null;
-        ASTNode result = sibling.getTreePrev();
-        while (result != null && isWhitespaceOrComment(result.getPsi())) {
-            result = result.getTreePrev();
-        }
-        return result;
-    }
-
     public static boolean isWhitespaceOrComment(PsiElement element) {
         return element instanceof PsiWhiteSpace || element instanceof PsiComment;
-    }
-
-    @NotNull
-    // TODO: figure this one out
-    public static <T extends PsiElement> List<T> getSubnodesOfType(@Nullable PsiElement element, @NotNull Class<T> aClass) {
-        final List<T> result = new ArrayList<>();
-        final Queue<PsiElement> queue = new LinkedList<>();
-        queue.add(element);
-        while (!queue.isEmpty()) {
-            final PsiElement currentElement = queue.poll();
-            result.addAll(PsiTreeUtil.getChildrenOfTypeAsList(currentElement, aClass));
-            Collections.addAll(queue, currentElement.getChildren());
-        }
-        return result;
-    }
-
-    @Nullable
-    public static List<PsiElement> getPathToParentOfType(@Nullable PsiElement element,
-                                                         @NotNull Class<? extends PsiElement> aClass) {
-        if (element == null) return null;
-        final List<PsiElement> result = new ArrayList<>();
-        while (element != null) {
-            result.add(element);
-            if (aClass.isInstance(element)) {
-                return result;
-            }
-            if (element instanceof PsiFile) return null;
-            element = element.getParent();
-        }
-
-        return null;
     }
 
     @Nullable
@@ -176,18 +116,6 @@ public class UsefulPsiTreeUtil {
 
         return null;
     }
-
-    // TODO implement?
-//    @Nullable
-//    public static HaxePsiCompositeElement getChildOfType(@Nullable ScriptPsiElement element, @Nullable IElementType elementType) {
-//        if (element == null) return null;
-//        for (ScriptPsiElement child : PsiTreeUtil.getChildrenOfTypeAsList(element, ScriptPsiElement.class)) {
-//            if (child.getT() == elementType) {
-//                return child;
-//            }
-//        }
-//        return null;
-//    }
 
     @Nullable
     public static <T extends PsiElement> T[] getChildrenOfType(@Nullable PsiElement element,

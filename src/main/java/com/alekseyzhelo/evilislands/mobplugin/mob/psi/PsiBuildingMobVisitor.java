@@ -15,9 +15,9 @@ public class PsiBuildingMobVisitor implements MobVisitor {
 
     private static final Logger LOG = Logger.getInstance(PsiBuildingMobVisitor.class);
 
-    private PsiMobFile myFile;
-    private PsiMobObjectsBlock objectsBlock;
-    private Map<Integer, PsiMobEntityBase> elementMap = new HashMap<>();
+    private final PsiMobFile myFile;
+    private final PsiMobObjectsBlock objectsBlock;
+    private final Map<Integer, PsiMobEntityBase> elementMap = new HashMap<>();
 
     public static PsiMobObjectsBlock createPsiMobObjectsBlock(PsiMobFile file) {
         PsiBuildingMobVisitor visitor = new PsiBuildingMobVisitor(file);

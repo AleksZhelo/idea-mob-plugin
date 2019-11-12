@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PsiMobParticle extends PsiMobEntityBase {
 
-    private MobParticle value;
+    private final MobParticle value;
 
     public PsiMobParticle(PsiElement parent, MobParticle particle) {
         super(parent);

@@ -3,11 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
-import com.intellij.codeInsight.completion.BasicInsertHandler;
 import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.InsertionContext;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -53,11 +51,8 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
     // TODO: unimplemented scripts higher in the list?
     public Object[] getVariants() {
         List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
-        return variants.stream().map((x) -> LookupElementDecorator.withInsertHandler(x, new InsertHandler<LookupElementDecorator<? super LookupElement>>() {
-            @Override
-            public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElementDecorator<? super LookupElement> item) {
+        return variants.stream().map((x) -> LookupElementDecorator.withInsertHandler(x, (InsertHandler<LookupElementDecorator<? super LookupElement>>) (context, item) -> {
 
-            }
         })).toArray(LookupElement[]::new);
     }
 

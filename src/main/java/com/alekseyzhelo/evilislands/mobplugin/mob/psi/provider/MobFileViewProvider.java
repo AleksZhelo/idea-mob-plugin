@@ -1,6 +1,5 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.provider;
 
-import com.alekseyzhelo.eimob.MobException;
 import com.alekseyzhelo.evilislands.mobplugin.mob.fileType.MobFileType;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
 import com.intellij.lang.Language;
@@ -12,8 +11,6 @@ import com.intellij.psi.*;
 import com.intellij.psi.impl.PsiManagerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.IOException;
 
 class MobFileViewProvider extends SingleRootFileViewProvider {
 

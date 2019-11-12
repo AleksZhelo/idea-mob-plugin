@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIExpression;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EILiteral;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.intellij.openapi.util.TextRange;

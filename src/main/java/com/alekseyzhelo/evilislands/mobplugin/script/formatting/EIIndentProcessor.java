@@ -10,7 +10,7 @@ import static com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes.*;
 
 final class EIIndentProcessor {
 
-    private static TokenSet NO_INDENT_ELEMENTS = TokenSet.create(
+    private static final TokenSet NO_INDENT_ELEMENTS = TokenSet.create(
             LPAREN,
             RPAREN,
             GLOBALVARS,
@@ -20,7 +20,7 @@ final class EIIndentProcessor {
             THEN,
             FOR
     );
-    private static TokenSet BLOCKS = TokenSet.create(
+    private static final TokenSet BLOCKS = TokenSet.create(
             GLOBAL_VARS,
             SCRIPT_BLOCK, // or SCRIPT_IMPLEMENTATION?
             SCRIPT_IF_BLOCK,
@@ -29,7 +29,7 @@ final class EIIndentProcessor {
             FOR_BLOCK,
             PARAMS
     );
-    private static TokenSet NO_INDENT_BLOCKS = TokenSet.create(
+    private static final TokenSet NO_INDENT_BLOCKS = TokenSet.create(
             DECLARATIONS,
             SCRIPTS,
             SCRIPT_DECLARATION,

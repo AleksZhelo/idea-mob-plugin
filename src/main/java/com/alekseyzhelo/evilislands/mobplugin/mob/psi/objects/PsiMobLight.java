@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PsiMobLight extends PsiMobEntityBase {
 
-    private MobLight value;
+    private final MobLight value;
 
     public PsiMobLight(PsiElement parent, MobLight light) {
         super(parent);

@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.ScriptImplReference;
@@ -12,7 +13,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,11 +21,6 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
-
-    public static final TokenSet COULD_HAVE_MOB_OBJECT_REF = TokenSet.create(
-            ScriptTypes.FLOATNUMBER,
-            ScriptTypes.CHARACTER_STRING
-    );
 
 //    @NotNull
 //    public static PsiReference getReference(EIAssignment assignment) {
@@ -57,9 +52,8 @@ public class EIScriptPsiImplUtil {
     public static PsiReference getReference(EILiteral literal) {
         ASTNode firstChild = literal.getNode().getFirstChildNode();
         final IElementType elementType = firstChild.getElementType();
-//
-//        if (COULD_HAVE_MOB_OBJECT_REF.contains(elementType)) {
-        boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
+
+        final boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
         final String functionName = isFloat ? "getobject" : "getobjectbyid";
 
         EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(literal, EIFunctionCall.class);
@@ -69,18 +63,8 @@ public class EIScriptPsiImplUtil {
                     : new TextRange(1, firstChild.getTextLength() - 1);
             return new MobObjectReference(literal, range);
         }
-//        }
 
         return null;
-    }
-
-    @NotNull
-    public static EITypeToken getActualType(EIFunctionDeclaration element) {
-        if (element.getType() != null) {
-            return element.getType().getTypeToken();
-        } else {
-            return EITypeToken.VOID;
-        }
     }
 
     @NotNull
@@ -95,7 +79,11 @@ public class EIScriptPsiImplUtil {
 
     @NotNull
     public static EITypeToken getCallableType(EIFunctionDeclaration declaration) {
-        return declaration.getActualType();
+        if (declaration.getType() != null) {
+            return declaration.getType().getTypeToken();
+        } else {
+            return EITypeToken.VOID;
+        }
     }
 
     @NotNull
@@ -106,10 +94,8 @@ public class EIScriptPsiImplUtil {
     @Nullable
     public static EITypeToken getType(EIFunctionCall element) {
         PsiElement resolved = element.getReference().resolve();
-        if (resolved instanceof EIFunctionDeclaration) {
-            return ((EIFunctionDeclaration) resolved).getActualType();
-        } else if (resolved instanceof EIScriptDeclaration) {
-            return EITypeToken.VOID;
+        if (resolved instanceof EICallableDeclaration) {
+            return ((EICallableDeclaration) resolved).getCallableType();
         } else {
             return null;
         }
@@ -119,6 +105,7 @@ public class EIScriptPsiImplUtil {
     public static EITypeToken getType(EIVariableAccess element) {
         PsiElement resolved = element.getReference().resolve();
         EIType type = null;
+        // TODO: common interface here as well?
         if (resolved instanceof EIGlobalVar) {
             type = ((EIGlobalVar) resolved).getType();
         } else if (resolved instanceof EIFormalParameter) {
@@ -140,34 +127,21 @@ public class EIScriptPsiImplUtil {
         }
     }
 
-    public static EITypeToken getType(EIAssignment element) {
-        return EITypeToken.VOID;
-    }
-
     @Nullable
     public static EITypeToken getType(EICallStatement element) {
         return element.getFunctionCall().getType();
     }
 
-    @NotNull
-    public static EITypeToken getType(EIForBlock element) {
-        return EITypeToken.VOID;
-    }
-
     @Nullable
     public static PsiElement getNthArgument(EIFunctionCall call, int n) {
-        EIParams params = call.getParams();
-        if (params != null) {
-            List<EIExpression> expressions = params.getExpressionList();
-            if (expressions.size() > n) {
-                return expressions.get(n);
-            }
+        List<EIExpression> expressions = call.getParams().getExpressionList();
+        if (expressions.size() > n) {
+            return expressions.get(n);
         }
         return null;
     }
 
-    // toString block
-
+    //region toString
     public static String toString(EILiteral literal) {
         return EIScriptNamingUtil.NAME_LITERAL + literal.getText();
     }
@@ -235,5 +209,5 @@ public class EIScriptPsiImplUtil {
     public static String toString(EIWorldScript worldScript) {
         return EIScriptNamingUtil.NAME_WORLDSCRIPT;
     }
-
+    //endregion
 }

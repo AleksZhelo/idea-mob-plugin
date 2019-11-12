@@ -1,9 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
-import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.testFramework.fixtures.BasePlatformTestCase;
-
-import java.util.List;
 
 public class EICodeInsightTest extends BasePlatformTestCase {
 

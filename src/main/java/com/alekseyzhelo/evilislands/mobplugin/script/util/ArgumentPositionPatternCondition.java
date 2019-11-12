@@ -16,7 +16,7 @@ public class ArgumentPositionPatternCondition extends PatternCondition<PsiElemen
     public static final ArgumentPositionPatternCondition FIRST_ARGUMENT = new ArgumentPositionPatternCondition(0);
     public static final ArgumentPositionPatternCondition SECOND_ARGUMENT = new ArgumentPositionPatternCondition(1);
 
-    private int position;
+    private final int position;
 
     // TODO: flag whether function call parent is already detected? (different stop element if not)
     public ArgumentPositionPatternCondition(int position) {

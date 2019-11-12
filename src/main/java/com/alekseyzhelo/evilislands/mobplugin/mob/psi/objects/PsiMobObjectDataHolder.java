@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class PsiMobObjectDataHolder<T extends MobObjectDataHolder> extends PsiMobEntityBase {
 
-    protected T value;
+    protected final T value;
 
     PsiMobObjectDataHolder(PsiElement parent, T object) {
         super(parent);

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil.*;
+import static com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil.getName;
 
 final class AnnotatorUtil {
 

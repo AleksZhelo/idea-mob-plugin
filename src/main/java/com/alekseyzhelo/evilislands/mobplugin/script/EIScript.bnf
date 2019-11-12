@@ -43,7 +43,7 @@ functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 {
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration"
-  methods=[getActualType getCallableParams getCallableType]
+  methods=[getCallableParams getCallableType]
 }
 // utility end
 
@@ -113,7 +113,6 @@ private scriptThenBody ::= scriptStatement*
 scriptStatement ::= plain_statement
                   | forBlock
 {
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIStatementBase"
   consumeTokenMethod="consumeTokenFast"
 }
 
@@ -135,7 +134,7 @@ assignment ::= variableAccess EQUALS expression
   recoverWhile=scriptAssignmentRecover
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIAssignmentMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIAssignmentMixin"
-  methods=[getType toString]
+  methods=[toString]
   consumeTokenMethod="consumeTokenFast"
 }
 
@@ -146,7 +145,7 @@ forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN 
 {
   pin=1
   extends=scriptStatement
-  methods=[getType toString]
+  methods=[toString]
   consumeTokenMethod="consumeTokenFast"
 }
 

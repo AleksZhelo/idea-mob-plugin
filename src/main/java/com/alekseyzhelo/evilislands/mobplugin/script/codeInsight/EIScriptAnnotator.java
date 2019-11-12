@@ -233,8 +233,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             EICallableDeclaration callable = (EICallableDeclaration) resolved;
             List<EIFormalParameter> formalParameters = callable.getCallableParams();
             EIParams argumentHolder = call.getParams();
-            List<EIExpression> actualArguments = argumentHolder != null ? argumentHolder.getExpressionList() : null;
-            assert actualArguments != null;
+            List<EIExpression> actualArguments = argumentHolder.getExpressionList();
             int numErrors = 0;
             int firstWrong = Integer.MAX_VALUE;
             for (int i = 0; i < Math.max(formalParameters.size(), actualArguments.size()); i++) {

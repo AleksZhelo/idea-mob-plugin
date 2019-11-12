@@ -17,7 +17,7 @@ public final class EIScriptTypingUtil {
 
     public static EITypeToken getExpectedType(EIExpression expression) {
         if (expression.getParent() instanceof EIAssignment) {
-            PsiElement resolved = ((EIAssignment) expression.getParent()).getReference().resolve();
+            PsiElement resolved = expression.getParent().getReference().resolve();
             if (resolved instanceof EIFormalParameter) {
                 EIType type = ((EIFormalParameter) resolved).getType();
                 return type.getTypeToken();

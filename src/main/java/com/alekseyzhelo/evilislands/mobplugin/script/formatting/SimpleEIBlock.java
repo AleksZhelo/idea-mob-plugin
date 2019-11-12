@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.formatting;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.google.common.collect.Lists;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;

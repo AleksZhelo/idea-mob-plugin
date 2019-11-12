@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PsiMobSound extends PsiMobEntityBase {
 
-    private MobSound value;
+    private final MobSound value;
 
     public PsiMobSound(PsiElement parent, MobSound sound) {
         super(parent);

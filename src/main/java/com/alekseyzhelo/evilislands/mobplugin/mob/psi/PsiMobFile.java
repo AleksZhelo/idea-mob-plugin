@@ -27,7 +27,7 @@ public class PsiMobFile extends PsiBinaryFileImpl {
 
     private static final Logger LOG = Logger.getInstance(PsiMobFile.class);
 
-    private PsiElement[] children = new PsiElement[1];
+    private final PsiElement[] children = new PsiElement[1];
 
     public PsiMobFile(@NotNull PsiManagerImpl manager, @NotNull FileViewProvider viewProvider) {
         super(manager, viewProvider);

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class PsiMobElement extends PsiElementBase {
 
     private final Project project;
-    private PsiElement parent;
+    private final PsiElement parent;
 
     public PsiMobElement(PsiElement parent) {
         this.parent = parent;
