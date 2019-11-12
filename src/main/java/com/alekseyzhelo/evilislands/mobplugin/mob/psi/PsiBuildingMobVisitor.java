@@ -49,7 +49,7 @@ public class PsiBuildingMobVisitor implements MobVisitor {
     }
 
     @Override
-    public void visitScriptBlock(@NotNull ScriptBlockBase value) {
+    public void visitScriptBlock(@NotNull ScriptBlock value) {
         // ignored
     }
 

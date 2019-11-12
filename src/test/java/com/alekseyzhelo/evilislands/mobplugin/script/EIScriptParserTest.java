@@ -42,7 +42,7 @@ public class EIScriptParserTest extends ParsingTestCase {
                 System.out.println(myFile.getChildren()[0]);
                 myFile = null;
             }
-            LOG.info("Time of execution: {} ms", ms / reps);
+            LOG.info("Time per repetition: {} ms", ms / reps);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

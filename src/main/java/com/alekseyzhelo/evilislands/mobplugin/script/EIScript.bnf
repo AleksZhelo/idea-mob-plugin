@@ -98,7 +98,7 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
   methods=[getReference toString]
-} // TODO implements own interface?
+}
 
 // TODO: flatten this out as well?
 scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
@@ -110,7 +110,6 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scrip
 
 private scriptThenBody ::= scriptStatement*
 
-// TODO: how to do references here?
 scriptStatement ::= plain_statement
                   | forBlock
 {
@@ -120,6 +119,7 @@ scriptStatement ::= plain_statement
 
 private plain_statement ::= callStatement | assignment
 
+// TODO: figure out how to collapse this one as well?
 callStatement ::= functionCall
 {
   extends=scriptStatement
@@ -176,7 +176,7 @@ variableAccess ::= IDENTIFIER
   consumeTokenMethod="consumeTokenFast"
 }
 
-// TODO: incomplete call (no LPAREN) breaks following calls in ifBlock - is that a problem?
+// TODO: incomplete call (no LPAREN) breaks following calls in an ifBlock - is that a problem?
 functionCall ::= IDENTIFIER params
 {
   extends=expression
