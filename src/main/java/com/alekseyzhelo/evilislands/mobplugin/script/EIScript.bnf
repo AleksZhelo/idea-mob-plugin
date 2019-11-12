@@ -29,7 +29,11 @@ scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldSc
 private meta comma_separated_list ::= <<param>> ( &RPAREN | (( COMMA <<param>> )*))
 {
   pin(".*")=1
-  recoverWhile=comma_separated_list_recover
+}
+
+private meta comma_separated_list_rec ::= <<comma_separated_list <<param>>>>
+{
+  recoverWhile='<<recover>>'
 }
 
 //noinspection BnfUnusedRule
@@ -43,7 +47,7 @@ functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 }
 // utility end
 
-private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN
+private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN {pin=1}
 
 formalParameter ::= IDENTIFIER COLON type
 {
@@ -61,6 +65,13 @@ scripts ::= scriptImplementation+  {methods=[toString]}
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=1 recoverWhile=worldScriptRecover methods=[toString]}
 
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
+// TODO: custom lists for global vars, params, formal params?
+//  (external rule like com.intellij.lang.java.parser.ExpressionParser.parseArgumentList)?
+//private globalVarList ::= globalVar ( &RPAREN | (( COMMA globalVar )*))
+//{
+//  pin(".*")=1
+//  recoverWhile=comma_separated_list_recover
+//}
 
 globalVar ::= IDENTIFIER COLON type
 {
@@ -117,7 +128,6 @@ forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN 
   methods=[getType toString]
 }
 
-// TODO: how to do references here?
 expression ::= reference_expression
              | literal
 {
@@ -131,6 +141,7 @@ literal ::= FLOATNUMBER | CHARACTER_STRING
   methods=[getType getReference toString]
   consumeTokenMethod="consumeTokenFast"
 }
+
 private reference_expression ::= functionCall | variableAccess
 
 // TODO: append !LPAREN ?
@@ -154,7 +165,14 @@ functionCall ::= IDENTIFIER params
 }
 
 // TODO: type checking!
-params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
+//params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
+params ::=  non_empty_params | empty_params  // EI script has very few empty params in general
+private empty_params ::= LPAREN RPAREN { consumeTokenMethod = 'consumeTokenFast' }
+private non_empty_params::= LPAREN <<comma_separated_list_rec expression comma_separated_list_recover>> RPAREN
+{
+  pin = 1
+  consumeTokenMethod = 'consumeTokenFast'
+}
 
 // TODO: handle no error on right part missing
 assignment ::= variableAccess EQUALS expression
@@ -167,8 +185,11 @@ assignment ::= variableAccess EQUALS expression
   methods=[getType toString]
 }
 
-type ::= FLOAT | STRING | OBJECT | GROUP {mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"}
+type ::= FLOAT | STRING | OBJECT | GROUP
+{
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EITypeMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"
+}
 
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)

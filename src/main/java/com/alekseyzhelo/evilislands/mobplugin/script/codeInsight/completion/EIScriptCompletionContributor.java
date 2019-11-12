@@ -168,7 +168,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
                         .withParent(EIScriptIfBlock.class),
-//                        .withParent(EIScriptIfBlock.class),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,
@@ -179,32 +178,33 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                 }
         );
         // TODO: no longer works, the IDENTIFIER is inside a VariableAccess now
-        extend(CompletionType.BASIC,
-                PlatformPatterns
-                        .psiElement(ScriptTypes.IDENTIFIER)
-                        .withParent(
-                                StandardPatterns.or(
-                                        PlatformPatterns.psiElement(EIScriptThenBlock.class),
-                                        PlatformPatterns.psiElement(EIWorldScript.class)
-                                )
-                        ),
-                new CompletionProvider<CompletionParameters>() {
-                    public void addCompletions(@NotNull CompletionParameters parameters,
-                                               @NotNull ProcessingContext context,
-                                               @NotNull CompletionResultSet resultSet) {
-                        ScriptPsiFile psiFile = (ScriptPsiFile) parameters.getOriginalFile();
-                        EIFunctionsService service = EIFunctionsService.getInstance(psiFile.getProject());
-
-                        Map<EITypeToken, List<LookupElement>> globalVarLookup = psiFile.getGlobalVarLookupElements();
-                        for (EITypeToken type : EITypeToken.values()) {
-                            resultSet.addAllElements(globalVarLookup.get(type));
-                        }
-                        // TODO: local vars missing
-                        resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.VOID));
-                        resultSet.addAllElements(psiFile.getScriptLookupElements());
-                    }
-                }
-        );
+        //  also not needed anymore
+//        extend(CompletionType.BASIC,
+//                PlatformPatterns
+//                        .psiElement(ScriptTypes.IDENTIFIER)
+//                        .withParent(
+//                                StandardPatterns.or(
+//                                        PlatformPatterns.psiElement(EIScriptThenBlock.class),
+//                                        PlatformPatterns.psiElement(EIWorldScript.class)
+//                                )
+//                        ),
+//                new CompletionProvider<CompletionParameters>() {
+//                    public void addCompletions(@NotNull CompletionParameters parameters,
+//                                               @NotNull ProcessingContext context,
+//                                               @NotNull CompletionResultSet resultSet) {
+//                        ScriptPsiFile psiFile = (ScriptPsiFile) parameters.getOriginalFile();
+//                        EIFunctionsService service = EIFunctionsService.getInstance(psiFile.getProject());
+//
+//                        Map<EITypeToken, List<LookupElement>> globalVarLookup = psiFile.getGlobalVarLookupElements();
+//                        for (EITypeToken type : EITypeToken.values()) {
+//                            resultSet.addAllElements(globalVarLookup.get(type));
+//                        }
+//                        // TODO: local vars missing
+//                        resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.VOID));
+//                        resultSet.addAllElements(psiFile.getScriptLookupElements());
+//                    }
+//                }
+//        );
     }
 
     @Override

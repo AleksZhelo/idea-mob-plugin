@@ -67,7 +67,7 @@ public final class EIScriptTypingUtil {
             return getExpectedType((EIParams) parent, variableAccess);
         }
 
-        if (parent instanceof EIScriptStatement) { // weird parser behaviour workaround
+        if (parent instanceof EIExpressionStatement) { // weird parser behaviour workaround
             return EITypeToken.ANY;
         }
 

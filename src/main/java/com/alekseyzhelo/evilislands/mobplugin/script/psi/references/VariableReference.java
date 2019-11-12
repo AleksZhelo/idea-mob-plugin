@@ -83,10 +83,10 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         }
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
         if (!(parent instanceof EIAssignment && ((EIAssignment) parent).indexOf(myElement) == 0) &&
-                !(parent instanceof EIForBlock && ((((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0)))) {
+                !(parent instanceof EIForBlock && (((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0))) {
             suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
         }
-        if (parent instanceof EIScriptStatement) { // weird parser behaviour workaround
+        if (parent instanceof EIExpressionStatement) { // weird parser behaviour workaround
             suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
         }
 
