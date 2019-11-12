@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,6 @@ public class EITypeMixinImpl extends EIScriptPsiElementImpl
 
     @Override
     public String toString() {
-        return getText();
+        return EIScriptNamingUtil.NAME_TYPE + getText();
     }
 }

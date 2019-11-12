@@ -36,15 +36,16 @@ public final class EIScriptNamingUtil {
     public static final Map<String, String> tokenMap;
 
 //    public static final String NAME_IDENTIFIER = "Identifier:";
-//    public static final String NAME_TYPE = "Type:";
+    public static final String NAME_TYPE = "Type:";
     public static final String NAME_SCRIPT_IMPL = "ScriptImpl:";
     public static final String NAME_SCRIPT_DECL = "ScriptDecl:";
     public static final String NAME_GLOBAL_VAR = "GlobalVar:";
-    public static final String NAME_EXPRESSION = "Expression";
+    public static final String NAME_LITERAL = "Literal:";
     public static final String NAME_FUNCTION_CALL= "Call:";
     public static final String NAME_VAR_ACCESS = "VariableAccess:";
     public static final String NAME_ASSIGNMENT = "Assignment:";
-    public static final String NAME_SCRIPT_STATEMENT = "ScriptStatement";
+    public static final String NAME_CALL_STATEMENT = "CallStatement";
+    public static final String NAME_FOR_BLOCK = "ForBlock";
     public static final String NAME_SCRIPT_BLOCK = "ScriptBlock";
     public static final String NAME_SCRIPT_IF_BLOCK = "IfBlock";
     public static final String NAME_SCRIPT_THEN_BLOCK = "ThenBlock";

@@ -59,16 +59,16 @@ public class EIScriptPsiImplUtil {
         final IElementType elementType = firstChild.getElementType();
 //
 //        if (COULD_HAVE_MOB_OBJECT_REF.contains(elementType)) {
-            boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
-            final String functionName = isFloat ? "getobject" : "getobjectbyid";
+        boolean isFloat = elementType.equals(ScriptTypes.FLOATNUMBER);
+        final String functionName = isFloat ? "getobject" : "getobjectbyid";
 
-            EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(literal, EIFunctionCall.class);
-            if (parentCall != null && parentCall.getName().equalsIgnoreCase(functionName)) {
-                TextRange range = isFloat
-                        ? new TextRange(0, firstChild.getTextLength())
-                        : new TextRange(1, firstChild.getTextLength() - 1);
-                return new MobObjectReference(literal, range);
-            }
+        EIFunctionCall parentCall = PsiTreeUtil.getParentOfType(literal, EIFunctionCall.class);
+        if (parentCall != null && parentCall.getName().equalsIgnoreCase(functionName)) {
+            TextRange range = isFloat
+                    ? new TextRange(0, firstChild.getTextLength())
+                    : new TextRange(1, firstChild.getTextLength() - 1);
+            return new MobObjectReference(literal, range);
+        }
 //        }
 
         return null;
@@ -145,8 +145,8 @@ public class EIScriptPsiImplUtil {
     }
 
     @Nullable
-    public static EITypeToken getType(EIExpressionStatement element) {
-        return element.getExpression().getType();
+    public static EITypeToken getType(EICallStatement element) {
+        return element.getFunctionCall().getType();
     }
 
     @NotNull
@@ -168,8 +168,8 @@ public class EIScriptPsiImplUtil {
 
     // toString block
 
-    public static String toString(EIExpression expression) {
-        return EIScriptNamingUtil.NAME_EXPRESSION;
+    public static String toString(EILiteral literal) {
+        return EIScriptNamingUtil.NAME_LITERAL + literal.getText();
     }
 
     public static String toString(EIScriptDeclaration declaration) {
@@ -200,8 +200,12 @@ public class EIScriptPsiImplUtil {
         return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getExpressionList().get(0).getText();
     }
 
-    public static String toString(EIScriptStatement scriptStatement) {
-        return EIScriptNamingUtil.NAME_SCRIPT_STATEMENT;
+    public static String toString(EICallStatement expressionStatement) {
+        return EIScriptNamingUtil.NAME_CALL_STATEMENT;
+    }
+
+    public static String toString(EIForBlock forBlock) {
+        return EIScriptNamingUtil.NAME_FOR_BLOCK;
     }
 
     public static String toString(EIScriptBlock scriptBlock) {

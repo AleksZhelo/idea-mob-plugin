@@ -105,12 +105,41 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
-    public void visitExpressionStatement(@NotNull EIExpressionStatement expressionStatement) {
-        super.visitExpressionStatement(expressionStatement);
+    public void visitCallStatement(@NotNull EICallStatement callStatement) {
+        super.visitCallStatement(callStatement);
 
-        if (expressionStatement.getType() != EITypeToken.VOID) {
-            markAsWarning(myHolder, expressionStatement,
-                    EIMessages.message("warn.script.expression.result.ignored", expressionStatement.getText()));
+        if (callStatement.getType() != EITypeToken.VOID) {
+            markAsWarning(myHolder, callStatement,
+                    EIMessages.message("warn.script.call.statement.result.ignored", callStatement.getText()));
+        }
+    }
+
+    @Override
+    public void visitAssignment(@NotNull EIAssignment assignment) {
+        super.visitAssignment(assignment);
+
+        List<EIExpression> expressions = assignment.getExpressionList();
+        EIExpression left = expressions.get(0);
+        EITypeToken lType = expressions.get(0).getType();
+        EITypeToken rType = expressions.size() > 1 ? expressions.get(1).getType() : null;
+        if (lType == null || !lType.equals(rType)) {
+            Annotation annotation =
+                    AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
+
+            PsiElement target = left.getReference().resolve();
+            if (lType != null && rType != null && target != null) {
+                // TODO: move to local quick fix provider in reference?
+                InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
+                LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
+                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
+                        left,
+                        annotation.getMessage(),
+                        fix,
+                        ProblemHighlightType.ERROR,
+                        true
+                );
+                annotation.registerFix(fix, assignment.getTextRange(), null, descriptor);
+            }
         }
     }
 
@@ -261,41 +290,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
-    public void visitExpression(@NotNull EIExpression expression) {
-        super.visitExpression(expression);
+    public void visitLiteral(@NotNull EILiteral literal) {
+        super.visitLiteral(literal);
 
-        PsiReference reference = expression.getReference();
+        PsiReference reference = literal.getReference();
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
-            markAsError(myHolder, expression, EIMessages.message("error.wrong.object.id", reference.getCanonicalText()));
-        }
-    }
-
-    @Override
-    public void visitAssignment(@NotNull EIAssignment assignment) {
-        super.visitAssignment(assignment);
-
-        List<EIExpression> expressions = assignment.getExpressionList();
-        EIExpression left = expressions.get(0);
-        EITypeToken lType = expressions.get(0).getType();
-        EITypeToken rType = expressions.size() > 1 ? expressions.get(1).getType() : null;
-        if (lType == null || !lType.equals(rType)) {
-            Annotation annotation =
-                    AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
-
-            PsiElement target = left.getReference().resolve();
-            if (lType != null && rType != null && target != null) {
-                // TODO: move to local quick fix provider in reference?
-                InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
-                LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
-                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
-                        left,
-                        annotation.getMessage(),
-                        fix,
-                        ProblemHighlightType.ERROR,
-                        true
-                );
-                annotation.registerFix(fix, assignment.getTextRange(), null, descriptor);
-            }
+            markAsError(myHolder, literal, EIMessages.message("error.wrong.object.id", reference.getCanonicalText()));
         }
     }
 

@@ -31,7 +31,7 @@ public class EIScriptParserTest extends ParsingTestCase {
         String name = getTestName();
         try {
             String text = loadFile(name + "." + myFileExt);
-            final int reps = 100;
+            final int reps = 500;
             int ms = 0;
             final Stopwatch stopwatch = Stopwatch.createUnstarted();
             for (int i = 0; i < reps; i++) {
@@ -39,6 +39,8 @@ public class EIScriptParserTest extends ParsingTestCase {
                 stopwatch.start();
                 doParse(name, text);
                 ms += stopwatch.stop().elapsed(TimeUnit.MILLISECONDS);
+                System.out.println(myFile.getChildren()[0]);
+                myFile = null;
             }
             LOG.info("Time of execution: {} ms", ms / reps);
         } catch (IOException e) {

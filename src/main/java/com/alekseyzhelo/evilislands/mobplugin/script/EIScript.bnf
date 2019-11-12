@@ -111,25 +111,47 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scrip
 private scriptThenBody ::= scriptStatement*
 
 // TODO: how to do references here?
-scriptStatement ::= forBlock
-                  | expressionStatement
+scriptStatement ::= plain_statement
+                  | forBlock
 {
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIStatementBase"
+  consumeTokenMethod="consumeTokenFast"
 }
 
-expressionStatement ::= functionCall | assignment {extends=scriptStatement methods=[getType toString]}
+private plain_statement ::= callStatement | assignment
+
+callStatement ::= functionCall
+{
+  extends=scriptStatement
+  methods=[getType toString]
+  consumeTokenMethod="consumeTokenFast"
+}
+
+// TODO: handle no error on right part missing
+assignment ::= variableAccess EQUALS expression
+{
+  extends=scriptStatement
+  pin=1
+  recoverWhile=scriptAssignmentRecover
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIAssignmentMixinImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIAssignmentMixin"
+  methods=[getType toString]
+  consumeTokenMethod="consumeTokenFast"
+}
+
 // TODO: Sum and ForIf?
 // TODO: pin=2?
 // TODO: annotation for For arguments!  | more or less done
-forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN expressionStatement* RPAREN
+forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN plain_statement* RPAREN
 {
   pin=1
   extends=scriptStatement
   methods=[getType toString]
+  consumeTokenMethod="consumeTokenFast"
 }
 
-expression ::= reference_expression
-             | literal
+expression ::= literal
+             | reference_expression
 {
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExpressionBase"
   consumeTokenMethod="consumeTokenFast"
@@ -172,17 +194,6 @@ private non_empty_params::= LPAREN <<comma_separated_list_rec expression comma_s
 {
   pin = 1
   consumeTokenMethod = 'consumeTokenFast'
-}
-
-// TODO: handle no error on right part missing
-assignment ::= variableAccess EQUALS expression
-{
-  extends=expression
-  pin=1
-  recoverWhile=scriptAssignmentRecover
-  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIAssignmentMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIAssignmentMixin"
-  methods=[getType toString]
 }
 
 type ::= FLOAT | STRING | OBJECT | GROUP

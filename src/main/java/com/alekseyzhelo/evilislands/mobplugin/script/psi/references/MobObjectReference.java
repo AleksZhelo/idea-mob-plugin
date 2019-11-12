@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIExpression;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EILiteral;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -12,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class MobObjectReference extends PsiReferenceBase<EIExpression> {
+public class MobObjectReference extends PsiReferenceBase<EILiteral> {
 
-    public MobObjectReference(@NotNull EIExpression element, TextRange rangeInElement) {
+    public MobObjectReference(@NotNull EILiteral element, TextRange rangeInElement) {
         super(element, rangeInElement);
     }
 

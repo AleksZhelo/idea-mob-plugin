@@ -86,9 +86,6 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
                 !(parent instanceof EIForBlock && (((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0))) {
             suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
         }
-        if (parent instanceof EIExpressionStatement) { // weird parser behaviour workaround
-            suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
-        }
 
         return variants.toArray();
     }
