@@ -22,7 +22,7 @@ final class EIIndentProcessor {
     );
     private static final TokenSet BLOCKS = TokenSet.create(
             GLOBAL_VARS,
-            SCRIPT_BLOCK, // or SCRIPT_IMPLEMENTATION?
+            SCRIPT_IMPLEMENTATION,
             SCRIPT_IF_BLOCK,
             SCRIPT_THEN_BLOCK,
             WORLD_SCRIPT,
@@ -33,7 +33,8 @@ final class EIIndentProcessor {
             DECLARATIONS,
             SCRIPTS,
             SCRIPT_DECLARATION,
-            SCRIPT_IMPLEMENTATION
+            SCRIPT_BLOCK
+//            SCRIPT_IMPLEMENTATION
     );
 
     private EIIndentProcessor() {

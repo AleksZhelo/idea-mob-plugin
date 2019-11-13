@@ -16,6 +16,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
 import org.jetbrains.annotations.NotNull;
@@ -165,7 +166,9 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
-                        .withParent(EIScriptIfBlock.class),
+                        .withParent(PlatformPatterns
+                                .psiElement(PsiErrorElement.class)
+                                .inside(EIScriptIfBlock.class)),
                 new CompletionProvider<CompletionParameters>() {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,

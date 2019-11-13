@@ -22,6 +22,7 @@ final class EISpacingBuilderProvider {
     static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
         return new SpacingBuilder(settings, EIScriptLanguage.INSTANCE)
                 .around(other).spaces(1)
+                .before(ScriptTypes.COMMA).spaces(0)
                 .after(ScriptTypes.COMMA).spaces(1)
                 .beforeInside(ScriptTypes.LPAREN, TokenSet.create(ScriptTypes.SCRIPT_DECLARATION)).spaces(1)
                 .before(ScriptTypes.DECLARATIONS).blankLines(1)

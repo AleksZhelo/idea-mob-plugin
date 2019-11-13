@@ -105,7 +105,6 @@ scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRec
 
 scriptIfBlock ::= IF LPAREN functionCall* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
-//  recoverWhile=scriptThenBlockRecover
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
 private scriptThenBody ::= scriptStatement*
@@ -203,9 +202,9 @@ type ::= FLOAT | STRING | OBJECT | GROUP
 
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
-private scriptIfBlockRecover ::= !(THEN)
-private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN)
-private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER)
-private scriptBlockRecover ::= !(IF | RPAREN)
-private worldScriptRecover ::= !(RPAREN)
-private comma_separated_list_recover ::= !(RPAREN)  // wrong, interferes with other recovers! // TODO: still relevant?
+private scriptIfBlockRecover ::= !(THEN | RPAREN !THEN)
+private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN | SCRIPT | WORLDSCRIPT)
+private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER | FOR)
+private scriptBlockRecover ::= !(IF | RPAREN !RPAREN | SCRIPT | WORLDSCRIPT)
+private worldScriptRecover ::= !(<<eof>>)
+private comma_separated_list_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR)

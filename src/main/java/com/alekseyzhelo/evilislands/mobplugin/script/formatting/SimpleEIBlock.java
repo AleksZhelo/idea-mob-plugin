@@ -33,9 +33,10 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
             LPAREN,
             RPAREN,
             FUNCTION_CALL,
-            SCRIPT_STATEMENT
+            ASSIGNMENT,
+            CALL_STATEMENT,
+            FOR_BLOCK
     );
-
 
     final SpacingBuilder mySpacingBuilder;
     private final Indent myIndent;
