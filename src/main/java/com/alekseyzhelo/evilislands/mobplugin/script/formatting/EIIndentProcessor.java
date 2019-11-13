@@ -34,7 +34,6 @@ final class EIIndentProcessor {
             SCRIPTS,
             SCRIPT_DECLARATION,
             SCRIPT_BLOCK
-//            SCRIPT_IMPLEMENTATION
     );
 
     private EIIndentProcessor() {

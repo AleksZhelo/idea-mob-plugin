@@ -5,6 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.lang.documentation.AbstractDocumentationProvider;
@@ -62,8 +63,11 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
 
     private String getGlobalVarDoc(EIGlobalVar element) {
         String doc = DocumentationFormatter.wrapDefinition(
-                DocumentationFormatter.wrapKeyword(EIMessages.message("doc.keyword.globalVar")
-                ) + " " + DocumentationFormatter.bold(element.getName()));
+                DocumentationFormatter.wrapKeyword(EIMessages.message("doc.keyword.globalVar"))
+                        + " "
+                        + DocumentationFormatter.bold(element.getName())
+                        + " : " + EIScriptNamingUtil.getName(element.getType())
+        );
         PsiElement next = UsefulPsiTreeUtil.getNextSiblingSkipWhiteSpacesAndCommas(element, true);
         if (next instanceof PsiComment) {
             doc += DocumentationFormatter.wrapContent(next.getText().substring(2, next.getTextLength()));
