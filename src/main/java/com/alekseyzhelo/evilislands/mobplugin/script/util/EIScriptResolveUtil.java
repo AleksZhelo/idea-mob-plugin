@@ -40,7 +40,7 @@ public class EIScriptResolveUtil {
 
     @Nullable
     public static List<EIFormalParameter> findEnclosingScriptParams(ScriptPsiFile scriptFile, PsiElement myElement) {
-        EIScriptImplementation script = UsefulPsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class);
+        EIScriptImplementation script = PsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class);
         if (script == null || script.getName().isEmpty()) {
             return null;
         } else {

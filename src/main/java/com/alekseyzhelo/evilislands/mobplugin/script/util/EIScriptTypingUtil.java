@@ -4,6 +4,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -81,7 +82,7 @@ public final class EIScriptTypingUtil {
         if (paramOwner != null && param != null) {
             int index = paramOwner.getExpressionList().indexOf(param);
             if (index >= 0) {
-                EIFunctionCall call = UsefulPsiTreeUtil.getParentOfType(paramOwner, EIFunctionCall.class);
+                EIFunctionCall call = PsiTreeUtil.getParentOfType(paramOwner, EIFunctionCall.class);
                 assert call != null;
                 PsiElement resolved = call.getReference().resolve();
                 if (resolved instanceof EICallableDeclaration) {

@@ -227,6 +227,7 @@ public class ScriptPsiFile extends PsiFileBase {
     private class CachedGSVarsProvider implements CachedValueProvider<Map<String, EIGSVar>> {
         @Override
         public Result<Map<String, EIGSVar>> compute() {
+            Stopwatch watch = Stopwatch.createStarted();
             Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
             acceptChildren(new EIVisitor() {
                 @Override
@@ -255,7 +256,7 @@ public class ScriptPsiFile extends PsiFileBase {
                     element.acceptChildren(this);
                 }
             });
-            LOG.warn("CachedGSVarsProvider");
+            LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedGSVarsProvider");
             return new Result<>(result, ScriptPsiFile.this);
         }
     }
@@ -263,6 +264,7 @@ public class ScriptPsiFile extends PsiFileBase {
     private class CachedAreasProvider implements CachedValueProvider<Map<Integer, EIArea>> {
         @Override
         public Result<Map<Integer, EIArea>> compute() {
+            Stopwatch watch = Stopwatch.createStarted();
             Map<Integer, EIArea> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
             acceptChildren(new EIVisitor() {
                 @Override
@@ -295,7 +297,7 @@ public class ScriptPsiFile extends PsiFileBase {
                     element.acceptChildren(this);
                 }
             });
-            LOG.warn("CachedAreasProvider");
+            LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedAreasProvider");
             return new Result<>(result, ScriptPsiFile.this);
         }
     }

@@ -85,10 +85,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                             .withLanguage(EIScriptLanguage.INSTANCE)
                             .withSuperParent(3, PlatformPatterns
                                     .psiElement(EIFunctionCall.class)
-                                    .withFirstChild(PlatformPatterns
-                                            .psiElement()
-                                            .withText(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
-                                    )
+                                    .withName(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
                             )
                             // TODO: could optimize by checking argument position first? (would need to improve ArgumentPositionPatternCondition)
                             .with(ArgumentPositionPatternCondition.SECOND_ARGUMENT),
@@ -110,7 +107,8 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                         || (!isRead && (myVar.getWrites() == 1 && myVar.getReads() == 0)))) {
                                     continue;
                                 }
-                                suggestToken(result, gsVar.toString());
+                                // TODO: proper lookup element with icon and everything
+                                suggestString(result, gsVar.toString());
                             }
                         }
                     }
@@ -125,10 +123,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                            .withLanguage(EIScriptLanguage.INSTANCE)
 //                            .withSuperParent(3, PlatformPatterns
 //                                    .psiElement(EIFunctionCall.class)
-//                                    .withFirstChild(PlatformPatterns
-//                                            .psiElement()
-//                                            .withText(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
-//                                    )
+//                                    .withName(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
 //                            ),
 //                    new CompletionProvider<CompletionParameters>() {
 //                        @Override
@@ -255,6 +250,10 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         }
     }
 
+    private void suggestString(CompletionResultSet result, String suggestion) {
+        result.addElement(LookupElementBuilder.create(suggestion));
+    }
+    
     private void suggestToken(CompletionResultSet result, String token) {
         PrefixMatcher matcher = result.getPrefixMatcher();
         LookupElement element = matcher.prefixMatches(token)

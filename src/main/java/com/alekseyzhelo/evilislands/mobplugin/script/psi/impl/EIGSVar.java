@@ -59,6 +59,10 @@ public class EIGSVar extends EIExtraVarBase<String> {
         super(name);
     }
 
+    public boolean isZoneOrQuestVar() {
+        return variable.startsWith("z.") || variable.startsWith("q.");
+    }
+
     @Override
     protected boolean isVariableRead(@NotNull EIFunctionCall call) {
         // TODO: is calling isGSVarRead expensive here?

@@ -178,13 +178,15 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                 Map<String, EIGSVar> vars = ((ScriptPsiFile) call.getContainingFile()).findGSVars();
                 EIGSVar gsVar = vars.get(varName);
                 if (gsVar != null) {
-                    if (gsVar.getReads() == 0 && !varName.startsWith("z.")) {
-                        markAsWeakWarning(myHolder, varNameElement,
-                                EIMessages.message(gsVar.getWrites() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.written", gsVar));
-                    }
-                    if (gsVar.getWrites() == 0) {
-                        markAsWeakWarning(myHolder, varNameElement,
-                                EIMessages.message(gsVar.getReads() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.read", gsVar));
+                    if (!gsVar.isZoneOrQuestVar()) { // TODO: should still warn about only reading a special var?
+                        if (gsVar.getReads() == 0) {
+                            markAsWeakWarning(myHolder, varNameElement,
+                                    EIMessages.message(gsVar.getWrites() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.written", gsVar));
+                        }
+                        if (gsVar.getWrites() == 0) {
+                            markAsWeakWarning(myHolder, varNameElement,
+                                    EIMessages.message(gsVar.getReads() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.read", gsVar));
+                        }
                     }
                 } else {
                     LOG.error("GSVar is null for " + call);
