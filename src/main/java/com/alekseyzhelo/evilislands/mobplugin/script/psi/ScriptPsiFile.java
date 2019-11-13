@@ -253,7 +253,9 @@ public class ScriptPsiFile extends PsiFileBase {
                 @Override
                 public void visitElement(PsiElement element) {
                     super.visitElement(element);
-                    element.acceptChildren(this);
+                    if (!(element instanceof EIGlobalVars || element instanceof EIDeclarations)) {
+                        element.acceptChildren(this);
+                    }
                 }
             });
             LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " CachedGSVarsProvider");
