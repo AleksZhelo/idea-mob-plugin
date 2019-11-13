@@ -25,6 +25,14 @@ public class EIScriptParserTest extends ParsingTestCase {
     }
 
     public void testIngosTownOkrestTime() {
+        timeTest();
+    }
+
+    public void testSuslPrtlGipTime() {
+        timeTest();
+    }
+
+    private void timeTest() {
         String name = getTestName();
         try {
             String text = loadFile(name + "." + myFileExt);
@@ -39,7 +47,7 @@ public class EIScriptParserTest extends ParsingTestCase {
                 System.out.println(myFile.getChildren()[0]);
                 myFile = null;
             }
-            LOG.info("Time per repetition: {} ms", ms / reps);
+            LOG.info(name + ", time per repetition: {} ms", ms / reps);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
