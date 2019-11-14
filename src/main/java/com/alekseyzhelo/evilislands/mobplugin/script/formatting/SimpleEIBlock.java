@@ -21,12 +21,13 @@ import static com.intellij.psi.TokenType.WHITE_SPACE;
 class SimpleEIBlock extends AbstractBlock implements BlockEx {
 
     private static final TokenSet WRAP_TOP_LEVEL = TokenSet.create(
+            GLOBAL_VARS,
             GLOBAL_VAR,
             SCRIPT_DECLARATION,
             SCRIPT_IMPLEMENTATION,
             SCRIPT_IF_BLOCK,
             SCRIPT_THEN_BLOCK,
-            WORLDSCRIPT
+            WORLD_SCRIPT
     );
 
     private static final TokenSet WRAP_SECOND_LEVEL = TokenSet.create(
@@ -75,9 +76,14 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     }
 
     private boolean shouldWrap(IElementType childType) {
-        return WRAP_TOP_LEVEL.contains(childType) ||
-                (!getElementType().equals(SCRIPT_DECLARATION) &&
-                        WRAP_TOP_LEVEL.contains(getElementType()) && WRAP_SECOND_LEVEL.contains(childType));
+        IElementType elementType = getElementType();
+        if (GLOBAL_VARS.equals(elementType) && LPAREN.equals(childType)) {
+            return false;
+        } else {
+            return WRAP_TOP_LEVEL.contains(childType) ||
+                    (!elementType.equals(SCRIPT_DECLARATION) &&
+                            WRAP_TOP_LEVEL.contains(elementType) && WRAP_SECOND_LEVEL.contains(childType));
+        }
     }
 
     @Override

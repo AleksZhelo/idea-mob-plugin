@@ -21,7 +21,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.Condition;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.PsiElementPattern;
@@ -32,7 +31,7 @@ import com.intellij.util.SmartList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * @author Fedor.Korotkov, Aleksey Zhelo

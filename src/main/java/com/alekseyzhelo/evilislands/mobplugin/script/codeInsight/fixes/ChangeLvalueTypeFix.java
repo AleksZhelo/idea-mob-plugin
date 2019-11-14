@@ -19,7 +19,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: make an Intention as well?
+// TODO: make it an Intention as well?
 public class ChangeLvalueTypeFix extends LocalQuickFixOnPsiElement {
 
     private final String varName;

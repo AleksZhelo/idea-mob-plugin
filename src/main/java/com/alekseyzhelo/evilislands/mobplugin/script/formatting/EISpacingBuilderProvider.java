@@ -8,25 +8,20 @@ import com.intellij.psi.tree.TokenSet;
 
 final class EISpacingBuilderProvider {
 
-    private static final TokenSet other;
-
     private EISpacingBuilderProvider() {
-    }
-
-    static {
-        //  test
-        other = TokenSet.create(ScriptTypes.COLON, ScriptTypes.EQUALS);
     }
 
     // TODO: bother with custom settings?
     static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
         return new SpacingBuilder(settings, EIScriptLanguage.INSTANCE)
-                .around(other).spaces(1)
+                .around(TokenSet.create(ScriptTypes.COLON, ScriptTypes.EQUALS)).spaces(1)
                 .before(ScriptTypes.COMMA).spaces(0)
                 .after(ScriptTypes.COMMA).spaces(1)
-                .beforeInside(ScriptTypes.LPAREN, TokenSet.create(ScriptTypes.SCRIPT_DECLARATION)).spaces(1)
+                .after(ScriptTypes.LPAREN).spaces(0)
+                .before(ScriptTypes.RPAREN).spaces(0)
+                .beforeInside(ScriptTypes.LPAREN,
+                        TokenSet.create(ScriptTypes.SCRIPT_DECLARATION, ScriptTypes.GLOBAL_VARS)).spaces(1)
                 .before(ScriptTypes.DECLARATIONS).blankLines(1)
-                // TODO: ignore comments
                 .before(ScriptTypes.SCRIPT_IMPLEMENTATION).blankLines(1)
                 .before(ScriptTypes.WORLD_SCRIPT).blankLines(1)
                 ;
