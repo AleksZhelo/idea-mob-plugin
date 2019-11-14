@@ -180,7 +180,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             );
             if (errorMessage != null) {
                 // TODO: could prompt to create a script here?
-                AnnotatorUtil.markAsError(myHolder, callNameElement, errorMessage);
+                Annotation annotation = AnnotatorUtil.markAsError(myHolder, callNameElement, errorMessage);
+                annotation.registerFix(
+                        // TODO: add factory? maybe just for delete element, or for all my fixes?
+                        new DeleteElementFix(call, EIMessages.message("fix.remove.element")),
+                        call.getTextRange()
+                );
             }
         }
 

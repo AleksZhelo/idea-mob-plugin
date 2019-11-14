@@ -25,6 +25,7 @@
         </context>
     </template>
 
+<!--    TODO: remove? or at least call KillScript() -->
     <template name="init"
               value="Script Initialization&#10;// Инициализация разных переменных и всего такого прочего.&#10;(&#10;  if&#10;  (&#10;    // Безусловный вызов.&#10;  )&#10;  then&#10;  (&#10;    // Инициализировать переменные...&#10;    $END$&#10;    // Инициализировать зоны...&#10;    &#10;  )&#10;)"
               description="Initialization script" toReformat="true">
