@@ -2,27 +2,27 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
+import org.jetbrains.annotations.NotNull;
 
 final class EIScriptGenerationUtil {
 
-    static String globalVarText(String name) {
-        return globalVarText(name, EITypeToken.GROUP);
-    }
-
-    static String globalVarText(String name, EITypeToken type) {
+    @NotNull
+    static String globalVarText(@NotNull String name, @NotNull EITypeToken type) {
         return "GlobalVars(" + trimDummy(name) + ":" + type.getTypeString() + ")";
     }
 
-    static String scriptImplementationText(String name) {
-        // TODO: world script is a workaround for script_then_block recoverUntil deficiency
-        return "Script " + trimDummy(name) + "(if () then (KillScript()))" + "WorldScript()";
+    @NotNull
+    static String scriptImplementationText(@NotNull String name) {
+        return "Script " + trimDummy(name) + "(if () then (KillScript()))";
     }
 
-    static String scriptDeclarationText(String name) {
-        return "DeclareScript " + trimDummy(name) + " (this : object)";
+    @NotNull
+    static String scriptDeclarationText(@NotNull String name, @NotNull String paramName, @NotNull EITypeToken type) {
+        return "DeclareScript " + trimDummy(name) + String.format(" (%s : %s)", paramName, type.getTypeString());
     }
 
-    private static String trimDummy(String text) {
+    @NotNull
+    private static String trimDummy(@NotNull String text) {
         if (text.endsWith(CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED)) {
             text = text.substring(0, text.length() - CompletionInitializationContext.DUMMY_IDENTIFIER_TRIMMED.length());
         }

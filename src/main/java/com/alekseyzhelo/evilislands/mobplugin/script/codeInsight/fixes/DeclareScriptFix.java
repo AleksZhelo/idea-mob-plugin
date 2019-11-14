@@ -1,12 +1,11 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICaretPlacementUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.intellij.codeInsight.FileModificationService;
 import com.intellij.codeInspection.LocalQuickFixOnPsiElement;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.ScrollType;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.TextEditor;
@@ -58,16 +57,7 @@ public class DeclareScriptFix extends LocalQuickFixOnPsiElement {
 
         FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(file.getVirtualFile());
         if (selectedEditor instanceof TextEditor) {
-            placeCaretInsideDeclaration(newDeclaration, ((TextEditor) selectedEditor).getEditor());
+            EICaretPlacementUtil.placeCaretInsideDeclaration(newDeclaration, ((TextEditor) selectedEditor).getEditor());
         }
-    }
-
-    private void placeCaretInsideDeclaration(EIScriptDeclaration newDeclaration, Editor editor) {
-        PsiElement target = newDeclaration.getNode().findChildByType(ScriptTypes.RPAREN).getPsi();
-
-        final int offset = target.getTextRange().getStartOffset();
-        editor.getCaretModel().moveToOffset(offset);
-        editor.getScrollingModel().scrollToCaret(ScrollType.CENTER);
-        editor.getSelectionModel().removeSelection();
     }
 }

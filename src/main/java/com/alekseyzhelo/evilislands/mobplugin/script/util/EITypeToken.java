@@ -11,7 +11,7 @@ public enum EITypeToken {
     STRING(EIScriptNamingUtil.STRING),
     OBJECT(EIScriptNamingUtil.OBJECT),
     GROUP(EIScriptNamingUtil.GROUP),
-    ANY(EIScriptNamingUtil.ANY);  // TODO: ANY added everywhere where needed?
+    ANY("");  // TODO: ANY added everywhere where needed?
 
     @NotNull
     private final String typeString;

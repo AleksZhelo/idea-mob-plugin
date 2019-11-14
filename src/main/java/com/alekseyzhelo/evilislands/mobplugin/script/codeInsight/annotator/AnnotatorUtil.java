@@ -1,16 +1,17 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
+package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIExpression;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIParams;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.intellij.codeInspection.*;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiReference;
 import com.intellij.ui.ColorUtil;
 import com.intellij.util.ui.UIUtil;
 import com.intellij.xml.util.XmlStringUtil;
@@ -25,6 +26,47 @@ final class AnnotatorUtil {
 
     private AnnotatorUtil() {
 
+    }
+
+    static void registerReferenceQuickFixes(@NotNull Annotation annotation, @NotNull PsiReference reference) {
+        if (reference instanceof LocalQuickFixProvider) {
+            LocalQuickFix[] fixes = ((LocalQuickFixProvider) reference).getQuickFixes();
+            if (fixes != null) {
+                InspectionManager inspectionManager = InspectionManager.getInstance(reference.getElement().getProject());
+                for (LocalQuickFix fix : fixes) {
+                    ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
+                            reference.getElement(),
+                            annotation.getMessage(),
+                            fix,
+                            ProblemHighlightType.LIKE_UNKNOWN_SYMBOL,
+                            true
+                    );
+                    annotation.registerFix(fix, null, null, descriptor);
+                }
+            }
+        }
+    }
+
+    @Nullable
+    static String detectFunctionCallError(@NotNull PsiElement callNameElement,
+                                          PsiElement resolvedTo,
+                                          boolean inIfBlock) {
+        String errorMessage = null;
+        if (resolvedTo == null) {
+            errorMessage = EIMessages.message(
+                    inIfBlock ? "error.unresolved.function"
+                            : "error.unresolved.function.or.script",
+                    callNameElement.getText()
+            );
+        } else if (resolvedTo instanceof EIScriptDeclaration && inIfBlock) {
+            errorMessage = EIMessages.message("error.not.allowed.in.script.if");
+        } else if (resolvedTo instanceof EIFunctionDeclaration && inIfBlock) {
+            EIFunctionDeclaration function = (EIFunctionDeclaration) resolvedTo;
+            if (function.getType() == null || function.getType().getTypeToken() != EITypeToken.FLOAT) {
+                errorMessage = EIMessages.message("error.not.allowed.in.script.if");
+            }
+        }
+        return errorMessage;
     }
 
     @NotNull
@@ -57,15 +99,13 @@ final class AnnotatorUtil {
 
     @NotNull
     static Annotation createIncompatibleCallTypesAnnotation(@NotNull AnnotationHolder holder,
-                                                            @NotNull List<EIFormalParameter> parameters,
-                                                            @NotNull List<EIExpression> arguments,
-                                                            int idxError) {
-        EIFormalParameter parameter = parameters.get(idxError);
-        EIExpression expression = arguments.get(idxError);
+                                                            @NotNull EICallArgumentErrorDetector errorDetector) {
+        EIFormalParameter parameter = errorDetector.getFirstWrongParameter();
+        EIExpression expression = errorDetector.getFirstWrongArgument();
         return holder.createErrorAnnotation(
                 expression.getTextRange(),
                 EIMessages.message("error.incompatible.call.types",
-                        idxError + 1,
+                        errorDetector.getFirstWrong() + 1,
                         getName(parameter.getType()),
                         getName(expression.getType()))
         );
@@ -181,5 +221,20 @@ final class AnnotatorUtil {
     @NotNull
     private static String escape(@NotNull String s) {
         return XmlStringUtil.escapeString(s);
+    }
+
+    static Annotation markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
+        Annotation annotation = holder.createErrorAnnotation(nameElement.getTextRange(), errorString);
+        // TODO: should I keep this?
+        annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+        return annotation;
+    }
+
+    static Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull String warningString) {
+        return holder.createWarningAnnotation(element.getTextRange(), warningString);
+    }
+
+    static void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
+        holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
     }
 }

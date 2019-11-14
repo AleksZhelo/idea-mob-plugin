@@ -6,6 +6,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementImpl implements EIScriptNamedElementMixin {
 
@@ -40,6 +41,7 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
     }
 
     @Override
+    @Nullable
     public PsiElement getNameIdentifier() {
         ASTNode nameNode = getNameNode();
         if (nameNode != null) {

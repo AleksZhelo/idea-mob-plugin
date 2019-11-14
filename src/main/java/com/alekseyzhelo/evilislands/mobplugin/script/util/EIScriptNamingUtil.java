@@ -17,7 +17,6 @@ public final class EIScriptNamingUtil {
     public static final String STRING = "string";
     public static final String OBJECT = "object";
     public static final String GROUP = "group";
-    public static final String ANY = "any";
     public static final String GLOBALVARS = "GlobalVars";
     public static final String DECLARESCRIPT = "DeclareScript";
     public static final String SCRIPT = "Script";

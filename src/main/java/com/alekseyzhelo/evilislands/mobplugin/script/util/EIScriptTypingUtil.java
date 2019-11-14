@@ -5,6 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +36,7 @@ public final class EIScriptTypingUtil {
         }
     }
 
-    public static EITypeToken getVariableExpectedType(EIVariableAccess variableAccess) {
+    public static EITypeToken getVariableExpectedType(@NotNull EIVariableAccess variableAccess) {
         PsiElement parent = variableAccess.getParent();
 
         if (parent instanceof EIForBlock) {
@@ -55,6 +56,7 @@ public final class EIScriptTypingUtil {
             if (myIndex == 0) { // left side
                 // if assignment is incomplete any type is OK
                 return assignment.isComplete()
+                        // TODO: don't return VOID here?
                         ? Objects.requireNonNull(assignment.getRightSide()).getType()
                         : EITypeToken.ANY;
             } else if (myIndex == 1) {
@@ -69,6 +71,14 @@ public final class EIScriptTypingUtil {
         }
 
         return null;  // shouldn't happen
+    }
+
+    @NotNull
+    public static EITypeToken getCreatableVariableExpectedType(@NotNull EIVariableAccess variableAccess) {
+        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(variableAccess);
+        return expectedType != null && expectedType != EITypeToken.VOID
+                ? expectedType
+                : EITypeToken.ANY;
     }
 
     /**

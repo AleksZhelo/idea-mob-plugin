@@ -6,63 +6,91 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.psi.codeStyle.CodeStyleManager;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 public class EIScriptElementFactory {
 
+    public static EIGlobalVars createGlobalVars(@NotNull Project project,
+                                                @Nullable String varName,
+                                                @Nullable EITypeToken varType) {
+        ScriptPsiFile file;
+        if (varName == null || varType == null) {
+            file = createDummyScriptFile(project, "GlobalVars()");
+        } else {
+            file = createDummyScriptFile(project, EIScriptGenerationUtil.globalVarText(varName, varType));
+        }
+        PsiElement result = file.getFirstChild();
+        return (EIGlobalVars) CodeStyleManager.getInstance(project).reformat(result);
+    }
+
+    public static EIGlobalVar createGlobalVar(@NotNull Project project,
+                                              @NotNull String name,
+                                              @NotNull EITypeToken type) {
+        if (EITypeToken.VOID.equals(type)) {
+            throw new IncorrectOperationException("Cannot create a 'VOID' global variable");
+        }
+        return createGlobalVars(project, name, type).getGlobalVarList().get(0);
+    }
+
     public static PsiElement createIdentifier(@NotNull Project project, @NotNull String name) {
-        EIGlobalVar globalVar = createGlobalVar(project, name);
-        return globalVar.getNameIdentifier();
+        return createGlobalVar(project, name, EITypeToken.GROUP).getNameIdentifier();
     }
 
     public static EIType createType(@NotNull Project project, @NotNull EITypeToken typeToken) {
-        if (EITypeToken.ANY.equals(typeToken)) {
-            throw new IncorrectOperationException("Cannot create an 'ANY' PSI EIType");
+        if (EITypeToken.ANY.equals(typeToken) || EITypeToken.VOID.equals(typeToken)) {
+            throw new IncorrectOperationException("Cannot create an 'ANY' or 'VOID' PSI EIType");
         }
-        final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.globalVarText("dummy", typeToken));
-        return PsiTreeUtil.findChildOfType(file.getFirstChild(), EIGlobalVar.class).getType();
+        return createGlobalVar(project, "dummy", typeToken).getType();
     }
 
-    public static EIGlobalVar createGlobalVar(@NotNull Project project, @NotNull String name) {
-        final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.globalVarText(name));
-        return PsiTreeUtil.findChildOfType(file.getFirstChild(), EIGlobalVar.class);
-    }
-
-    private static EIScripts createScripts(@NotNull Project project, @NotNull String scriptName, boolean reformat) {
+    public static EIScripts createScripts(@NotNull Project project,
+                                           @NotNull String scriptName) {
         final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.scriptImplementationText(scriptName));
         EIScripts scripts = (EIScripts) file.getFirstChild();
-        return reformat ? (EIScripts) CodeStyleManager.getInstance(project).reformat(scripts) : scripts;
+        return (EIScripts) CodeStyleManager.getInstance(project).reformat(scripts);
     }
 
-    public static EIScripts createScripts(@NotNull Project project, @NotNull String scriptName) {
-        return createScripts(project, scriptName, true);
+    public static EIScriptImplementation createScriptImplementation(@NotNull Project project,
+                                                                    @NotNull String name) {
+        return createScripts(project, name).getScriptImplementationList().get(0);
     }
 
-    public static EIScriptImplementation createScriptImplementation(@NotNull Project project, @NotNull String name) {
-        EIScripts scripts = createScripts(project, name, false);
-        EIScriptImplementation scriptImpl = scripts.getScriptImplementationList().get(0);
-        return (EIScriptImplementation) CodeStyleManager.getInstance(project).reformat(scriptImpl);
-    }
-
-    private static EIDeclarations createDeclarations(@NotNull Project project, @NotNull String scriptName, boolean reformat) {
-        final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.scriptDeclarationText(scriptName));
+    private static EIDeclarations createDeclarations(@NotNull Project project,
+                                                     @NotNull String scriptName,
+                                                     @NotNull String paramName,
+                                                     @NotNull EITypeToken paramType) {
+        final ScriptPsiFile file = createDummyScriptFile(
+                project,
+                EIScriptGenerationUtil.scriptDeclarationText(scriptName, paramName, paramType)
+        );
         EIDeclarations declarations = (EIDeclarations) file.getFirstChild();
-        return reformat ? (EIDeclarations) CodeStyleManager.getInstance(project).reformat(declarations) : declarations;
+        return (EIDeclarations) CodeStyleManager.getInstance(project).reformat(declarations);
     }
 
-    public static EIDeclarations createDeclarations(@NotNull Project project, @NotNull String scriptName) {
-        return createDeclarations(project, scriptName, true);
+    public static EIDeclarations createDeclarations(@NotNull Project project,
+                                                    @NotNull String scriptName) {
+        return createDeclarations(project, scriptName, "this", EITypeToken.OBJECT);
     }
 
-    public static EIScriptDeclaration createScriptDeclaration(@NotNull Project project, @NotNull String name) {
-        EIScriptDeclaration declaration = createDeclarations(project, name, false).getScriptDeclarationList().get(0);
-        return (EIScriptDeclaration) CodeStyleManager.getInstance(project).reformat(declaration);
+    public static EIScriptDeclaration createScriptDeclaration(@NotNull Project project,
+                                                              @NotNull String name) {
+        return createDeclarations(project, name).getScriptDeclarationList().get(0);
     }
 
-    public static ScriptPsiFile createDummyScriptFile(@NotNull Project project, @NotNull String text) {
+    public static EIFormalParameter createFormalParameter(@NotNull Project project,
+                                                          @NotNull String name,
+                                                          @NotNull EITypeToken type) {
+        if (EITypeToken.VOID.equals(type)) {
+            throw new IncorrectOperationException("Cannot create a 'VOID' formal parameter");
+        }
+        EIDeclarations declarations = createDeclarations(project, "dummy", name, type);
+        return declarations.getScriptDeclarationList().get(0).getFormalParameterList().get(0);
+    }
+
+    private static ScriptPsiFile createDummyScriptFile(@NotNull Project project, @NotNull String text) {
         String name = "dummy.eiscript";
         return (ScriptPsiFile) PsiFileFactory.getInstance(project).
                 createFileFromText(name, ScriptFileType.INSTANCE, text);

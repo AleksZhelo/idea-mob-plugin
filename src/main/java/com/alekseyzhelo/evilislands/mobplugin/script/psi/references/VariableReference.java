@@ -1,5 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScriptParamFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -8,11 +10,14 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.codeInspection.LocalQuickFix;
+import com.intellij.codeInspection.LocalQuickFixProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +28,7 @@ import java.util.List;
 import static com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil.HAS_ERROR_CHILD;
 
 // TODO: ResolveCache.getInstance(getProject()).resolveWithCaching()?
-public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
+public class VariableReference extends PsiReferenceBase<EIVariableAccess> implements LocalQuickFixProvider {
     private final String name;
 
     public VariableReference(@NotNull EIVariableAccess element, TextRange textRange) {
@@ -102,6 +107,18 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> {
         if (acceptableFunctions != null) {
             variants.addAll(acceptableFunctions);
         }
+    }
+
+    @Nullable
+    @Override
+    public LocalQuickFix[] getQuickFixes() {
+        List<LocalQuickFix> fixes = new ArrayList<>();
+        // inside a script impl
+        if (PsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class, true, EIWorldScript.class) != null) {
+            fixes.add(new AddScriptParamFix(myElement));
+        }
+        fixes.add(new DeclareGlobalVarFix(myElement));
+        return fixes.toArray(LocalQuickFix.EMPTY_ARRAY);
     }
 
     private static class MyResolver implements ResolveCache.AbstractResolver<VariableReference, PsiElement> {
