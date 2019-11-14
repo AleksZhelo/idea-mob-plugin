@@ -309,5 +309,4 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             }
         }
     }
-
 }

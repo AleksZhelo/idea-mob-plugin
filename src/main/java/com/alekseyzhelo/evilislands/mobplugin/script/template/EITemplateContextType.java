@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class EITemplateContextType extends TemplateContextType {
 
-    protected EITemplateContextType(@NotNull String id,
-                                    @NotNull String presentableName,
-                                    @Nullable Class<? extends TemplateContextType> baseContextType) {
+    EITemplateContextType(@NotNull String id,
+                          @NotNull String presentableName,
+                          @Nullable Class<? extends TemplateContextType> baseContextType) {
         super(id, presentableName, baseContextType);
     }
 
@@ -67,7 +67,8 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
             EIDeclarations declarations = file.findChildByClass(EIDeclarations.class);
             EIWorldScript worldScript = file.findChildByClass(EIWorldScript.class);
-            final boolean topLevel = parent instanceof EIScripts || parent instanceof ScriptPsiFile;
+            final boolean topLevel = parent instanceof EIScripts || parent instanceof ScriptPsiFile
+                    || afterScriptImplClosingParenth(parent, elementOffset);
             final boolean beforeWorldScript = (worldScript == null || elementOffset < worldScript.getTextRange().getStartOffset());
 
             if (!beforeWorldScript) {
@@ -89,10 +90,54 @@ public abstract class EITemplateContextType extends TemplateContextType {
             }
             return false;
         }
+
+        private boolean afterScriptImplClosingParenth(PsiElement correctedParent, int elementOffset) {
+            if (correctedParent instanceof EIScriptImplementation) {
+                ASTNode node = correctedParent.getNode();
+                ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
+                return rParen != null && elementOffset > rParen.getTextRange().getEndOffset();
+            }
+            return false;
+        }
+    }
+
+    public static class ScriptBlockAllowed extends EITemplateContextType {
+
+        public ScriptBlockAllowed() {
+            super("EI_SCRIPT_BLOCK_ALLOWED", "Script block allowed", EIGeneric.class);
+        }
+
+        @Override
+        protected boolean isInContext(@NotNull PsiElement element) {
+            PsiElement parent = element.getParent();
+            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
+                parent = parent.getParent();
+            }
+
+            if (parent instanceof EIScriptImplementation) {
+                ASTNode node = parent.getNode();
+                ASTNode lParen = node.findChildByType(ScriptTypes.LPAREN);
+                ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
+
+                return lParen != null
+                        && element.getTextOffset() > lParen.getStartOffset()
+                        && (rParen == null || element.getTextOffset() < rParen.getStartOffset());
+            } else if (parent instanceof EIScriptIfBlock) { // incomplete ifBlock at script end
+                ASTNode node = parent.getNode();
+                ASTNode lParen = node.findChildByType(ScriptTypes.LPAREN);
+                ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
+
+                return lParen == null && rParen != null && element.getTextOffset() < rParen.getStartOffset();
+            } else if (parent instanceof EIScriptBlock) {
+                return true; // TODO: ok?
+            }
+
+            return false;
+        }
     }
 
     public static class ScriptExpressionAllowed extends EITemplateContextType {
-        
+
         public ScriptExpressionAllowed() {
             super("EI_SCRIPT_EXPRESSION_ALLOWED", "Script expression allowed", EIGeneric.class);
         }
@@ -102,6 +147,9 @@ public abstract class EITemplateContextType extends TemplateContextType {
             PsiElement parent = element.getParent();
             if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
                 parent = parent.getParent();
+            }
+            if (parent instanceof EIVariableAccess) {
+                parent = parent.getParent().getParent(); // TODO: better way?
             }
 
             return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;

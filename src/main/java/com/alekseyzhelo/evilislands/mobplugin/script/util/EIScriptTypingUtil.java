@@ -54,7 +54,7 @@ public final class EIScriptTypingUtil {
             EIAssignment assignment = (EIAssignment) parent;
             int myIndex = assignment.indexOf(variableAccess);
             if (myIndex == 0) { // left side
-                // if assignment is incomplete any type is OK
+                // if the assignment is incomplete any type is OK
                 return assignment.isComplete()
                         // TODO: don't return VOID here?
                         ? Objects.requireNonNull(assignment.getRightSide()).getType()

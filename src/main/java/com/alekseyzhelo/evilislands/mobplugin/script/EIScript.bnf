@@ -95,6 +95,7 @@ scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
 scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
 {
   pin=1
+  recoverWhile=scriptImplRecover
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
   methods=[getReference toString]
@@ -202,9 +203,10 @@ type ::= FLOAT | STRING | OBJECT | GROUP
 
 private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
-private scriptIfBlockRecover ::= !(THEN | RPAREN !THEN)
-private scriptThenBlockRecover ::= !(IF | RPAREN !RPAREN | SCRIPT | WORLDSCRIPT)
+private scriptImplRecover ::= !(SCRIPT | WORLDSCRIPT | <<eof>>)
+private scriptBlockRecover ::= !(IF | IDENTIFIER | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)
+private scriptIfBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)
+private scriptThenBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | IDENTIFIER RPAREN | RPAREN !RPAREN)
 private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER | FOR)
-private scriptBlockRecover ::= !(IF | RPAREN !RPAREN | SCRIPT | WORLDSCRIPT)
 private worldScriptRecover ::= !(<<eof>>)
 private comma_separated_list_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR)

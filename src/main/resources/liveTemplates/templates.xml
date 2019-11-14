@@ -34,6 +34,12 @@
         </context>
     </template>
 
+    <template name="if" value="if&#10;(&#10;  $END$&#10;)&#10;then&#10;(&#10;  &#10;)" description="Script block" toReformat="true">
+        <context>
+            <option name="EI_SCRIPT_BLOCK_ALLOWED" value="true" />
+        </context>
+    </template>
+
     <template name="For" value="For($I$, $GROUP$)&#10;(&#10;  $END$&#10;)" description="For block" toReformat="true">
         <variable name="I" expression="" defaultValue="i" alwaysStopAt="true" />
         <variable name="GROUP" expression="" defaultValue="" alwaysStopAt="true" />
