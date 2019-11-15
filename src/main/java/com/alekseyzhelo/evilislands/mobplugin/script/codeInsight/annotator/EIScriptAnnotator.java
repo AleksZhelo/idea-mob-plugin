@@ -2,8 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ChangeLvalueTypeFix;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ImplementScriptFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
@@ -13,7 +12,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
+import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.InspectionManager;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.ProblemDescriptor;
@@ -52,6 +51,34 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
+    public void visitGlobalVars(@NotNull EIGlobalVars globalVars) {
+        super.visitGlobalVars(globalVars);
+
+        EIRepeatDeclarationHandler<EIGlobalVar> repeatChecker =
+                new EIRepeatDeclarationHandler<EIGlobalVar>(globalVars.getGlobalVarList(), true) {
+                    @Override
+                    protected IntentionAction createNavigateToAlreadyDeclaredElementFix(EIGlobalVar element) {
+                        return new NavigateToAlreadyDeclaredGlobalVarFix(element);
+                    }
+                };
+        repeatChecker.registerErrors(myHolder, "error.global.var.already.defined");
+    }
+
+    @Override
+    public void visitDeclarations(@NotNull EIDeclarations declarations) {
+        super.visitDeclarations(declarations);
+
+        EIRepeatDeclarationHandler<EIScriptDeclaration> repeatChecker =
+                new EIRepeatDeclarationHandler<EIScriptDeclaration>(declarations.getScriptDeclarationList(), false) {
+                    @Override
+                    protected IntentionAction createNavigateToAlreadyDeclaredElementFix(EIScriptDeclaration element) {
+                        return new NavigateToAlreadyDeclaredScriptFix(element);
+                    }
+                };
+        repeatChecker.registerErrors(myHolder, "error.script.already.declared");
+    }
+
+    @Override
     public void visitScriptDeclaration(@NotNull EIScriptDeclaration scriptDeclaration) {
         super.visitScriptDeclaration(scriptDeclaration);
 
@@ -72,11 +99,31 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             );
             TextRange range = scriptDeclaration.getTextRange();
             annotation.registerFix(fix, range, null, descriptor);
-            annotation.registerFix(
-                    new DeleteElementFix(scriptDeclaration, EIMessages.message("fix.remove.element")),
-                    range
-            );
+            annotation.registerFix(AnnotatorUtil.createDeleteElementFix(scriptDeclaration, false), range);
         }
+
+        EIRepeatDeclarationHandler<EIFormalParameter> repeatChecker =
+                new EIRepeatDeclarationHandler<EIFormalParameter>(scriptDeclaration.getFormalParameterList(), true) {
+                    @Override
+                    protected IntentionAction createNavigateToAlreadyDeclaredElementFix(EIFormalParameter element) {
+                        return new NavigateToAlreadyDeclaredParameterFix(element);
+                    }
+                };
+        repeatChecker.registerErrors(myHolder, "error.parameter.already.defined");
+    }
+
+    @Override
+    public void visitScripts(@NotNull EIScripts scripts) {
+        super.visitScripts(scripts);
+
+        EIRepeatDeclarationHandler<EIScriptImplementation> repeatChecker =
+                new EIRepeatDeclarationHandler<EIScriptImplementation>(scripts.getScriptImplementationList(), false) {
+                    @Override
+                    protected IntentionAction createNavigateToAlreadyDeclaredElementFix(EIScriptImplementation element) {
+                        return new NavigateToAlreadyImplementedScriptFix(element);
+                    }
+                };
+        repeatChecker.registerErrors(myHolder, "error.script.already.implemented");
     }
 
     @Override
@@ -88,7 +135,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement ident = scriptImplementation.getNameIdentifier();
             if (ident != null) {
                 Annotation annotation = AnnotatorUtil.markAsError(myHolder, ident,
-                        EIMessages.message("warn.script.not.declared", scriptImplementation.getName()));
+                        EIMessages.message("warn.script.not.declared", scriptImplementation.getName()), true);
                 AnnotatorUtil.registerReferenceQuickFixes(annotation, reference);
             }
         }
@@ -180,10 +227,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             );
             if (errorMessage != null) {
                 // TODO: could prompt to create a script here?
-                Annotation annotation = AnnotatorUtil.markAsError(myHolder, callNameElement, errorMessage);
+                // TODO: likeUnknownSymbol should be false for known non-float functions in an ifBlock
+                Annotation annotation = AnnotatorUtil.markAsError(myHolder, callNameElement,
+                        errorMessage, resolvedTo == null);
                 annotation.registerFix(
                         // TODO: add factory? maybe just for delete element, or for all my fixes?
-                        new DeleteElementFix(call, EIMessages.message("fix.remove.element")),
+                        AnnotatorUtil.createDeleteElementFix(call, false),
                         call.getTextRange()
                 );
             }
@@ -243,7 +292,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         final PsiReference reference = access.getReference();
         if (ident != null && reference.resolve() == null) {
             Annotation annotation = AnnotatorUtil.markAsError(myHolder, ident,
-                    EIMessages.message("error.undefined.variable", access.getName()));
+                    EIMessages.message("error.undefined.variable", access.getName()), true);
             AnnotatorUtil.registerReferenceQuickFixes(annotation, reference);
         }
     }
@@ -254,7 +303,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = literal.getReference();
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
-            AnnotatorUtil.markAsError(myHolder, literal, EIMessages.message("error.wrong.object.id", reference.getCanonicalText()));
+            AnnotatorUtil.markAsError(myHolder, literal,
+                    EIMessages.message("error.wrong.object.id", reference.getCanonicalText()), true);
         }
     }
 

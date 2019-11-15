@@ -1,11 +1,14 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeleteListElementFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
+import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.*;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -207,6 +210,31 @@ final class AnnotatorUtil {
         return annotation;
     }
 
+    static Annotation markAsError(@NotNull AnnotationHolder holder,
+                                  @NotNull PsiElement nameElement,
+                                  @NotNull String errorString,
+                                  boolean likeUnknownSymbol) {
+        Annotation annotation = holder.createErrorAnnotation(nameElement.getTextRange(), errorString);
+        if (likeUnknownSymbol) {
+            annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+        }
+        return annotation;
+    }
+
+    static Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull String warningString) {
+        return holder.createWarningAnnotation(element.getTextRange(), warningString);
+    }
+
+    static void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
+        holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
+    }
+
+    static IntentionAction createDeleteElementFix(PsiElement toDelete, boolean isInList) {
+        return isInList
+                ? new DeleteListElementFix(toDelete, EIMessages.message("fix.remove.element"))
+                : new DeleteElementFix(toDelete, EIMessages.message("fix.remove.element"));
+    }
+
     @NotNull
     private static String redIfNotMatch(@Nullable EITypeToken type, boolean matches) {
         if (matches) return getName(type);
@@ -221,20 +249,5 @@ final class AnnotatorUtil {
     @NotNull
     private static String escape(@NotNull String s) {
         return XmlStringUtil.escapeString(s);
-    }
-
-    static Annotation markAsError(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String errorString) {
-        Annotation annotation = holder.createErrorAnnotation(nameElement.getTextRange(), errorString);
-        // TODO: should I keep this?
-        annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
-        return annotation;
-    }
-
-    static Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull String warningString) {
-        return holder.createWarningAnnotation(element.getTextRange(), warningString);
-    }
-
-    static void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
-        holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
     }
 }
