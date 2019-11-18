@@ -24,6 +24,10 @@ public class EIScriptParserTest extends ParsingTestCase {
         doTest(false);
     }
 
+    public void testSuslPrtlGip() {
+        doTest(false);
+    }
+
     public void testIngosTownOkrestTime() {
         timeTest();
     }

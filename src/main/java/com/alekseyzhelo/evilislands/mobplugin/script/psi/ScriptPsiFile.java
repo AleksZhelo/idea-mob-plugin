@@ -8,6 +8,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.google.common.base.Stopwatch;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.extapi.psi.PsiFileBase;
@@ -188,19 +189,19 @@ public class ScriptPsiFile extends PsiFileBase {
     @NotNull
     private Map<String, EIGSVar> findGSVarsInner() {
         Stopwatch watch = Stopwatch.createStarted();
-        Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
+        final Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
         acceptChildren(new EIVisitor() {
             @Override
             public void visitFunctionCall(@NotNull EIFunctionCall call) {
                 super.visitFunctionCall(call);
 
                 if (EIGSVar.isReadOrWrite(call)) {
-                    PsiElement nameElement = EIGSVar.getVarNameElement(call);
-                    if (nameElement != null &&
+                    PsiElement varElement = EIGSVar.getGSVarArgument(call);
+                    if (varElement != null &&
                             // TODO: can also be an expression, how to handle then? a reference goes to a formal param
                             //  for instance, instead of the actual parameter
-                            nameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-                        String varName = EIGSVar.getVarName(nameElement.getText());
+                            varElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+                        String varName = EIGSVar.getVarName(varElement.getText());
                         EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
                         stats.processCall(call);
                         if (stats.isValid()) {
@@ -221,6 +222,40 @@ public class ScriptPsiFile extends PsiFileBase {
         LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findGSVarsInner");
         return result;
     }
+
+    // TODO: not sure about this one
+//    @NotNull
+//    private Map<String, EIGSVar> findGSVarsInnerLiteral() {
+//        Stopwatch watch = Stopwatch.createStarted();
+//        final Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
+//        acceptChildren(new EIVisitor() {
+//            @Override
+//            public void visitLiteral(@NotNull EILiteral literal) {
+//                if (literal.getNode().getFirstChildNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
+//                    EIFunctionCall call = UsefulPsiTreeUtil.getParentFunctionCall(literal);
+//                    if (call != null && EIGSVar.isReadOrWrite(call)
+//                            && call.getParams().getExpressionList().indexOf(literal) == 1) {
+//                        String varName = EIGSVar.getVarName(literal.getText());
+//                        EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
+//                        stats.processCall(call);
+//                        if (stats.isValid()) {
+//                            result.put(varName, stats);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void visitElement(PsiElement element) {
+//                super.visitElement(element);
+//                if (!(element instanceof EIGlobalVars || element instanceof EIDeclarations)) {
+//                    element.acceptChildren(this);
+//                }
+//            }
+//        });
+//        LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findGSVarsInnerLiteral");
+//        return result;
+//    }
 
     @NotNull
     private Map<Integer, EIArea> findAreasInner() {

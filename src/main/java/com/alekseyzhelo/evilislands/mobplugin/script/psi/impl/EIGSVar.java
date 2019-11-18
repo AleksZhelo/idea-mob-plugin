@@ -39,14 +39,14 @@ public class EIGSVar extends EIExtraVarBase<String> {
     }
 
     @Nullable
-    public static PsiElement getVarNameElement(EIFunctionCall call) {
+    public static PsiElement getGSVarArgument(EIFunctionCall call) {
         PsiElement element = call.getNthArgument(1);
         return element != null ? element.getFirstChild() : null;
     }
 
     @Nullable
     public static String getVarName(EIFunctionCall call) {
-        PsiElement nameElement = getVarNameElement(call);
+        PsiElement nameElement = getGSVarArgument(call);
         return nameElement != null ? getVarName(nameElement.getText()) : null;
     }
 

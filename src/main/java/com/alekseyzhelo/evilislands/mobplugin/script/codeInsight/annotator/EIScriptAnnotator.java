@@ -310,7 +310,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private static void tryAnnotateGSVarUsage(@NotNull AnnotationHolder holder, @NotNull EIFunctionCall call) {
         if (EIScriptLanguage.GS_VARS_ENABLED && EIGSVar.isReadOrWrite(call)) {
-            PsiElement varNameElement = EIGSVar.getVarNameElement(call);
+            PsiElement varNameElement = EIGSVar.getGSVarArgument(call);
             if (varNameElement != null &&
                     varNameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
                 String varName = EIGSVar.getVarName(varNameElement.getText());
