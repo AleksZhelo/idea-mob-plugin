@@ -11,7 +11,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatter
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
@@ -158,7 +157,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                    }
 //            );
         }
-        // TODO: no longer works either  | did it ever work?
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement(ScriptTypes.IDENTIFIER)
@@ -169,39 +167,12 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     public void addCompletions(@NotNull CompletionParameters parameters,
                                                @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
+                        // TODO: check that we are inside the if block parentheses
                         EIFunctionsService service = EIFunctionsService.getInstance(parameters.getOriginalFile().getProject());
                         resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.FLOAT));
                     }
                 }
         );
-        // TODO: no longer works, the IDENTIFIER is inside a VariableAccess now
-        //  also not needed anymore
-//        extend(CompletionType.BASIC,
-//                PlatformPatterns
-//                        .psiElement(ScriptTypes.IDENTIFIER)
-//                        .withParent(
-//                                StandardPatterns.or(
-//                                        PlatformPatterns.psiElement(EIScriptThenBlock.class),
-//                                        PlatformPatterns.psiElement(EIWorldScript.class)
-//                                )
-//                        ),
-//                new CompletionProvider<CompletionParameters>() {
-//                    public void addCompletions(@NotNull CompletionParameters parameters,
-//                                               @NotNull ProcessingContext context,
-//                                               @NotNull CompletionResultSet resultSet) {
-//                        ScriptPsiFile psiFile = (ScriptPsiFile) parameters.getOriginalFile();
-//                        EIFunctionsService service = EIFunctionsService.getInstance(psiFile.getProject());
-//
-//                        Map<EITypeToken, List<LookupElement>> globalVarLookup = psiFile.getGlobalVarLookupElements();
-//                        for (EITypeToken type : EITypeToken.values()) {
-//                            resultSet.addAllElements(globalVarLookup.get(type));
-//                        }
-//                        // TODO: local vars missing
-//                        resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.VOID));
-//                        resultSet.addAllElements(psiFile.getScriptLookupElements());
-//                    }
-//                }
-//        );
     }
 
     @Override

@@ -48,7 +48,6 @@ public class ScriptPsiFile extends PsiFileBase {
 
     // TODO: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
     //  | done with CachedValue; investigate stubs?
-    // TODO: return Maps instead of lists?
     @NotNull
     public Map<String, EIGlobalVar> findGlobalVars() {
         final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);

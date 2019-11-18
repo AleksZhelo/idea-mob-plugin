@@ -27,7 +27,6 @@ import java.util.List;
 
 import static com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil.HAS_ERROR_CHILD;
 
-// TODO: ResolveCache.getInstance(getProject()).resolveWithCaching()?
 public class VariableReference extends PsiReferenceBase<EIVariableAccess> implements LocalQuickFixProvider {
     private final String name;
 
@@ -73,7 +72,6 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
                     if (expectedType != EITypeToken.ANY && paramType.getTypeToken() != expectedType) {
                         continue;
                     }
-                    // TODO: icon!
                     variants.add(EILookupElementFactory.create(param));
                 }
             }

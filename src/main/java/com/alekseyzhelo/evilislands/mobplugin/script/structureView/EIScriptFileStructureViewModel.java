@@ -16,7 +16,6 @@ import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: units/etc via groupers?  | will try to do this in the project view window
 public class EIScriptFileStructureViewModel extends TextEditorBasedStructureViewModel implements StructureViewModel.ElementInfoProvider {
 
     EIScriptFileStructureViewModel(Editor editor, ScriptPsiFile file) {

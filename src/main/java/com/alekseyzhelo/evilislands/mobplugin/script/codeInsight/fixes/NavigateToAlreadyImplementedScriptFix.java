@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;

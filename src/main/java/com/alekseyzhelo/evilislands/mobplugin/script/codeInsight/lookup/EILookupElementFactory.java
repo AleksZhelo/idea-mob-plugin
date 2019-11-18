@@ -31,7 +31,7 @@ public final class EILookupElementFactory {
     public static LookupElement create(EIFormalParameter param) {
         EIType type = param.getType();
         return LookupElementBuilder.create(param)
-                // TODO: icon
+                // TODO: icon!
                 .withIcon(Icons.FILE)
                 .withTypeText(type != null ? type.getText() : "unknown")
                 .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE)
