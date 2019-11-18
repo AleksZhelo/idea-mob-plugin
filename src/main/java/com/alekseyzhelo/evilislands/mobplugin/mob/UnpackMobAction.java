@@ -2,6 +2,10 @@ package com.alekseyzhelo.evilislands.mobplugin.mob;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -14,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-// TODO: finish, test, improve
 public class UnpackMobAction extends AnAction {
 
     private static final Logger LOG = Logger.getInstance(UnpackMobAction.class);
@@ -25,28 +28,21 @@ public class UnpackMobAction extends AnAction {
         if (psiFile instanceof PsiMobFile) {
             if (isPacked(psiFile)) {
                 unpack((PsiMobFile) psiFile);
-                // TODO: correct, needed?
-                psiFile.getVirtualFile().getParent().refresh(false, false);
-                // TODO: auto-open the mob node in project view
             } else {
                 pack((PsiMobFile) psiFile);
-                // TODO: correct, needed?
-                psiFile.getVirtualFile().refresh(false, false);
             }
         }
     }
 
     @Override
     public void update(AnActionEvent e) {
-        long start = System.currentTimeMillis();
         PsiFile psiFile = e.getData(PlatformDataKeys.PSI_FILE);
-        if (psiFile != null && !psiFile.isDirectory() && psiFile instanceof PsiMobFile) {
+        if (psiFile instanceof PsiMobFile) {
             e.getPresentation().setEnabledAndVisible(true);
             e.getPresentation().setText(EIMessages.message(isPacked(psiFile) ? "action.unpack.script" : "action.pack.script"));
         } else {
             e.getPresentation().setEnabledAndVisible(false);
         }
-        System.out.println(String.format("UnpackMobAction update took %d ms", System.currentTimeMillis() - start));
     }
 
     @Override
@@ -59,39 +55,47 @@ public class UnpackMobAction extends AnAction {
         return file.getParent().findChild(getScriptName(file)) == null;
     }
 
-    private void unpack(PsiMobFile file) {
-        VirtualFile virtualFile = file.getVirtualFile();
-        System.out.println("Want to unpack " + virtualFile.getPath());
+    private void unpack(@NotNull PsiMobFile file) {
+        final VirtualFile virtualFile = file.getVirtualFile();
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 VirtualFile script = virtualFile.getParent().createChildData(UnpackMobAction.this, getScriptName(virtualFile));
                 script.setBinaryContent(file.getScriptBytes());
                 FileEditorManager.getInstance(file.getProject()).openFile(script, true);
             } catch (IOException e) {
-                // TODO: also display in event log?
-                LOG.error("Failed to unpack script for " + virtualFile.getPath(), e);
+                final String errorText =
+                        EIMessages.message("notification.error.cannot.unpack.mob.text", virtualFile.getPath());
+                Notifications.Bus.notify(
+                        new Notification(
+                                EIMessages.message("notification.general.group.id"),
+                                EIMessages.message("notification.error.cannot.unpack.mob.title"),
+                                errorText,
+                                NotificationType.ERROR
+                        ),
+                        file.getProject()
+                );
+                LOG.error(errorText, e);
             }
         });
     }
 
     @NotNull
-    private String getScriptName(VirtualFile file) {
-        return file.getNameWithoutExtension() + ".eiscript";
+    private String getScriptName(@NotNull VirtualFile file) {
+        return file.getNameWithoutExtension() + "." + ScriptFileType.INSTANCE.getDefaultExtension();
     }
 
-    private void pack(PsiMobFile file) {
+    private void pack(@NotNull PsiMobFile file) {
         VirtualFile virtualFile = file.getVirtualFile();
-        System.out.println("Want to pack " + virtualFile.getPath());
+        final String filePath = virtualFile.getPath();
         VirtualFile scriptFile = virtualFile.getParent().findChild(getScriptName(virtualFile));
         if (scriptFile != null) {
             try {
                 file.setScriptBytes(scriptFile.contentsToByteArray());
             } catch (IOException e) {
-                LOG.error("Failed to pack script into mob " + virtualFile.getPath(), e);
+                LOG.error("Failed to pack script into mob " + filePath, e);
             }
         } else {
-            LOG.error("Want to pack script into mob " + virtualFile.getPath() + ", but the script file does not exist!");
+            LOG.error("Want to pack script into mob " + filePath + ", but the script file does not exist!");
         }
     }
-
 }
