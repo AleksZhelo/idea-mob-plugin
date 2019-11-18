@@ -4,12 +4,14 @@ import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInsight.intention.impl.BaseIntentionAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.pom.Navigatable;
 import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-abstract class NavigateToAlreadyDeclaredElementFixBase<Element extends NavigatablePsiElement> implements IntentionAction {
+abstract class NavigateToAlreadyDeclaredElementFixBase<Element extends PsiElement & Navigatable> implements IntentionAction {
     protected final Element myElement;
 
     NavigateToAlreadyDeclaredElementFixBase(@NotNull Element element) {

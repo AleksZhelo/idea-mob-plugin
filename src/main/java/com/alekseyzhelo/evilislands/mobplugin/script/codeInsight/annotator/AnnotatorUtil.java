@@ -229,12 +229,6 @@ final class AnnotatorUtil {
         holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
     }
 
-    static IntentionAction createDeleteElementFix(PsiElement toDelete, boolean isInList) {
-        return isInList
-                ? new DeleteListElementFix(toDelete, EIMessages.message("fix.remove.element"))
-                : new DeleteElementFix(toDelete, EIMessages.message("fix.remove.element"));
-    }
-
     @NotNull
     private static String redIfNotMatch(@Nullable EITypeToken type, boolean matches) {
         if (matches) return getName(type);

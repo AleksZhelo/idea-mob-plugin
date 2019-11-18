@@ -43,7 +43,7 @@ public final class EIScriptNamingUtil {
     public static final String NAME_FUNCTION_CALL= "Call:";
     public static final String NAME_VAR_ACCESS = "VariableAccess:";
     public static final String NAME_ASSIGNMENT = "Assignment:";
-    public static final String NAME_CALL_STATEMENT = "CallStatement";
+    public static final String NAME_CALL_STATEMENT = "CallStatement:";
     public static final String NAME_FOR_BLOCK = "ForBlock";
     public static final String NAME_SCRIPT_BLOCK = "ScriptBlock";
     public static final String NAME_SCRIPT_IF_BLOCK = "IfBlock";

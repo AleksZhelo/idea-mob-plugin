@@ -11,6 +11,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatter
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;

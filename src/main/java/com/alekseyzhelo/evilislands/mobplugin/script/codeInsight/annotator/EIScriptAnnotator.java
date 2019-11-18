@@ -4,6 +4,7 @@ import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
@@ -99,7 +100,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             );
             TextRange range = scriptDeclaration.getTextRange();
             annotation.registerFix(fix, range, null, descriptor);
-            annotation.registerFix(AnnotatorUtil.createDeleteElementFix(scriptDeclaration, false), range);
+            annotation.registerFix(EICodeInsightUtil.createDeleteElementFix(scriptDeclaration, false), range);
         }
 
         EIRepeatDeclarationHandler<EIFormalParameter> repeatChecker =
@@ -232,7 +233,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                         errorMessage, resolvedTo == null);
                 annotation.registerFix(
                         // TODO: add factory? maybe just for delete element, or for all my fixes?
-                        AnnotatorUtil.createDeleteElementFix(call, false),
+                        EICodeInsightUtil.createDeleteElementFix(call, false),
                         call.getTextRange()
                 );
             }

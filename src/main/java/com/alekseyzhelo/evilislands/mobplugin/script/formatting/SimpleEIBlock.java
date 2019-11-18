@@ -87,7 +87,6 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     }
 
     @Override
-    // TODO:?
     // TODO: detect incomplete function call?
     public boolean isIncomplete() {
         return super.isIncomplete();
@@ -111,7 +110,6 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
 
     @Nullable
     @Override
-    // TODO:
     protected Indent getChildIndent() {
         return EIIndentProcessor.getChildIndent(getElementType());
     }

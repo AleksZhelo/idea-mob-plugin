@@ -127,6 +127,9 @@ public class EICallableLookupElement extends LookupItem<EICallableDeclaration> i
         final EICallableDeclaration callable = getObject();
         final boolean hasParams = callable.getCallableParams().size() > 0;
 
+        // fix suggestion case
+        context.getDocument().replaceString(context.getStartOffset(), context.getTailOffset(), callable.getName());
+
         EICompletionUtil.insertParentheses(context, this, hasParams, true);
 
         final int startOffset = context.getStartOffset();

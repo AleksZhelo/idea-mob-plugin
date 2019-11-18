@@ -6,9 +6,8 @@ import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EICommonUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.google.common.base.Stopwatch;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.extapi.psi.PsiFileBase;
@@ -47,48 +46,55 @@ public class ScriptPsiFile extends PsiFileBase {
         return "ScriptFile: " + getName();
     }
 
-    // TODO this and below: find or get?
-    //  also: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
+    // TODO: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
     //  | done with CachedValue; investigate stubs?
     // TODO: return Maps instead of lists?
     @NotNull
-    public List<EIGlobalVar> findGlobalVars() {
+    public Map<String, EIGlobalVar> findGlobalVars() {
         final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class),
-                        globalVars != null ? globalVars : this));
+                () -> CachedValueProvider.Result.create(
+                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class)),
+                        globalVars != null ? globalVars : this
+                )
+        );
     }
 
     @Nullable
     public EIGlobalVar findGlobalVar(String varName) {
-        return EIScriptResolveUtil.matchByName(varName, findGlobalVars());
+        return findGlobalVars().get(varName);
     }
 
     @NotNull
-    public List<EIScriptDeclaration> findScriptDeclarations() {
+    public Map<String, EIScriptDeclaration> findScriptDeclarations() {
         final EIDeclarations declarations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIDeclarations.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class),
-                        declarations != null ? declarations : this));
+                () -> CachedValueProvider.Result.create(
+                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class)),
+                        declarations != null ? declarations : this
+                )
+        );
     }
 
     @Nullable
-    // TODO: implement via Maps for faster access?
     public EIScriptDeclaration findScriptDeclaration(String scriptName) {
-        return EIScriptResolveUtil.matchByName(scriptName, findScriptDeclarations());
+        return findScriptDeclarations().get(scriptName);
     }
 
     @NotNull
-    public List<EIScriptImplementation> findScriptImplementations() {
+    public Map<String, EIScriptImplementation> findScriptImplementations() {
         final EIScripts implementations = PsiTreeUtil.getChildOfType(this, EIScripts.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class),
-                        implementations != null ? implementations : this));
+                () -> CachedValueProvider.Result.create(
+                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class)),
+                        implementations != null ? implementations : this
+                )
+        );
     }
 
     @Nullable
     public EIScriptImplementation findScriptImplementation(String scriptName) {
-        return EIScriptResolveUtil.matchByName(scriptName, findScriptImplementations());
+        return findScriptImplementations().get(scriptName);
     }
 
     @NotNull
@@ -139,7 +145,7 @@ public class ScriptPsiFile extends PsiFileBase {
         List<LookupElement> objectVars = new ArrayList<>();
         List<LookupElement> groupVars = new ArrayList<>();
         List<LookupElement> allVars = new ArrayList<>();
-        for (final EIGlobalVar globalVar : findGlobalVars()) {
+        for (final EIGlobalVar globalVar : findGlobalVars().values()) {
             if (globalVar.getName().length() > 0 && globalVar.getType() != null) {
                 LookupElement lookupElement = EILookupElementFactory.create(globalVar);
                 switch (globalVar.getType().getTypeToken()) {
@@ -176,7 +182,7 @@ public class ScriptPsiFile extends PsiFileBase {
     @NotNull
     private List<LookupElement> getScriptLookupElementsInner() {
         List<LookupElement> result = new ArrayList<>();
-        for (final EIScriptDeclaration script : findScriptDeclarations()) {
+        for (final EIScriptDeclaration script : findScriptDeclarations().values()) {
             if (script.getName().length() > 0) {
                 result.add(EILookupElementFactory.create(script));
             }
@@ -184,7 +190,6 @@ public class ScriptPsiFile extends PsiFileBase {
         return result;
     }
 
-    // TODO: implement with a HighlightingPass?
     // TODO: GSVars and Areas could be calculated in one PSI-tree pass, instead of two
     @NotNull
     private Map<String, EIGSVar> findGSVarsInner() {

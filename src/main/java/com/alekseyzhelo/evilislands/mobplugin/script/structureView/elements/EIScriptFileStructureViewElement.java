@@ -24,10 +24,10 @@ public class EIScriptFileStructureViewElement extends PsiTreeElementBase<ScriptP
         List<StructureViewTreeElement> children = new ArrayList<>();
         ScriptPsiFile myFile = getElement();
         if (myFile != null) {
-            children.addAll(myFile.findScriptImplementations().stream()
+            children.addAll(myFile.findScriptImplementations().values().stream()
                     .map(EIScriptImplStructureViewElement::new)
                     .collect(Collectors.toList()));
-            children.addAll(myFile.findGlobalVars().stream()
+            children.addAll(myFile.findGlobalVars().values().stream()
                     .map(EIGlobalVarStructureViewElement::new)
                     .collect(Collectors.toList()));
             if (EIScriptLanguage.GS_VARS_ENABLED) {

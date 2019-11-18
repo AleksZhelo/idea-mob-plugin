@@ -27,7 +27,6 @@ public class MobObjectReference extends PsiReferenceBase<EILiteral> {
     @Nullable
     @Override
     public PsiElement resolve() {
-        // TODO: cache works?
         return ResolveCache.getInstance(myElement.getProject()).resolveWithCaching(
                 this,
                 MyResolver.INSTANCE,
@@ -53,7 +52,7 @@ public class MobObjectReference extends PsiReferenceBase<EILiteral> {
                 int objectId = Integer.parseInt(element.getFirstChild().getText().replace("\"", ""));
                 PsiMobObjectsBlock objectsBlock = ((ScriptPsiFile) element.getContainingFile()).getCompanionMobObjectsBlock();
                 if (objectsBlock != null) {
-                    // TODO: account for possible AddMob calls?
+                    // TODO v2: account for possible AddMob calls?
                     return objectsBlock.getChild(objectId);
                 }
             } catch (NumberFormatException e) {

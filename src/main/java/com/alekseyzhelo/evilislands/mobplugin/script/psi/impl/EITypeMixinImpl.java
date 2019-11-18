@@ -21,7 +21,6 @@ public class EITypeMixinImpl extends EIScriptPsiElementImpl
     @Override
     @NotNull
     public EITypeToken getTypeToken() {
-        // TODO: cache?
         return EITypeToken.fromString(getText().toLowerCase(Locale.ENGLISH));
     }
 

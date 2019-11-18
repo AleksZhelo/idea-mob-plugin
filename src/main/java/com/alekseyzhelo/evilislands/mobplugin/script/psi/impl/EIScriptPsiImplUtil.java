@@ -141,6 +141,11 @@ public class EIScriptPsiImplUtil {
         return null;
     }
 
+    @Nullable
+    public static String getName(EICallStatement element) {
+        return element.getFunctionCall().getName();
+    }
+
     //region toString
     public static String toString(EILiteral literal) {
         return EIScriptNamingUtil.NAME_LITERAL + literal.getText();
@@ -148,22 +153,18 @@ public class EIScriptPsiImplUtil {
 
     public static String toString(EIScriptDeclaration declaration) {
         return EIScriptNamingUtil.NAME_SCRIPT_DECL + declaration.getName();
-//        return declaration.getName();
     }
 
     public static String toString(EIScriptImplementation implementation) {
         return EIScriptNamingUtil.NAME_SCRIPT_IMPL + implementation.getName();
-//        return implementation.getName();
     }
 
     public static String toString(EIGlobalVar globalVar) {
         return EIScriptNamingUtil.NAME_GLOBAL_VAR + globalVar.getName();
-//        return globalVar.getName();
     }
 
     public static String toString(EIFunctionCall functionCall) {
         return EIScriptNamingUtil.NAME_FUNCTION_CALL + functionCall.getName();
-//        return functionCall.getName();
     }
 
     public static String toString(EIVariableAccess variableAccess) {
@@ -174,8 +175,8 @@ public class EIScriptPsiImplUtil {
         return EIScriptNamingUtil.NAME_ASSIGNMENT + assignment.getExpressionList().get(0).getText();
     }
 
-    public static String toString(EICallStatement expressionStatement) {
-        return EIScriptNamingUtil.NAME_CALL_STATEMENT;
+    public static String toString(EICallStatement callStatement) {
+        return EIScriptNamingUtil.NAME_CALL_STATEMENT + callStatement.getFunctionCall().getName();
     }
 
     public static String toString(EIForBlock forBlock) {

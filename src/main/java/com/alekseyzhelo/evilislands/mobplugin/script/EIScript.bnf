@@ -96,7 +96,7 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
 {
   pin=1
   recoverWhile=scriptImplRecover
-  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptImplementationMixinImpl"
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
   methods=[getReference toString]
 }
@@ -122,7 +122,7 @@ private plain_statement ::= callStatement | assignment
 callStatement ::= functionCall
 {
   extends=scriptStatement
-  methods=[getType toString]
+  methods=[getType getName toString]
   consumeTokenMethod="consumeTokenFast"
 }
 

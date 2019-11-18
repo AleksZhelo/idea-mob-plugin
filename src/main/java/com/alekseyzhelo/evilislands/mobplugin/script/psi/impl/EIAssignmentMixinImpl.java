@@ -14,7 +14,7 @@ import java.util.List;
 public abstract class EIAssignmentMixinImpl extends EIScriptPsiElementImpl implements EIAssignmentMixin {
 
     // TODO: is concurrent access a concern?
-    private List<EIExpression> expressionCache;
+    private volatile List<EIExpression> expressionCache;
 
     EIAssignmentMixinImpl(ASTNode node) {
         super(node);

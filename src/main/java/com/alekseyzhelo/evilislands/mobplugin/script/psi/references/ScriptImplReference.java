@@ -1,14 +1,12 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
-import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareScriptFix;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
-import com.intellij.codeInsight.completion.InsertHandler;
-import com.intellij.codeInsight.daemon.impl.quickfix.DeleteElementFix;
 import com.intellij.codeInsight.lookup.LookupElement;
-import com.intellij.codeInsight.lookup.LookupElementDecorator;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.LocalQuickFixProvider;
 import com.intellij.openapi.util.TextRange;
@@ -52,20 +50,19 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
     @NotNull
     @Override
     // TODO: cache as well?
-    // TODO: unimplemented scripts higher in the list?
     public Object[] getVariants() {
         List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
-        return variants.stream().map((x) -> LookupElementDecorator.withInsertHandler(x, (InsertHandler<LookupElementDecorator<? super LookupElement>>) (context, item) -> {
-
-        })).toArray(LookupElement[]::new);
+        return variants.stream()
+                .map((x) -> EILookupElementFactory.asScriptImplVariant(file, x))
+                .toArray(LookupElement[]::new);
     }
 
     @Nullable
     @Override
     public LocalQuickFix[] getQuickFixes() {
-        return new LocalQuickFix[] {
+        return new LocalQuickFix[]{
                 new DeclareScriptFix(myElement),
-                new DeleteElementFix(myElement, EIMessages.message("fix.remove.element"))
+                EICodeInsightUtil.createDeleteElementFix(myElement, false)
         };
     }
 

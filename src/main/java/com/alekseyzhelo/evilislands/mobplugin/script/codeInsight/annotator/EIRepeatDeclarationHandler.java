@@ -1,10 +1,11 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
-import com.intellij.psi.NavigatablePsiElement;
+import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiNamedElement;
 import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiNamedElement & NavigatablePsiElement> {
+public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiNamedElement & Navigatable> {
 
     private final List<DeclarationType> repeatDeclarations = new ArrayList<>();
     private final Map<String, DeclarationType> firstDeclarations = new HashMap<>();
@@ -47,7 +48,7 @@ public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiName
                     false
             );
             annotation.registerFix(createNavigateToAlreadyDeclaredElementFix(firstDeclarations.get(name)));
-            annotation.registerFix(AnnotatorUtil.createDeleteElementFix(repeatDeclaration, commaSeparatedDeclarations));
+            annotation.registerFix(EICodeInsightUtil.createDeleteElementFix(repeatDeclaration, commaSeparatedDeclarations));
         }
     }
 }
