@@ -4,19 +4,19 @@ import com.intellij.ide.projectView.ViewSettings;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
 import com.intellij.ide.util.treeView.AbstractTreeNode;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
-// TODO: show objects/units/particles/etc?
-// TODO: red underline for script file when errors detected?
 public class EIMobPsiFileNode extends PsiFileNode {
 
-    private final Collection<AbstractTreeNode> children;
+    private final List<AbstractTreeNode> children;
 
-    public EIMobPsiFileNode(Project project, @NotNull PsiFile value, ViewSettings viewSettings, PsiFileNode scriptNode) {
+    EIMobPsiFileNode(Project project, @NotNull PsiFile value, ViewSettings viewSettings, PsiFileNode scriptNode) {
         super(project, value, viewSettings);
         if (scriptNode != null) {
             children = Collections.singletonList(scriptNode);
@@ -30,9 +30,8 @@ public class EIMobPsiFileNode extends PsiFileNode {
         return children;
     }
 
-    // TODO: doesn't work?
     @Override
-    public boolean isAlwaysExpand() {
-        return children.size() > 0;
+    public boolean contains(@NotNull VirtualFile file) {
+        return super.contains(file) || !children.isEmpty() && file.equals(((PsiFileNode) children.get(0)).getVirtualFile());
     }
 }

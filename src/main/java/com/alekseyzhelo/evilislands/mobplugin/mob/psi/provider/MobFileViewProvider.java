@@ -44,7 +44,7 @@ class MobFileViewProvider extends SingleRootFileViewProvider {
     @NotNull
     @Override
     protected PsiFile createFile(@NotNull VirtualFile file, @NotNull FileType fileType, @NotNull Language language) {
-        if (fileType instanceof MobFileType) {
+        if (fileType == MobFileType.INSTANCE) {
             PsiFile psiFile = createFile(language);
             return psiFile != null ? psiFile : super.createFile(file, fileType, language);
         } else {

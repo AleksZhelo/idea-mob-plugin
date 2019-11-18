@@ -25,7 +25,8 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="eiscript" patterns="*.eiscript"
+        <fileType name="EIScript" extensions="eiscript"
+                  fieldName="INSTANCE" language="EIScriptLanguage"
                   implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.fileType.ScriptFileType"/>
         <lang.parserDefinition language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserDefinition"/>
         <lang.syntaxHighlighterFactory language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighterFactory"/>
@@ -45,7 +46,7 @@
         <lang.braceMatcher language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.misc.EIPairedBraceMatcher" />
         <lang.quoteHandler language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.misc.EIQuoteHandler" />
 
-        <fileType name="mob" patterns="*.mob"
+        <fileType name="Mob" extensions="mob" fieldName="INSTANCE"
                   implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.fileType.MobFileType"/>
         <fileType.fileViewProviderFactory filetype="Mob"
                                           implementationClass="com.alekseyzhelo.evilislands.mobplugin.mob.psi.provider.MobFileViewProviderFactory"/>
@@ -57,6 +58,8 @@
                                    implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.EIFunctionParameterInfoHandler"/>
         <projectService
                 serviceImplementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService"/>
+        <problemFileHighlightFilter
+                implementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIProblemFileHighlightFilter"/>
 
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$EIGeneric" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptAllowed" />

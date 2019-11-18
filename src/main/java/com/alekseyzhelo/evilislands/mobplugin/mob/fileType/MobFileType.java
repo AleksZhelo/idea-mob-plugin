@@ -14,7 +14,6 @@ public class MobFileType implements FileType {
     public static final MobFileType INSTANCE = new MobFileType();
 
     private MobFileType() {
-//        super(EIMobLanguage.INSTANCE);
     }
 
     @NotNull

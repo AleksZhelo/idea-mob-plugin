@@ -20,9 +20,8 @@ public class ScriptFileType extends LanguageFileType {
 
     @NotNull
     @Override
-    // TODO: change?
     public String getName() {
-        return "Script text file";
+        return "EIScript";
     }
 
     @NotNull

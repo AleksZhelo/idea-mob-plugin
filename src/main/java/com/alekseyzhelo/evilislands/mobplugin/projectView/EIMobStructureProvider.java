@@ -38,14 +38,14 @@ public class EIMobStructureProvider implements TreeStructureProvider {
             if (virtualFile != null) {
                 try {
                     PsiFile psiFile = ((PsiFileNode) node).getValue();
-                    if (virtualFile.getFileType() instanceof MobFileType) {
-                        PsiFileNode scriptNode = findSameNamedSiblingOfType(siblings, virtualFile, ScriptFileType.class);
+                    if (virtualFile.getFileType() == MobFileType.INSTANCE) {
+                        PsiFileNode scriptNode = findSameNamedSiblingOfType(siblings, virtualFile, ScriptFileType.INSTANCE);
                         return scriptNode != null
                                 ? new EIMobPsiFileNode(node.getProject(), psiFile, ((PsiFileNode) node).getSettings(), scriptNode)
                                 : node;
                     } else {
-                        if (virtualFile.getFileType() instanceof ScriptFileType) {
-                            PsiFileNode mobNode = findSameNamedSiblingOfType(siblings, virtualFile, MobFileType.class);
+                        if (virtualFile.getFileType() == ScriptFileType.INSTANCE) {
+                            PsiFileNode mobNode = findSameNamedSiblingOfType(siblings, virtualFile, MobFileType.INSTANCE);
                             // filter out script nodes which will be subsumed by the corresponding mob nodes
                             return mobNode == null ? node : null;
                         } else {
@@ -65,13 +65,13 @@ public class EIMobStructureProvider implements TreeStructureProvider {
     private PsiFileNode findSameNamedSiblingOfType(
             Collection<AbstractTreeNode> siblings,
             VirtualFile file,
-            Class<? extends FileType> type
+            FileType fileTypeInstance
     ) {
         PsiFileNode siblingNode = null;
         for (AbstractTreeNode<?> sibling : siblings) {
             if (sibling instanceof PsiFileNode) {
                 VirtualFile siblingFile = ((PsiFileNode) sibling).getVirtualFile();
-                if (siblingFile != null && type.isInstance(siblingFile.getFileType()) &&
+                if (siblingFile != null && siblingFile.getFileType() == fileTypeInstance &&
                         siblingFile.getNameWithoutExtension().equals(file.getNameWithoutExtension())) {
                     siblingNode = (PsiFileNode) sibling;
                     break;
