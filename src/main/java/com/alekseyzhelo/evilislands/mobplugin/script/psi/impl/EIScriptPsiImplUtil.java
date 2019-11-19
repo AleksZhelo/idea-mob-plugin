@@ -9,6 +9,8 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +69,11 @@ public class EIScriptPsiImplUtil {
         }
 
         return null;
+    }
+
+    @NotNull
+    public static SearchScope getUseScope(EIFunctionDeclaration declaration) {
+        return GlobalSearchScope.projectScope(declaration.getProject());
     }
 
     @NotNull

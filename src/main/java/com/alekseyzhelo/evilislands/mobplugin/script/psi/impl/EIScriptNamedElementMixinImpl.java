@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementImpl implements EIScriptNamedElementMixin {
 
-    public EIScriptNamedElementMixinImpl(@NotNull ASTNode node) {
+    EIScriptNamedElementMixinImpl(@NotNull ASTNode node) {
         super(node);
     }
 

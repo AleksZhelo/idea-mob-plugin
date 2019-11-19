@@ -43,7 +43,7 @@ functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 {
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration"
-  methods=[getCallableParams getCallableType]
+  methods=[getUseScope getCallableParams getCallableType]
 }
 // utility end
 

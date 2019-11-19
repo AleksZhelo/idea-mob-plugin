@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
@@ -50,6 +51,8 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
             return  EIMessages.message("fu.element.functionCall");
         } else if (element instanceof EIFunctionDeclaration) {
             return EIMessages.message("fu.element.functionDeclaration");
+        } else if (element instanceof EIFormalParameter){
+            return EIMessages.message("fu.element.formalParam");
         } else {
             return "";
         }
@@ -58,20 +61,9 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
     @NotNull
     @Override
     public String getDescriptiveName(@NotNull PsiElement element) {
-        if (element instanceof EIGlobalVar) {
-            return ((EIGlobalVar) element).getName();
-        } else if (element instanceof EIScriptDeclaration) {
-            // TODO: improve?
-            return ((EIScriptDeclaration) element).getName();
-        } else if (element instanceof EIScriptImplementation) {
-            // TODO: improve?
-            return ((EIScriptImplementation) element).getName();
-        } else if (element instanceof EIFunctionCall) {
-            // TODO: improve?
-            return ((EIFunctionCall) element).getName();
-        } else if (element instanceof EIFunctionDeclaration) {
-            return ((EIFunctionDeclaration) element).getName();
-        } else {
+        if (element instanceof EIScriptNamedElementMixin) {
+            return ((EIScriptNamedElementMixin) element).getName();
+         } else {
             return "";
         }
     }
