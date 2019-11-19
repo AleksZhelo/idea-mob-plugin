@@ -10,6 +10,8 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 
 public class EIScriptElementFactory {
 
@@ -47,7 +49,7 @@ public class EIScriptElementFactory {
     }
 
     public static EIScripts createScripts(@NotNull Project project,
-                                           @NotNull String scriptName) {
+                                          @NotNull String scriptName) {
         final ScriptPsiFile file = createDummyScriptFile(project, EIScriptGenerationUtil.scriptImplementationText(scriptName));
         EIScripts scripts = (EIScripts) file.getFirstChild();
         return (EIScripts) CodeStyleManager.getInstance(project).reformat(scripts);
@@ -56,6 +58,14 @@ public class EIScriptElementFactory {
     public static EIScriptImplementation createScriptImplementation(@NotNull Project project,
                                                                     @NotNull String name) {
         return createScripts(project, name).getScriptImplementationList().get(0);
+    }
+
+    public static EICallStatement createKillScriptCall(@NotNull Project project) {
+        return (EICallStatement) Objects.requireNonNull(createScripts(project, "dummy")
+                .getScriptImplementationList().get(0)
+                .getScriptBlockList().get(0)
+                .getScriptThenBlock())
+                .getScriptStatementList().get(0);
     }
 
     private static EIDeclarations createDeclarations(@NotNull Project project,

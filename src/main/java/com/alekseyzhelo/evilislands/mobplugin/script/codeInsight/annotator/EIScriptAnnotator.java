@@ -132,13 +132,11 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitScriptImplementation(scriptImplementation);
 
         PsiReference reference = scriptImplementation.getReference();
-        if (reference.resolve() == null) {
-            PsiElement ident = scriptImplementation.getNameIdentifier();
-            if (ident != null) {
-                Annotation annotation = AnnotatorUtil.markAsError(myHolder, ident,
-                        EIMessages.message("warn.script.not.declared", scriptImplementation.getName()), true);
-                AnnotatorUtil.registerReferenceQuickFixes(annotation, reference);
-            }
+        PsiElement ident = scriptImplementation.getNameIdentifier();
+        if (ident != null && reference.resolve() == null) {
+            Annotation annotation = AnnotatorUtil.markAsError(myHolder, ident,
+                    EIMessages.message("warn.script.not.declared", scriptImplementation.getName()), true);
+            AnnotatorUtil.registerReferenceQuickFixes(annotation, reference);
         }
     }
 
@@ -213,9 +211,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     public void visitFunctionCall(@NotNull EIFunctionCall call) {
         super.visitFunctionCall(call);
 
-        tryAnnotateGSVarUsage(myHolder, call);
-        tryAnnotateAreaUsage(myHolder, call);
-
         final FunctionCallReference reference = (FunctionCallReference) call.getReference();
         final PsiElement callNameElement = call.getNameIdentifier();
         final PsiElement resolvedTo = reference.resolve();
@@ -232,7 +227,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                 Annotation annotation = AnnotatorUtil.markAsError(myHolder, callNameElement,
                         errorMessage, resolvedTo == null);
                 annotation.registerFix(
-                        // TODO: add factory? maybe just for delete element, or for all my fixes?
                         EICodeInsightUtil.createDeleteElementFix(call, false),
                         call.getTextRange()
                 );
@@ -306,58 +300,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (reference instanceof MobObjectReference && reference.resolve() == null) {
             AnnotatorUtil.markAsError(myHolder, literal,
                     EIMessages.message("error.wrong.object.id", reference.getCanonicalText()), true);
-        }
-    }
-
-    private static void tryAnnotateGSVarUsage(@NotNull AnnotationHolder holder, @NotNull EIFunctionCall call) {
-        if (EIScriptLanguage.GS_VARS_ENABLED && EIGSVar.isReadOrWrite(call)) {
-            PsiElement varNameElement = EIGSVar.getGSVarArgument(call);
-            if (varNameElement != null &&
-                    varNameElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-                String varName = EIGSVar.getVarName(varNameElement.getText());
-                Map<String, EIGSVar> vars = ((ScriptPsiFile) call.getContainingFile()).findGSVars();
-                EIGSVar gsVar = vars.get(varName);
-                if (gsVar != null) {
-                    if (!gsVar.isZoneOrQuestVar()) { // TODO: should still warn about only reading a special var?
-                        if (gsVar.getReads() == 0) {
-                            AnnotatorUtil.markAsWeakWarning(holder, varNameElement,
-                                    EIMessages.message(gsVar.getWrites() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.written", gsVar));
-                        }
-                        if (gsVar.getWrites() == 0) {
-                            AnnotatorUtil.markAsWeakWarning(holder, varNameElement,
-                                    EIMessages.message(gsVar.getReads() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.read", gsVar));
-                        }
-                    }
-                } else {
-                    LOG.error("GSVar is null for " + call);
-                }
-            }
-        }
-    }
-
-    private static void tryAnnotateAreaUsage(@NotNull AnnotationHolder holder, @NotNull EIFunctionCall call) {
-        if (EIScriptLanguage.AREAS_ENABLED && EIArea.isReadOrWrite(call)) {
-            PsiElement areaIdElement = EIArea.getAreaIdElement(call);
-            if (areaIdElement != null &&
-                    areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
-                try {
-                    int areaId = Integer.parseInt(areaIdElement.getText());
-                    Map<Integer, EIArea> vars = ((ScriptPsiFile) call.getContainingFile()).findAreas();
-                    EIArea area = vars.get(areaId);
-                    if (area != null) {
-                        if (area.getReads() == 0) {
-                            AnnotatorUtil.markAsWarning(holder, areaIdElement, EIMessages.message("warn.area.only.written", area));
-                        }
-                        if (area.getWrites() == 0) {
-                            AnnotatorUtil.markAsWarning(holder, areaIdElement, EIMessages.message("warn.area.only.read", area));
-                        }
-                    } else {
-                        LOG.error("Area  is null for " + call);
-                    }
-                } catch (NumberFormatException ignored) {
-                    //don't really care
-                }
-            }
         }
     }
 }

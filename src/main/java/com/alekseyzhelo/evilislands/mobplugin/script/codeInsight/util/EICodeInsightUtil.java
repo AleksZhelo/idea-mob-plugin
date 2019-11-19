@@ -12,6 +12,7 @@ public final class EICodeInsightUtil {
 
     }
 
+    // TODO: extract to a specialized factory?
     public static LocalQuickFixAndIntentionActionOnPsiElement createDeleteElementFix(
             PsiElement toDelete, boolean isInList) {
         return isInList

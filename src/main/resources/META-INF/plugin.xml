@@ -60,6 +60,18 @@
                 serviceImplementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService"/>
         <problemFileHighlightFilter
                 implementation="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIProblemFileHighlightFilter"/>
+<!--        <localInspection-->
+<!--                language="EIScriptLanguage"-->
+<!--                implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.inspections.EngineVarsUsageInspection"-->
+<!--                bundle="messages.EIMessages" groupBundle="messages.EIMessages"-->
+<!--                key="inspection.engine.vars.usage.name" groupKey="inspection.general.group"-->
+<!--                enabledByDefault="true"/>-->
+        <localInspection
+                language="EIScriptLanguage"
+                implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.inspections.KillScriptNotCalledInspection"
+                bundle="messages.EIMessages" groupBundle="messages.EIMessages"
+                key="inspection.killScript.not.called.name" groupKey="inspection.general.group"
+                enabledByDefault="true"/>
 
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$EIGeneric" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptAllowed" />
