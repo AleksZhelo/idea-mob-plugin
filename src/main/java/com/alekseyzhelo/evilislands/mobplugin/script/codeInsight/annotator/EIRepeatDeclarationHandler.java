@@ -36,7 +36,6 @@ public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiName
 
     protected abstract IntentionAction createNavigateToAlreadyDeclaredElementFix(DeclarationType element);
 
-    @MagicConstant
     void registerErrors(@NotNull AnnotationHolder holder,
                         @NotNull @PropertyKey(resourceBundle = EIMessages.BUNDLE) String errorKey) {
         for (DeclarationType repeatDeclaration : repeatDeclarations) {

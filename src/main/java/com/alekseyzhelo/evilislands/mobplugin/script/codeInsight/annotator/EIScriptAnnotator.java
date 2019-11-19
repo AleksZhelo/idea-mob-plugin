@@ -1,17 +1,14 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
-import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.InspectionManager;
@@ -29,7 +26,6 @@ import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 // TODO finish, proper
@@ -297,9 +293,9 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitLiteral(literal);
 
         PsiReference reference = literal.getReference();
-        if (reference instanceof MobObjectReference && reference.resolve() == null) {
+        if (reference instanceof MobObjectReferenceBase && reference.resolve() == null) {
             AnnotatorUtil.markAsError(myHolder, literal,
-                    EIMessages.message("error.wrong.object.id", reference.getCanonicalText()), true);
+                    ((MobObjectReferenceBase) reference).getErrorMessage(), true);
         }
     }
 }

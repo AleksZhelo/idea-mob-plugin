@@ -64,16 +64,27 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(PsiMobEntityBase entity) {
+        return create(entity, entity.getText());
+    }
+
+    @NotNull
+    public static LookupElement createByName(PsiMobEntityBase entity) {
+        return create(entity, entity.getName());
+    }
+
+    @NotNull
+    private static LookupElement create(PsiMobEntityBase entity, String lookupString) {
         return LookupElementBuilder
-                .create(entity.getText())
+                .create(lookupString)
                 .withTypeText(entity.getObjectKind())
                 .withPresentableText(lookupText(entity));
     }
 
     private static String lookupText(PsiMobEntityBase entity) {
-        Float3 location = entity.getLocation();
-        return String.format("%-10d %s at (%.2f, %.2f, %.2f)", entity.getId(), entity.getName(),
-                location.getX(), location.getY(), location.getZ());
+//        Float3 location = entity.getLocation();
+//        return String.format("%-10d %s at (%.2f, %.2f, %.2f)", entity.getId(), entity.getName(),
+//                location.getX(), location.getY(), location.getZ());
+        return String.format("%-10d %s", entity.getId(), entity.getName());
     }
 
     private static class CaseCorrectingInsertHandler implements InsertHandler<LookupElement> {

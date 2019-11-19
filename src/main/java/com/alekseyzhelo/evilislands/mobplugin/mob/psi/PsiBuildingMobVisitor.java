@@ -19,7 +19,7 @@ public class PsiBuildingMobVisitor implements MobVisitor {
     private final PsiMobObjectsBlock objectsBlock;
     private final Map<Integer, PsiMobEntityBase> elementMap = new HashMap<>();
 
-    public static PsiMobObjectsBlock createPsiMobObjectsBlock(PsiMobFile file) {
+    static PsiMobObjectsBlock createPsiMobObjectsBlock(PsiMobFile file) {
         PsiBuildingMobVisitor visitor = new PsiBuildingMobVisitor(file);
         file.acceptMobVisitor(visitor);
         visitor.objectsBlock.setElements(visitor.elementMap);

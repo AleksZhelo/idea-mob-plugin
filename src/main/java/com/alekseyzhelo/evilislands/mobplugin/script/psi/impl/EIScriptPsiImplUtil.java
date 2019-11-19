@@ -2,10 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReference;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.ScriptImplReference;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.VariableReference;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
@@ -61,7 +58,12 @@ public class EIScriptPsiImplUtil {
             TextRange range = isFloat
                     ? new TextRange(0, firstChild.getTextLength())
                     : new TextRange(1, firstChild.getTextLength() - 1);
-            return new MobObjectReference(literal, range);
+            return new MobObjectReferenceById(literal, range);
+        }
+
+        if (!isFloat && parentCall != null
+                && parentCall.getName().equalsIgnoreCase("getobjectbyname")) {
+            return new MobObjectReferenceByName(literal, new TextRange(1, firstChild.getTextLength() - 1));
         }
 
         return null;
