@@ -294,7 +294,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         PsiReference reference = literal.getReference();
         if (reference instanceof MobObjectReferenceBase && reference.resolve() == null) {
-            AnnotatorUtil.markAsError(myHolder, literal,
+            AnnotatorUtil.markAsWarning(myHolder, literal,
                     ((MobObjectReferenceBase) reference).getErrorMessage(), true);
         }
     }

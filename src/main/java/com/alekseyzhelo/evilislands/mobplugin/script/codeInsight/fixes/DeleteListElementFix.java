@@ -6,6 +6,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,9 @@ public class DeleteListElementFix extends DeleteElementFix {
     public void invoke(@NotNull Project project, @NotNull PsiFile file, @Nullable Editor editor, @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
         PsiElement previous = PsiTreeUtil.skipWhitespacesAndCommentsBackward(startElement);
         if (previous != null && ScriptTypes.COMMA.equals(previous.getNode().getElementType())) {
+            if (previous.getNextSibling() instanceof PsiWhiteSpace){
+                previous.getNextSibling().delete();
+            }
             previous.delete();
         } else {
             PsiElement next = PsiTreeUtil.skipWhitespacesAndCommentsForward(startElement);

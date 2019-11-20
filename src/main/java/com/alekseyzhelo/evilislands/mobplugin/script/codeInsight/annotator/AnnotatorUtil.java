@@ -222,6 +222,17 @@ final class AnnotatorUtil {
         return holder.createWarningAnnotation(element.getTextRange(), warningString);
     }
 
+    static Annotation markAsWarning(@NotNull AnnotationHolder holder,
+                                    @NotNull PsiElement element,
+                                    @NotNull String warningString,
+                                    boolean likeUnknownSymbol) {
+        Annotation annotation = markAsWarning(holder, element, warningString);
+        if (likeUnknownSymbol) {
+            annotation.setHighlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL);
+        }
+        return annotation;
+    }
+
     static void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
         holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
     }

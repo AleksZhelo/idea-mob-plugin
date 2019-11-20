@@ -168,6 +168,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                                @NotNull ProcessingContext context,
                                                @NotNull CompletionResultSet resultSet) {
                         // TODO: check that we are inside the if block parentheses
+                        //  (need to modify grammar first, apparently)
                         EIFunctionsService service = EIFunctionsService.getInstance(parameters.getOriginalFile().getProject());
                         resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.FLOAT));
                     }
