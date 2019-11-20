@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-// TODO: processChildren implementation needed?
+// TODO v2: investigate stubs?
 public class ScriptPsiFile extends PsiFileBase {
 
     private static final Logger LOG = Logger.getInstance(ScriptPsiFile.class);
@@ -46,8 +46,6 @@ public class ScriptPsiFile extends PsiFileBase {
         return "ScriptFile: " + getName();
     }
 
-    // TODO: should better be cached? (mechanism definitely exists, worth it to include here? stubIndex?)
-    //  | done with CachedValue; investigate stubs?
     @NotNull
     public Map<String, EIGlobalVar> findGlobalVars() {
         final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);

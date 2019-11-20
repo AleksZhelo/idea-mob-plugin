@@ -19,16 +19,7 @@ public class EIScriptPsiElementImpl extends ASTWrapperPsiElement implements EISc
 
     @NotNull
     @Override
-    // TODO: correct?
     public SearchScope getUseScope() {
-        // TODO: limited scope for parameters?
         return new LocalSearchScope(getContainingFile());
-    }
-
-    @NotNull
-    @Override
-    // TODO: should specify?
-    public GlobalSearchScope getResolveScope() {
-        return super.getResolveScope();
     }
 }

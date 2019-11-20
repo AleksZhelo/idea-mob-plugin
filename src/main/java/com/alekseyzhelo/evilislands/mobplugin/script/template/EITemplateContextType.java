@@ -3,15 +3,20 @@ package com.alekseyzhelo.evilislands.mobplugin.script.template;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.template.EverywhereContextType;
 import com.intellij.codeInsight.template.TemplateContextType;
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public abstract class EITemplateContextType extends TemplateContextType {
 
@@ -153,6 +158,62 @@ public abstract class EITemplateContextType extends TemplateContextType {
             }
 
             return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;
+        }
+    }
+
+    public static class FunctionArgumentAllowed extends EITemplateContextType {
+
+        public FunctionArgumentAllowed() {
+            super("EI_FUNCTION_ARGUMENT_ALLOWED", "Function argument allowed", EIGeneric.class);
+        }
+
+        protected FunctionArgumentAllowed(@NotNull String id,
+                                          @NotNull String presentableName,
+                                          @Nullable Class<? extends TemplateContextType> baseContextType) {
+            super(id, presentableName, baseContextType);
+        }
+
+        @Override
+        protected boolean isInContext(@NotNull PsiElement element) {
+            PsiElement parent = element.getParent();
+            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
+                parent = parent.getParent();
+            }
+            if (parent instanceof EIVariableAccess) {
+                parent = parent.getParent();
+            }
+
+            return parent instanceof EIParams;
+        }
+    }
+
+    public static class CoordsArgumentAllowed extends FunctionArgumentAllowed {
+
+        public CoordsArgumentAllowed() {
+            super("EI_COORDS_ARGUMENT_ALLOWED",
+                    "Coordinates argument allowed", FunctionArgumentAllowed.class);
+        }
+
+        @Override
+        protected boolean isInContext(@NotNull PsiElement element) {
+            if (super.isInContext(element)) {
+                EIFunctionCall call = UsefulPsiTreeUtil.getParentFunctionCall(element);
+                EIFunctionDeclaration resolved = call != null
+                        ? (EIFunctionDeclaration) call.getReference().resolve()
+                        : null;
+                return resolved != null && hasXParam(resolved);
+            }
+            return false;
+        }
+
+        private boolean hasXParam(@NotNull EIFunctionDeclaration declaration) {
+            for (EIFormalParameter parameter : declaration.getFormalParameterList()) {
+                if (StringUtil.equalsIgnoreCase(parameter.getName(), "x")
+                        && EITypeToken.FLOAT.equals(Objects.requireNonNull(parameter.getType()).getTypeToken())) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

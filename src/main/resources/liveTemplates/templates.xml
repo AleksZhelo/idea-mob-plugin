@@ -47,4 +47,28 @@
             <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="true" />
         </context>
     </template>
+
+    <template name="gxy" value="GetX($OBJ$), GetY($OBJ$)$END$" description="Get X, Y coords" toReformat="true" toShortenFQNames="true">
+        <variable name="OBJ" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI" value="false" />
+            <option name="EI_SCRIPT_ALLOWED" value="false" />
+            <option name="EI_SCRIPT_BLOCK_ALLOWED" value="false" />
+            <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="false" />
+            <option name="EI_FUNCTION_ARGUMENT_ALLOWED" value="false" />
+            <option name="EI_COORDS_ARGUMENT_ALLOWED" value="true" />
+        </context>
+    </template>
+
+    <template name="gxyz" value="GetX($OBJ$), GetY($OBJ$), GetZ($OBJ$)$END$" description="Get X, Y, Z coords" toReformat="true" toShortenFQNames="true">
+        <variable name="OBJ" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI" value="false" />
+            <option name="EI_SCRIPT_ALLOWED" value="false" />
+            <option name="EI_SCRIPT_BLOCK_ALLOWED" value="false" />
+            <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="false" />
+            <option name="EI_FUNCTION_ARGUMENT_ALLOWED" value="false" />
+            <option name="EI_COORDS_ARGUMENT_ALLOWED" value="true" />
+        </context>
+    </template>
 </templateSet>
