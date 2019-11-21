@@ -11,7 +11,7 @@ public enum EITypeToken {
     STRING(EIScriptNamingUtil.STRING),
     OBJECT(EIScriptNamingUtil.OBJECT),
     GROUP(EIScriptNamingUtil.GROUP),
-    ANY("");  // TODO: ANY added everywhere where needed?
+    ANY("");
 
     @NotNull
     private final String typeString;
@@ -33,7 +33,6 @@ public enum EITypeToken {
             }
         }
 
-        // TODO: maybe null would do better?
-        return VOID;
+        return VOID;  // XXX: shouldn't happen
     }
 }

@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.formatting;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.formatting.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
@@ -29,7 +30,10 @@ public final class EIBlockFactory {
             @Nullable Alignment alignment,
             SpacingBuilder spacingBuilder
     ) {
-        return new SimpleEIBlock(node, wrap, alignment, spacingBuilder);
+        if (node.getElementType() == ScriptTypes.PARAMS) {
+            return new EIParamsBlock(node, wrap, alignment, spacingBuilder);
+        } else {
+            return new EIBlock(node, wrap, alignment, spacingBuilder);
+        }
     }
-
 }

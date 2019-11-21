@@ -1,6 +1,5 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 
-import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -11,6 +10,7 @@ import com.intellij.codeInsight.completion.PrioritizedLookupElement;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupElementDecorator;
+import com.intellij.icons.AllIcons;
 import org.jetbrains.annotations.NotNull;
 
 public final class EILookupElementFactory {
@@ -31,8 +31,7 @@ public final class EILookupElementFactory {
     public static LookupElement create(EIFormalParameter param) {
         EIType type = param.getType();
         return LookupElementBuilder.create(param)
-                // TODO: icon!
-                .withIcon(Icons.FILE)
+                .withIcon(AllIcons.Nodes.Parameter)
                 .withTypeText(type != null ? type.getText() : "unknown")
                 .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE)
                 .withCaseSensitivity(false);

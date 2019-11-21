@@ -23,7 +23,7 @@ public class EIPairedBraceMatcher implements PairedBraceMatcher {
 
     @Override
     public boolean isPairedBracesAllowedBeforeType(@NotNull IElementType lbraceType, @Nullable IElementType contextType) {
-        // TODO: for now
+        // TODO v2: implement?
         return true;
     }
 

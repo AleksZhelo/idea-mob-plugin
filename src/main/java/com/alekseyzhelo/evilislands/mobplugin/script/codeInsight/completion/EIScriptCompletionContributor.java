@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 import java.util.Map;
 
-// TODO: insertHandler-s for script declarations, script implementations, function calls, script calls, etc
+// TODO: insertHandler-s for script declarations
 public class EIScriptCompletionContributor extends CompletionContributor {
 
     // TODO: DUMMY_IDENTIFIER_TRIMMED?

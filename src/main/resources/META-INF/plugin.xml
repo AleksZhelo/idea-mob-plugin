@@ -78,7 +78,7 @@
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptBlockAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptExpressionAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$FunctionArgumentAllowed" />
-        <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$CoordsArgumentAllowed" />
+        <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$CoordinateArgumentsAllowed" />
         <defaultLiveTemplatesProvider implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EILiveTemplatesProvider" />
     </extensions>
 

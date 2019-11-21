@@ -18,7 +18,6 @@ class EIScriptStructureViewComponent extends StructureViewComponent {
         myScriptPsiFile = file;
     }
 
-    // TODO: needed?
     @Override
     public Object getData(@NotNull String dataId) {
         if (CommonDataKeys.VIRTUAL_FILE.is(dataId)) {

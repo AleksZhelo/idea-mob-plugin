@@ -13,7 +13,6 @@ public final class DocumentationFormatter {
         return "<b>" + str + "</b>";
     }
 
-    // TODO: improve?
     public static String wrapKeyword(String keyword) {
         String keywordColor = Integer.toHexString(EIScriptSyntaxHighlightingColors.KEYWORD.getDefaultAttributes().getForegroundColor().getRGB());
         return String.format("<span style=\"color: #%s;\">%s</span>", keywordColor, bold(keyword));

@@ -28,7 +28,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
             new AttributesDescriptor(EIMessages.message("color.settings.number"), NUMBER),
             new AttributesDescriptor(EIMessages.message("color.settings.identifier"), IDENTIFIER),
             new AttributesDescriptor(EIMessages.message("color.settings.functionCall"), FUNCTION_CALL),
-            new AttributesDescriptor(EIMessages.message("color.settings.variableAccess"), VARIABLE_ACCESS),
+            new AttributesDescriptor(EIMessages.message("color.settings.variable"), VARIABLE_ACCESS),
             new AttributesDescriptor(EIMessages.message("color.settings.comment"), COMMENT),
     };
 
@@ -77,8 +77,7 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
 
     @NotNull
     @Override
-    // TODO: extract EIScript string from everywhere
     public String getDisplayName() {
-        return "EIScript";
+        return EIMessages.message("lang.display.name");
     }
 }

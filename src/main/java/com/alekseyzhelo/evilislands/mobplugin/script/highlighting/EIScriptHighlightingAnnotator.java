@@ -12,8 +12,6 @@ import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-// TODO finish
-// TODO: look into Lua annotator closer
 public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotator {
 
     private AnnotationHolder myHolder = null;
@@ -45,7 +43,6 @@ public class EIScriptHighlightingAnnotator extends EIVisitor implements Annotato
     }
 
     private static void setHighlighting(@NotNull PsiElement element, @NotNull AnnotationHolder holder, @NotNull TextAttributesKey key) {
-        holder.createInfoAnnotation(element, null).setEnforcedTextAttributes(TextAttributes.ERASE_MARKER);
         String description = ApplicationManager.getApplication().isUnitTestMode() ? key.getExternalName() : null;
         holder.createInfoAnnotation(element, description).setTextAttributes(key);
     }

@@ -20,6 +20,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptBlock;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIWorldScript;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
 import com.intellij.openapi.util.Condition;
 import com.intellij.patterns.PlatformPatterns;
@@ -34,9 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- * @author Fedor.Korotkov, Aleksey Zhelo
+ * @author Aleksey Zhelo
  */
-// TODO: remove?
 public class UsefulPsiTreeUtil {
 
     public static final PsiElementPattern.Capture<PsiElement> HAS_ERROR_CHILD = PlatformPatterns.psiElement()
@@ -86,47 +86,13 @@ public class UsefulPsiTreeUtil {
         return element instanceof PsiWhiteSpace || element instanceof PsiComment;
     }
 
-    @Nullable
-    public static PsiElement getParentByPattern(@Nullable PsiElement element,
-                                                @NotNull PsiElementPattern.Capture<PsiElement> pattern) {
-        if (element == null) return null;
-        while (element != null) {
-            if (pattern.accepts(element)) {
-                return element;
-            }
-            if (element instanceof PsiFile) return null;
-            element = element.getParent();
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public static <T extends PsiElement> T[] getChildrenOfType(@Nullable PsiElement element,
-                                                               @NotNull Class<T> aClass,
-                                                               @Nullable PsiElement lastParent) {
-        if (element == null) return null;
-
-        List<T> result = null;
-        for (PsiElement child = element.getFirstChild(); child != null; child = child.getNextSibling()) {
-            if (lastParent == child) {
-                break;
-            }
-            if (aClass.isInstance(child)) {
-                if (result == null) result = new SmartList<>();
-                //noinspection unchecked
-                result.add((T) child);
-            }
-        }
-        return result == null ? null : ArrayUtil.toObjectArray(result, aClass);
-    }
-
     public static EIFunctionCall getParentFunctionCall(PsiElement element) {
         return PsiTreeUtil.getParentOfType(
                 element,
                 EIFunctionCall.class,
                 true,
-                EIScriptBlock.class
+                EIScriptBlock.class,
+                EIWorldScript.class
         );
     }
 }

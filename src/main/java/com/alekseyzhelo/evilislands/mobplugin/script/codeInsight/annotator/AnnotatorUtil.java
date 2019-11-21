@@ -91,8 +91,7 @@ final class AnnotatorUtil {
             ms.append(i == expected.length - 1 ? ")" : ",");
             ms.append("</nobr></b></td>");
         }
-        // TODO: message needed here?
-        Annotation annotation = holder.createErrorAnnotation(textRange, "");
+        Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message("error.call.bad.for.args"));
         annotation.setTooltip(EIMessages.message("for.block.argument.mismatch.html.tooltip", ms.toString()));
         return annotation;
     }
@@ -102,6 +101,7 @@ final class AnnotatorUtil {
                                                             @NotNull EICallArgumentErrorDetector errorDetector) {
         EIFormalParameter parameter = errorDetector.getFirstWrongParameter();
         EIExpression expression = errorDetector.getFirstWrongArgument();
+        assert parameter != null && expression != null;
         return holder.createErrorAnnotation(
                 expression.getTextRange(),
                 EIMessages.message("error.incompatible.call.types",
@@ -115,8 +115,8 @@ final class AnnotatorUtil {
     static Annotation createBadCallArgumentsAnnotation(@NotNull AnnotationHolder holder,
                                                        @NotNull EICallableDeclaration declaration,
                                                        @NotNull EIParams arguments) {
-        // TODO; need a message?
-        Annotation annotation = holder.createErrorAnnotation(arguments.getTextRange(), "");
+        Annotation annotation = holder.createErrorAnnotation(arguments.getTextRange(),
+                EIMessages.message("error.call.bad.call.args", declaration.getName()));
         annotation.setTooltip(badCallArgumentsTooltip(declaration, arguments.getExpressionList()));
         return annotation;
     }

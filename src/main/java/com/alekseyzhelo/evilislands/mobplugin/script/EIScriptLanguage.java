@@ -1,9 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: ParameterInfoHandler?  | done, improve?
 // TODO: LineMarkerProvider?
 // TODO: something like https://github.com/sylvanaar/IDLua/blob/idea16/src/lang/psi/LuaPsiManager.java?
 // TODO: thread-safety everywhere, Read/Write-Actions?
@@ -21,8 +21,8 @@ public class EIScriptLanguage extends Language {
     @NotNull
     @Override
     public String getDisplayName() {
-        return "EIScript";
-    }
+        return EIMessages.message("lang.display.name");
+}
 }
 
 //    static String readFile(String path, Charset encoding)

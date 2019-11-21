@@ -36,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 // see JavaMethodCallElement
-// TODO: why no param name boxes?  | seems like too much effort to figure them out, tbh
+// TODO v2: param name boxes?
 public class EICallableLookupElement extends LookupItem<EICallableDeclaration> implements EITypedLookupItem {
 
     private static final Key<Boolean> COMPLETION_HINTS = Key.create("completion.hints");

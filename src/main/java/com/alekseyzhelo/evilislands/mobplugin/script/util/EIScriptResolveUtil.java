@@ -49,16 +49,6 @@ public class EIScriptResolveUtil {
         }
     }
 
-    // TODO use
-    @Nullable
-    public static PsiComment findDocumentation(EIScriptNamedElementMixin element) {
-        final PsiElement candidate = PsiTreeUtil.skipWhitespacesBackward(element);
-        if (candidate instanceof PsiComment) {
-            return (PsiComment) candidate;
-        }
-        return null;
-    }
-
     @Nullable
     public static <T extends PsiNamedElement> T matchByName(String name, Collection<T> elements) {
         if (elements == null) {

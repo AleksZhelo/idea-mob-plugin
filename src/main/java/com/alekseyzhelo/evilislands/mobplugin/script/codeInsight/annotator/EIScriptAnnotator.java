@@ -28,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-// TODO finish, proper
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
     private static final Logger LOG = Logger.getInstance(EIScriptAnnotator.class);

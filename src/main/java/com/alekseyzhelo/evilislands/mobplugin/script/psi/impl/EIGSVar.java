@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO: these ones should be project-wide? Especially in read/write counts?
+// TODO v2: these ones should be project-wide? Especially in read/write counts?
 public class EIGSVar extends EIExtraVarBase<String> {
 
     @SuppressWarnings("SpellCheckingInspection")
@@ -65,7 +65,6 @@ public class EIGSVar extends EIExtraVarBase<String> {
 
     @Override
     protected boolean isVariableRead(@NotNull EIFunctionCall call) {
-        // TODO: is calling isGSVarRead expensive here?
         return isGSVarRead(call);
     }
 

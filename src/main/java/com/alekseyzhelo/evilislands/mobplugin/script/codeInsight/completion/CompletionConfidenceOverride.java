@@ -21,7 +21,7 @@ public class CompletionConfidenceOverride extends CompletionConfidence {
         }
     }
 
-    // TODO: doesn't work
+    // TODO v2: doesn't work
     private static boolean isNumberLiteral(PsiElement element) {
         return PlatformPatterns.psiElement().withElementType(EIScriptParserDefinition.NUMERIC_LITERALS).accepts(element);
     }

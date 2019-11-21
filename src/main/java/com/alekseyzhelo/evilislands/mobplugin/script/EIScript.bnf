@@ -47,6 +47,7 @@ functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 }
 // utility end
 
+// TODO: recover for list here?
 private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN {pin=1}
 
 formalParameter ::= IDENTIFIER COLON type
@@ -64,14 +65,9 @@ scripts ::= scriptImplementation+  {methods=[toString]}
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=1 recoverWhile=worldScriptRecover methods=[toString]}
 
+// TODO: recover for list here?
+//  or: (external rule like com.intellij.lang.java.parser.ExpressionParser.parseArgumentList)?
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
-// TODO: custom lists for global vars, params, formal params?
-//  (external rule like com.intellij.lang.java.parser.ExpressionParser.parseArgumentList)?
-//private globalVarList ::= globalVar ( &RPAREN | (( COMMA globalVar )*))
-//{
-//  pin(".*")=1
-//  recoverWhile=comma_separated_list_recover
-//}
 
 globalVar ::= IDENTIFIER COLON type
 {
@@ -101,7 +97,6 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
   methods=[getReference toString]
 }
 
-// TODO: flatten this out as well?
 scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
 
 scriptIfBlock ::= IF LPAREN functionCall* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
@@ -126,7 +121,6 @@ callStatement ::= functionCall
   consumeTokenMethod="consumeTokenFast"
 }
 
-// TODO: handle no error on right part missing
 assignment ::= variableAccess EQUALS expression
 {
   extends=scriptStatement
@@ -139,8 +133,6 @@ assignment ::= variableAccess EQUALS expression
 }
 
 // TODO: Sum and ForIf?
-// TODO: pin=2?
-// TODO: annotation for For arguments!  | more or less done
 forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN plain_statement* RPAREN
 {
   pin=1
@@ -165,7 +157,8 @@ literal ::= FLOATNUMBER | CHARACTER_STRING
 
 private reference_expression ::= functionCall | variableAccess
 
-// TODO: append !LPAREN ?
+// TODO v2: append !LPAREN ?
+// TODO v2: could _be_ its own reference, like in Java PSI (same for script impl and function call)
 variableAccess ::= IDENTIFIER
 {
   extends=expression
@@ -185,11 +178,9 @@ functionCall ::= IDENTIFIER params
   consumeTokenMethod="consumeTokenFast"
 }
 
-// TODO: type checking!
-//params ::=  LPAREN <<comma_separated_list (expression)>>? RPAREN {pin=1}
 params ::=  non_empty_params | empty_params  // EI script has very few empty params in general
 private empty_params ::= LPAREN RPAREN { consumeTokenMethod = 'consumeTokenFast' }
-private non_empty_params::= LPAREN <<comma_separated_list_rec expression comma_separated_list_recover>> RPAREN
+private non_empty_params::= LPAREN <<comma_separated_list_rec expression non_empty_params_recover>> RPAREN
 {
   pin = 1
   consumeTokenMethod = 'consumeTokenFast'
@@ -209,4 +200,4 @@ private scriptIfBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | RPAREN !RP
 private scriptThenBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | IDENTIFIER RPAREN | RPAREN !RPAREN)
 private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER | FOR)
 private worldScriptRecover ::= !(<<eof>>)
-private comma_separated_list_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR)
+private non_empty_params_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR)

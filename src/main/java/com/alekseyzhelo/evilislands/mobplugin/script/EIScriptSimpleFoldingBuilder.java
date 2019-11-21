@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO plurals
+// TODO v2: plurals
 public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     @NotNull

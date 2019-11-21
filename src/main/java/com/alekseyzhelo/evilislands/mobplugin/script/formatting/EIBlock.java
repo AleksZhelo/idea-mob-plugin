@@ -16,9 +16,8 @@ import java.util.List;
 import static com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes.*;
 import static com.intellij.psi.TokenType.WHITE_SPACE;
 
-// TODO: alignment?
-// TODO: add a function block with nice argument indentation?
-class SimpleEIBlock extends AbstractBlock implements BlockEx {
+// TODO v2: alignment?
+class EIBlock extends AbstractBlock implements BlockEx {
 
     private static final TokenSet WRAP_TOP_LEVEL = TokenSet.create(
             GLOBAL_VARS,
@@ -42,7 +41,7 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
     final SpacingBuilder mySpacingBuilder;
     private final Indent myIndent;
 
-    SimpleEIBlock(@NotNull ASTNode node, @Nullable Wrap wrap, @Nullable Alignment alignment, SpacingBuilder spacingBuilder) {
+    EIBlock(@NotNull ASTNode node, @Nullable Wrap wrap, @Nullable Alignment alignment, SpacingBuilder spacingBuilder) {
         super(node, wrap, alignment);
         mySpacingBuilder = spacingBuilder;
         myIndent = EIIndentProcessor.getIndent(node);
@@ -84,12 +83,6 @@ class SimpleEIBlock extends AbstractBlock implements BlockEx {
                     (!elementType.equals(SCRIPT_DECLARATION) &&
                             WRAP_TOP_LEVEL.contains(elementType) && WRAP_SECOND_LEVEL.contains(childType));
         }
-    }
-
-    @Override
-    // TODO: detect incomplete function call?
-    public boolean isIncomplete() {
-        return super.isIncomplete();
     }
 
     @Nullable

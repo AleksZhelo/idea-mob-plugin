@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.template;
 
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -46,7 +47,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
     public static class EIGeneric extends EITemplateContextType {
 
         public EIGeneric() {
-            super("EI", "EIScript", EverywhereContextType.class);
+            super("EI", EIMessages.message("lang.display.name"), EverywhereContextType.class);
         }
 
         @Override
@@ -58,7 +59,8 @@ public abstract class EITemplateContextType extends TemplateContextType {
     public static class ScriptAllowed extends EITemplateContextType {
 
         public ScriptAllowed() {
-            super("EI_SCRIPT_ALLOWED", "Script allowed", EIGeneric.class);
+            super("EI_SCRIPT_ALLOWED",
+                    EIMessages.message("templates.context.script.allowed"), EIGeneric.class);
         }
 
         @Override
@@ -109,7 +111,8 @@ public abstract class EITemplateContextType extends TemplateContextType {
     public static class ScriptBlockAllowed extends EITemplateContextType {
 
         public ScriptBlockAllowed() {
-            super("EI_SCRIPT_BLOCK_ALLOWED", "Script block allowed", EIGeneric.class);
+            super("EI_SCRIPT_BLOCK_ALLOWED",
+                    EIMessages.message("templates.context.script.block.allowed"), EIGeneric.class);
         }
 
         @Override
@@ -133,18 +136,17 @@ public abstract class EITemplateContextType extends TemplateContextType {
                 ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
 
                 return lParen == null && rParen != null && element.getTextOffset() < rParen.getStartOffset();
-            } else if (parent instanceof EIScriptBlock) {
-                return true; // TODO: ok?
+            } else {
+                return parent instanceof EIScriptBlock;
             }
-
-            return false;
         }
     }
 
     public static class ScriptExpressionAllowed extends EITemplateContextType {
 
         public ScriptExpressionAllowed() {
-            super("EI_SCRIPT_EXPRESSION_ALLOWED", "Script expression allowed", EIGeneric.class);
+            super("EI_SCRIPT_EXPRESSION_ALLOWED",
+                    EIMessages.message("templates.context.script.expression.allowed"), EIGeneric.class);
         }
 
         @Override
@@ -154,7 +156,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
                 parent = parent.getParent();
             }
             if (parent instanceof EIVariableAccess) {
-                parent = parent.getParent().getParent(); // TODO: better way?
+                parent = parent.getParent().getParent(); // skip access and assignment
             }
 
             return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;
@@ -163,13 +165,15 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
     public static class FunctionArgumentAllowed extends EITemplateContextType {
 
+        @SuppressWarnings("unused")
         public FunctionArgumentAllowed() {
-            super("EI_FUNCTION_ARGUMENT_ALLOWED", "Function argument allowed", EIGeneric.class);
+            super("EI_FUNCTION_ARGUMENT_ALLOWED",
+                    EIMessages.message("templates.context.function.argument.allowed"), EIGeneric.class);
         }
 
-        protected FunctionArgumentAllowed(@NotNull String id,
-                                          @NotNull String presentableName,
-                                          @Nullable Class<? extends TemplateContextType> baseContextType) {
+        FunctionArgumentAllowed(@NotNull String id,
+                                @NotNull String presentableName,
+                                @Nullable Class<? extends TemplateContextType> baseContextType) {
             super(id, presentableName, baseContextType);
         }
 
@@ -187,11 +191,11 @@ public abstract class EITemplateContextType extends TemplateContextType {
         }
     }
 
-    public static class CoordsArgumentAllowed extends FunctionArgumentAllowed {
+    public static class CoordinateArgumentsAllowed extends FunctionArgumentAllowed {
 
-        public CoordsArgumentAllowed() {
-            super("EI_COORDS_ARGUMENT_ALLOWED",
-                    "Coordinates argument allowed", FunctionArgumentAllowed.class);
+        public CoordinateArgumentsAllowed() {
+            super("EI_COORDINATE_ARGUMENTS_ALLOWED",
+                    EIMessages.message("templates.context.coordinate.arguments.allowed"), FunctionArgumentAllowed.class);
         }
 
         @Override

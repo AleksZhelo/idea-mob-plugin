@@ -63,8 +63,6 @@ final class EIIndentProcessor {
             return Indent.getNoneIndent();
         }
 
-        // TODO: which one?
-//        return Indent.getContinuationWithoutFirstIndent();
         return Indent.getNoneIndent();
     }
 

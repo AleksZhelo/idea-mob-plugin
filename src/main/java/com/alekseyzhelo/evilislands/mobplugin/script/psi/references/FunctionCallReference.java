@@ -57,7 +57,7 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
         List<LookupElement> variants = new ArrayList<>();
         EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
 
-        if (parent instanceof EIScriptIfBlock){
+        if (parent instanceof EIScriptIfBlock) {
             variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
         } else if (parent instanceof EIForBlock) {
             variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));

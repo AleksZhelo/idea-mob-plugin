@@ -36,7 +36,7 @@ public final class EIScriptTypingUtil {
         }
     }
 
-    public static EITypeToken getVariableExpectedType(@NotNull EIVariableAccess variableAccess) {
+    private static EITypeToken getVariableExpectedTypeInner(@NotNull EIVariableAccess variableAccess) {
         PsiElement parent = variableAccess.getParent();
 
         if (parent instanceof EIForBlock) {
@@ -56,7 +56,6 @@ public final class EIScriptTypingUtil {
             if (myIndex == 0) { // left side
                 // if the assignment is incomplete any type is OK
                 return assignment.isComplete()
-                        // TODO: don't return VOID here?
                         ? Objects.requireNonNull(assignment.getRightSide()).getType()
                         : EITypeToken.ANY;
             } else if (myIndex == 1) {
@@ -74,8 +73,8 @@ public final class EIScriptTypingUtil {
     }
 
     @NotNull
-    public static EITypeToken getCreatableVariableExpectedType(@NotNull EIVariableAccess variableAccess) {
-        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(variableAccess);
+    public static EITypeToken getVariableExpectedType(@NotNull EIVariableAccess variableAccess) {
+        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedTypeInner(variableAccess);
         return expectedType != null && expectedType != EITypeToken.VOID
                 ? expectedType
                 : EITypeToken.ANY;

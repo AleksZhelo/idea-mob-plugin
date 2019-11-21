@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO: are these also project-wide? check in engine!
+// TODO v2: are these also project-wide? check in engine!
 public class EIArea extends EIExtraVarBase<Integer> {
 
     @SuppressWarnings("SpellCheckingInspection")
@@ -51,7 +51,6 @@ public class EIArea extends EIExtraVarBase<Integer> {
 
     @Override
     protected boolean isVariableRead(@NotNull EIFunctionCall call) {
-        // TODO: same as for GSVars
         return isAreaRead(call);
     }
 

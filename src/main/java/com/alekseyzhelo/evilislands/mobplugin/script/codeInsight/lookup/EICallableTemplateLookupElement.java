@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Locale;
 
+// TODO v2: use?
 public class EICallableTemplateLookupElement extends LiveTemplateLookupElementImpl implements EITypedLookupItem {
 
     private final EITypeToken type;
@@ -31,7 +32,7 @@ public class EICallableTemplateLookupElement extends LiveTemplateLookupElementIm
         this.forScript = forScript;
     }
 
-    // TODO: replace with inline template as in Mathematica's BuiltinSymbolLookupElement.java?
+    // v2: replace with inline template as in Mathematica's BuiltinSymbolLookupElement.java?
     private static TemplateImpl constructTemplate(@NotNull String name, @NotNull List<EIFormalParameter> params) {
         String argumentStr = params.size() > 0
                 ? params.stream()

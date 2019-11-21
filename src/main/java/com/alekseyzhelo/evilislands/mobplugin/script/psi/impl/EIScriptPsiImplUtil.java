@@ -28,7 +28,7 @@ public class EIScriptPsiImplUtil {
 //    }
 
     @NotNull
-    // TODO: cache for getReference as well?
+    // TODO v2: cache for getReference as well?
     public static PsiReference getReference(EIFunctionCall call) {
         PsiElement ident = call.getNameIdentifier();
         return new FunctionCallReference(call, TextRange.create(0, ident.getTextLength()));
@@ -114,7 +114,7 @@ public class EIScriptPsiImplUtil {
     public static EITypeToken getType(EIVariableAccess element) {
         PsiElement resolved = element.getReference().resolve();
         EIType type = null;
-        // TODO: common interface here as well?
+        // TODO v2: common interface here as well?
         if (resolved instanceof EIGlobalVar) {
             type = ((EIGlobalVar) resolved).getType();
         } else if (resolved instanceof EIFormalParameter) {

@@ -44,7 +44,7 @@ public class EngineVarsUsageVisitor extends EIVisitor {
                 EIGSVar gsVar = vars.get(EIGSVar.getVarName(varNameElement.getText()));
                 if (gsVar != null) {
                     String problem = null;
-                    if (!gsVar.isZoneOrQuestVar()) {  // TODO: should still warn about only reading a special var?
+                    if (!gsVar.isZoneOrQuestVar()) {  // TODO v2: should still warn about only reading a special var?
                         if (gsVar.getReads() == 0) {
                             problem = EIMessages.message(gsVar.getWrites() == 1 ? "warn.gs.var.used.once" : "warn.gs.var.only.written", gsVar);
                         } else if (gsVar.getWrites() == 0) {

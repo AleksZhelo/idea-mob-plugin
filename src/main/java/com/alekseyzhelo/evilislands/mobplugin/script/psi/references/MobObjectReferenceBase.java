@@ -27,8 +27,8 @@ public abstract class MobObjectReferenceBase<ID> extends PsiReferenceBase<EILite
 
     @Override
     public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        // TODO: correct?  | not quite, could actually rename a mob entity - implement for easy mob object management?
-        throw new IncorrectOperationException("Can't rename a literal!");
+        // TODO v2: could actually rename a mob entity - implement for easy mob object management?
+        throw new IncorrectOperationException("Can't rename a mob object (yet)!");
     }
 
     @Nullable

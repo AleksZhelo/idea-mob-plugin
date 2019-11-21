@@ -20,11 +20,10 @@ public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiName
 
     private final List<DeclarationType> repeatDeclarations = new ArrayList<>();
     private final Map<String, DeclarationType> firstDeclarations = new HashMap<>();
-    private final boolean commaSeparatedDeclarations;
+    private final boolean commaSeparated;
 
-    // TODO: better name for commaSeparatedDeclarations?
-    EIRepeatDeclarationHandler(@NotNull List<DeclarationType> declarations, boolean commaSeparatedDeclarations) {
-        this.commaSeparatedDeclarations = commaSeparatedDeclarations;
+    EIRepeatDeclarationHandler(@NotNull List<DeclarationType> declarations, boolean commaSeparated) {
+        this.commaSeparated = commaSeparated;
         for (DeclarationType declaration : declarations) {
             final String name = declaration.getName();
             if (firstDeclarations.containsKey(name)) {
@@ -47,7 +46,7 @@ public abstract class EIRepeatDeclarationHandler<DeclarationType extends PsiName
                     false
             );
             annotation.registerFix(createNavigateToAlreadyDeclaredElementFix(firstDeclarations.get(name)));
-            annotation.registerFix(EICodeInsightUtil.createDeleteElementFix(repeatDeclaration, commaSeparatedDeclarations));
+            annotation.registerFix(EICodeInsightUtil.createDeleteElementFix(repeatDeclaration, commaSeparated));
         }
     }
 }
