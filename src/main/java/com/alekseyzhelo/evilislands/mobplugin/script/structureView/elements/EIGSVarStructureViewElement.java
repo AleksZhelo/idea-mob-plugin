@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-// TODO: navigate to first usage? or highlight all usages?
+// TODO v2: navigate to first usage? or highlight all usages?
 public class EIGSVarStructureViewElement implements StructureViewTreeElement, ItemPresentation, NodeDescriptorProvidingKey {
 
     private final EIGSVar myValue;

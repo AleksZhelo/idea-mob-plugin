@@ -17,10 +17,4 @@ public class PsiMobFlame extends PsiMobObjectDataHolder<MobFlame> {
     public String getObjectKind() {
         return EIMessages.message("mob.flame");
     }
-
-    @NotNull
-    @Override
-    public Float3 getLocation() {
-        return value.getFlameLocation(); // TODO: correct?
-    }
 }

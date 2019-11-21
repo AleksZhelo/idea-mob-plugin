@@ -49,7 +49,7 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
 
     @NotNull
     @Override
-    // TODO: cache as well?
+    // TODO v2: cache?
     public Object[] getVariants() {
         List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
         return variants.stream()
@@ -70,7 +70,6 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
         static final MyResolver INSTANCE = new MyResolver();
 
         @Override
-        // TODO: what is the use of incompleteCode?
         public PsiElement resolve(@NotNull ScriptImplReference reference, boolean incompleteCode) {
             return reference.file.findScriptDeclaration(reference.name);
         }

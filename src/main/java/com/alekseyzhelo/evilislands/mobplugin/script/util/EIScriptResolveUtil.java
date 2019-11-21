@@ -18,15 +18,13 @@
  */
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
-import com.intellij.psi.PsiComment;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -46,6 +44,20 @@ public class EIScriptResolveUtil {
         } else {
             EIScriptDeclaration declaration = scriptFile.findScriptDeclaration(script.getName());
             return declaration != null ? declaration.getFormalParameterList() : null;
+        }
+    }
+
+    public static void fillParamVariantsOfType(@NotNull List<LookupElement> variants,
+                                               @NotNull List<EIFormalParameter> params,
+                                               @NotNull EITypeToken expectedType) {
+        for (final EIFormalParameter param : params) {
+            EIType paramType = param.getType();
+            if (param.getName().length() > 0 && paramType != null) {
+                if (expectedType != EITypeToken.ANY && paramType.getTypeToken() != expectedType) {
+                    continue;
+                }
+                variants.add(EILookupElementFactory.create(param));
+            }
         }
     }
 

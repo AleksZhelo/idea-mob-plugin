@@ -87,7 +87,7 @@ public final class EIScriptTypingUtil {
      * @param param      the expression to process
      * @return the expected type token
      */
-    public static EITypeToken getExpectedType(EIParams paramOwner, EIExpression param) {
+    private static EITypeToken getExpectedTypeInner(EIParams paramOwner, EIExpression param) {
         if (paramOwner != null && param != null) {
             int index = paramOwner.getExpressionList().indexOf(param);
             if (index >= 0) {
@@ -105,6 +105,13 @@ public final class EIScriptTypingUtil {
             }
         }
         return null;
+    }
+
+    public static EITypeToken getExpectedType(EIParams paramOwner, EIExpression param) {
+        EITypeToken expectedType = EIScriptTypingUtil.getExpectedTypeInner(paramOwner, param);
+        return expectedType != null && expectedType != EITypeToken.VOID
+                ? expectedType
+                : EITypeToken.ANY;
     }
 
     public static boolean matchingType(EIFormalParameter parameter, EIExpression expression) {

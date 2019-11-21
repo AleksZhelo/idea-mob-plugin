@@ -4,6 +4,7 @@ import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.template.EverywhereContextType;
@@ -202,16 +203,17 @@ public abstract class EITemplateContextType extends TemplateContextType {
         protected boolean isInContext(@NotNull PsiElement element) {
             if (super.isInContext(element)) {
                 EIFunctionCall call = UsefulPsiTreeUtil.getParentFunctionCall(element);
-                EIFunctionDeclaration resolved = call != null
-                        ? (EIFunctionDeclaration) call.getReference().resolve()
+                EICallableDeclaration resolved = call != null
+                        ? (EICallableDeclaration) call.getReference().resolve()
                         : null;
                 return resolved != null && hasXParam(resolved);
             }
             return false;
         }
 
-        private boolean hasXParam(@NotNull EIFunctionDeclaration declaration) {
-            for (EIFormalParameter parameter : declaration.getFormalParameterList()) {
+        // TODO: check for other incorrent EIFunctionDeclaration usages!
+        private boolean hasXParam(@NotNull EICallableDeclaration declaration) {
+            for (EIFormalParameter parameter : declaration.getCallableParams()) {
                 if (StringUtil.equalsIgnoreCase(parameter.getName(), "x")
                         && EITypeToken.FLOAT.equals(Objects.requireNonNull(parameter.getType()).getTypeToken())) {
                     return true;

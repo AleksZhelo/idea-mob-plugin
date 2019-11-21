@@ -3,7 +3,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScriptParamFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
@@ -55,8 +54,8 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
     @Override
     public Object[] getVariants() {
         ScriptPsiFile scriptFile = (ScriptPsiFile) myElement.getContainingFile();
-        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(myElement);
         List<LookupElement> variants = new ArrayList<>();
+        EITypeToken expectedType = EIScriptTypingUtil.getVariableExpectedType(myElement);
 
         List<LookupElement> globalVars = scriptFile.getGlobalVarLookupElements().get(expectedType);
         if (globalVars != null) {
@@ -64,17 +63,8 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         }
 
         List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(scriptFile, myElement);
-        // TODO: extract?
-        if (params != null && expectedType != null) {
-            for (final EIFormalParameter param : params) {
-                EIType paramType = param.getType();
-                if (param.getName().length() > 0 && paramType != null) {
-                    if (expectedType != EITypeToken.ANY && paramType.getTypeToken() != expectedType) {
-                        continue;
-                    }
-                    variants.add(EILookupElementFactory.create(param));
-                }
-            }
+        if (params != null) {
+            EIScriptResolveUtil.fillParamVariantsOfType(variants, params, expectedType);
         }
 
         PsiElement parent = myElement.getParent();

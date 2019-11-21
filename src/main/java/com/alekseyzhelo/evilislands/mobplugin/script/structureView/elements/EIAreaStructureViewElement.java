@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-// TODO: navigate to first usage? or highlight all usages?
-// TODO: merge with GSVar element?
+// TODO v2: navigate to first usage? or highlight all usages?
+// TODO v2: merge with GSVar element?
 public class EIAreaStructureViewElement implements StructureViewTreeElement, ItemPresentation, NodeDescriptorProvidingKey {
 
     private final EIArea myValue;

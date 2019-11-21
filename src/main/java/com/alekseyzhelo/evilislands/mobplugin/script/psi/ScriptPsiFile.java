@@ -13,11 +13,13 @@ import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -124,6 +126,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @Nullable
     public PsiMobFile getCompanionMobFile() {
+        // TODO v2: proper use of tracking?
         return CachedValuesManager.getManager(getProject()).getCachedValue(this, KEY_PSI_MOB_FILE, new CachedCompanionPsiMobFileProvider(), true);
     }
 
@@ -134,45 +137,21 @@ public class ScriptPsiFile extends PsiFileBase {
     }
 
     @NotNull
-    // TODO: improve?
     private Map<EITypeToken, List<LookupElement>> getGlobalVarLookupElementsInner() {
         Map<EITypeToken, List<LookupElement>> result = new EnumMap<>(EITypeToken.class);
-        List<LookupElement> floatVars = new ArrayList<>();
-        List<LookupElement> stringVars = new ArrayList<>();
-        List<LookupElement> objectVars = new ArrayList<>();
-        List<LookupElement> groupVars = new ArrayList<>();
-        List<LookupElement> allVars = new ArrayList<>();
+        for (EITypeToken type : EITypeToken.values()) {
+            result.put(type, new ArrayList<>());
+        }
         for (final EIGlobalVar globalVar : findGlobalVars().values()) {
             if (globalVar.getName().length() > 0 && globalVar.getType() != null) {
                 LookupElement lookupElement = EILookupElementFactory.create(globalVar);
-                switch (globalVar.getType().getTypeToken()) {
-                    case VOID:
-                        break;
-                    case FLOAT:
-                        floatVars.add(lookupElement);
-                        break;
-                    case STRING:
-                        stringVars.add(lookupElement);
-                        break;
-                    case OBJECT:
-                        objectVars.add(lookupElement);
-                        break;
-                    case GROUP:
-                        groupVars.add(lookupElement);
-                        break;
-                }
+                result.get(globalVar.getType().getTypeToken()).add(lookupElement);
+                result.get(EITypeToken.ANY).add(lookupElement);
             }
         }
-        allVars.addAll(floatVars);
-        allVars.addAll(stringVars);
-        allVars.addAll(objectVars);
-        allVars.addAll(groupVars);
-        result.put(EITypeToken.VOID, Collections.emptyList());
-        result.put(EITypeToken.FLOAT, Collections.unmodifiableList(floatVars));
-        result.put(EITypeToken.STRING, Collections.unmodifiableList(stringVars));
-        result.put(EITypeToken.OBJECT, Collections.unmodifiableList(objectVars));
-        result.put(EITypeToken.GROUP, Collections.unmodifiableList(groupVars));
-        result.put(EITypeToken.ANY, Collections.unmodifiableList(allVars));
+        for (EITypeToken type : EITypeToken.values()) {
+            result.put(type, Collections.unmodifiableList(result.get(type)));
+        }
         return result;
     }
 
@@ -187,7 +166,7 @@ public class ScriptPsiFile extends PsiFileBase {
         return result;
     }
 
-    // TODO: GSVars and Areas could be calculated in one PSI-tree pass, instead of two
+    // TODO v2: GSVars and Areas could be calculated in one PSI-tree pass, instead of two
     @NotNull
     private Map<String, EIGSVar> findGSVarsInner() {
         Stopwatch watch = Stopwatch.createStarted();
@@ -200,8 +179,7 @@ public class ScriptPsiFile extends PsiFileBase {
                 if (EIGSVar.isReadOrWrite(call)) {
                     PsiElement varElement = EIGSVar.getGSVarArgument(call);
                     if (varElement != null &&
-                            // TODO: can also be an expression, how to handle then? a reference goes to a formal param
-                            //  for instance, instead of the actual parameter
+                            // TODO v2: can also be an expression, how to handle then?
                             varElement.getNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
                         String varName = EIGSVar.getVarName(varElement.getText());
                         EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
@@ -225,40 +203,6 @@ public class ScriptPsiFile extends PsiFileBase {
         return result;
     }
 
-    // TODO: not sure about this one
-//    @NotNull
-//    private Map<String, EIGSVar> findGSVarsInnerLiteral() {
-//        Stopwatch watch = Stopwatch.createStarted();
-//        final Map<String, EIGSVar> result = new LinkedHashMap<>(); // to preserve insertion order for structure view
-//        acceptChildren(new EIVisitor() {
-//            @Override
-//            public void visitLiteral(@NotNull EILiteral literal) {
-//                if (literal.getNode().getFirstChildNode().getElementType() == ScriptTypes.CHARACTER_STRING) {
-//                    EIFunctionCall call = UsefulPsiTreeUtil.getParentFunctionCall(literal);
-//                    if (call != null && EIGSVar.isReadOrWrite(call)
-//                            && call.getParams().getExpressionList().indexOf(literal) == 1) {
-//                        String varName = EIGSVar.getVarName(literal.getText());
-//                        EIGSVar stats = result.getOrDefault(varName, new EIGSVar(varName));
-//                        stats.processCall(call);
-//                        if (stats.isValid()) {
-//                            result.put(varName, stats);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void visitElement(PsiElement element) {
-//                super.visitElement(element);
-//                if (!(element instanceof EIGlobalVars || element instanceof EIDeclarations)) {
-//                    element.acceptChildren(this);
-//                }
-//            }
-//        });
-//        LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findGSVarsInnerLiteral");
-//        return result;
-//    }
-
     @NotNull
     private Map<Integer, EIArea> findAreasInner() {
         Stopwatch watch = Stopwatch.createStarted();
@@ -271,10 +215,9 @@ public class ScriptPsiFile extends PsiFileBase {
                 if (EIArea.isReadOrWrite(call)) {
                     PsiElement areaIdElement = EIArea.getAreaIdElement(call);
                     if (areaIdElement != null &&
-                            // TODO: same as with GSVars
+                            // TODO v2: same as with GSVars
                             areaIdElement.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
                         try {
-                            // TODO: also extract parsing to EIArea?
                             int areaId = Integer.parseInt(areaIdElement.getText());
                             EIArea stats = result.getOrDefault(areaId, new EIArea(areaId));
                             stats.processCall(call);
@@ -301,22 +244,14 @@ public class ScriptPsiFile extends PsiFileBase {
     private class CachedCompanionPsiMobFileProvider implements CachedValueProvider<PsiMobFile> {
         @Nullable
         @Override
-        // TODO: better way to do this?
         public Result<PsiMobFile> compute() {
-            PsiDirectory parent = getParent();
-            if (parent == null) {
-                parent = myOriginalFile.getParent();
-            }
+            final Project project = getProject();
+            final VirtualFile vFile = getViewProvider().getVirtualFile();
 
-            PsiMobFile result = null;
-            if (parent != null) {
-                PsiFile psiFile = parent.findFile(getViewProvider().getVirtualFile().getNameWithoutExtension() + ".mob");
-                if (psiFile instanceof PsiMobFile) {
-                    result = (PsiMobFile) psiFile;
-                }
-            }
-            LOG.warn("CachedCompanionPsiMobFileProvider");
-            return new Result<>(result, PsiModificationTracker.NEVER_CHANGED);
+            final VirtualFile mob = vFile.findFileByRelativePath("../" + vFile.getNameWithoutExtension() + ".mob");
+            PsiFile psiFile = mob != null ? PsiManager.getInstance(project).findFile(mob) : null;
+            LOG.info("CachedCompanionPsiMobFileProvider");
+            return new Result<>((PsiMobFile) psiFile, PsiModificationTracker.NEVER_CHANGED);
         }
     }
 }

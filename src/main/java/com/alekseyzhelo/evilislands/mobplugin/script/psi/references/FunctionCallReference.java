@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.util.TextRange;
@@ -50,8 +51,6 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
     @NotNull
     @Override
-    // TODO: typing here too
-    // TODO: cache as well?
     public Object[] getVariants() {
         PsiElement parent = myElement.getParent();
         List<LookupElement> variants = new ArrayList<>();
@@ -61,9 +60,15 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
             variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
         } else if (parent instanceof EIForBlock) {
             variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
-        } else {
+        } else if (parent instanceof EIParams) {
+            EITypeToken expectedType = EIScriptTypingUtil.getExpectedType((EIParams) parent, myElement);
+            if (expectedType == EITypeToken.VOID || expectedType == EITypeToken.ANY) {
+                variants.addAll(file.getScriptLookupElements());
+            }
+            variants.addAll(service.getFunctionLookupElements(expectedType));
+        } else if (parent instanceof EICallStatement) {
             variants.addAll(file.getScriptLookupElements());
-            variants.addAll(service.getFunctionLookupElements());
+            variants.addAll(service.getFunctionLookupElements(EITypeToken.VOID));
         }
 
         return variants.toArray();
@@ -73,7 +78,6 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
         static final MyResolver INSTANCE = new MyResolver();
 
         @Override
-        // TODO: what is the use of incompleteCode?
         public PsiElement resolve(@NotNull FunctionCallReference ref, boolean incompleteCode) {
             EIFunctionsService service = EIFunctionsService.getInstance(ref.file.getProject());
             EIFunctionDeclaration function = service.getFunctionDeclaration(ref.name);

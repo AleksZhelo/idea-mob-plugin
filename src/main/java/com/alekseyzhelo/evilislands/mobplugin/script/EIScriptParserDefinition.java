@@ -18,10 +18,30 @@ import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 
 public class EIScriptParserDefinition implements ParserDefinition {
-    private static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
+    @SuppressWarnings("WeakerAccess")
+    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.WHOLE_LINE_COMMENT, ScriptTypes.COMMENT);
     public static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
     public static final TokenSet NUMERIC_LITERALS = TokenSet.create(ScriptTypes.FLOATNUMBER);
+    public static final TokenSet IDENTIFIERS = TokenSet.create(ScriptTypes.IDENTIFIER);
+    @SuppressWarnings("WeakerAccess")
+    public static final TokenSet LITERALS = TokenSet.orSet(STRING_LITERALS, NUMERIC_LITERALS);
+    public static final TokenSet KEYWORDS = TokenSet.create(
+            ScriptTypes.GLOBALVARS,
+            ScriptTypes.DECLARESCRIPT,
+            ScriptTypes.SCRIPT,
+            ScriptTypes.IF,
+            ScriptTypes.THEN,
+            ScriptTypes.FOR,
+            ScriptTypes.WORLDSCRIPT
+    );
+    public static final TokenSet TYPES = TokenSet.create(
+            ScriptTypes.OBJECT,
+            ScriptTypes.GROUP,
+            ScriptTypes.STRING,
+            ScriptTypes.FLOAT
+    );
+    public static final TokenSet PARENS = TokenSet.create(ScriptTypes.LPAREN, ScriptTypes.RPAREN);
 
     public static final IFileElementType FILE =
             new IFileElementType(Language.findInstance(EIScriptLanguage.class));

@@ -8,38 +8,12 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import static com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlightingColors.*;
 
-// GoSyntaxHighlighter is just so much more succinct, investigate
-
 public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
-
-    private static final IElementType[] KEYWORDS_ARRAY = {
-            ScriptTypes.GLOBALVARS,
-            ScriptTypes.DECLARESCRIPT,
-            ScriptTypes.SCRIPT,
-            ScriptTypes.IF,
-            ScriptTypes.THEN,
-            ScriptTypes.FOR,
-            ScriptTypes.WORLDSCRIPT
-    };
-
-    private static final IElementType[] TYPES_ARRAY = {
-            ScriptTypes.OBJECT,
-            ScriptTypes.GROUP,
-            ScriptTypes.STRING,
-            ScriptTypes.FLOAT,
-    };
-
-    private static final Set<IElementType> KEYWORDS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(KEYWORDS_ARRAY)));
-    private static final Set<IElementType> TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(TYPES_ARRAY)));
 
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] EQUALS_KEYS = new TextAttributesKey[]{EQUALS};
@@ -66,11 +40,11 @@ public class EIScriptSyntaxHighlighter extends SyntaxHighlighterBase {
             return EQUALS_KEYS;
         } else if (tokenType.equals(ScriptTypes.COMMA)) {
             return COMMA_KEYS;
-        } else if (tokenType.equals(ScriptTypes.LPAREN) || tokenType.equals(ScriptTypes.RPAREN)) {
+        } else if (EIScriptParserDefinition.PARENS.contains(tokenType)) {
             return PARENTHESES_KEYS;
-        } else if (KEYWORDS.contains(tokenType)) {
+        } else if (EIScriptParserDefinition.KEYWORDS.contains(tokenType)) {
             return KEYWORD_KEYS;
-        } else if (TYPES.contains(tokenType)) {
+        } else if (EIScriptParserDefinition.TYPES.contains(tokenType)) {
             return TYPE_KEYS;
         } else if (EIScriptParserDefinition.STRING_LITERALS.contains(tokenType)) {
             return STRING_KEYS;
