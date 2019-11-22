@@ -5,7 +5,6 @@ import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
 // TODO: LineMarkerProvider?
-// TODO: something like https://github.com/sylvanaar/IDLua/blob/idea16/src/lang/psi/LuaPsiManager.java?
 // TODO: thread-safety everywhere, Read/Write-Actions?
 public class EIScriptLanguage extends Language {
     public static final EIScriptLanguage INSTANCE = new EIScriptLanguage();

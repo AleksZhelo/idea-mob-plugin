@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
-import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
@@ -14,7 +13,6 @@ import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO improve
 public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
 
     @Nullable
@@ -30,8 +28,11 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
 
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-        return psiElement instanceof PsiNamedElement;
-        // TODO: doesn't work
+        return psiElement instanceof EIGlobalVar
+                || psiElement instanceof EIScriptDeclaration
+                || psiElement instanceof EIFormalParameter
+                || psiElement instanceof EIFunctionDeclaration;
+        // TODO v2: doesn't work
 //        || psiElement instanceof PsiMobEntityBase;
     }
 
@@ -48,14 +49,10 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
             return EIMessages.message("fu.element.globalVar");
         } else if (element instanceof EIScriptDeclaration) {
             return EIMessages.message("fu.element.scriptDeclaration");
-        } else if (element instanceof EIScriptImplementation) {
-            return EIMessages.message("fu.element.scriptImplementation");
-        } else if (element instanceof EIFunctionCall) {
-            return EIMessages.message("fu.element.functionCall");
-        } else if (element instanceof EIFunctionDeclaration) {
-            return EIMessages.message("fu.element.functionDeclaration");
         } else if (element instanceof EIFormalParameter) {
             return EIMessages.message("fu.element.formalParam");
+        } else if (element instanceof EIFunctionDeclaration) {
+            return EIMessages.message("fu.element.functionDeclaration");
         } else {
             return "";
         }

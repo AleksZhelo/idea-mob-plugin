@@ -42,7 +42,8 @@ public class EIScriptColorSettingsPage implements ColorSettingsPage {
     @Nullable
     @Override
     public Icon getIcon() {
-        return Icons.FILE;
+        // TODO v2: draw icon?
+        return null;
     }
 
     @NotNull

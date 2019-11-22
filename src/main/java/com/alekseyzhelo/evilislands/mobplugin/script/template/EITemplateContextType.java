@@ -211,7 +211,6 @@ public abstract class EITemplateContextType extends TemplateContextType {
             return false;
         }
 
-        // TODO: check for other incorrent EIFunctionDeclaration usages!
         private boolean hasXParam(@NotNull EICallableDeclaration declaration) {
             for (EIFormalParameter parameter : declaration.getCallableParams()) {
                 if (StringUtil.equalsIgnoreCase(parameter.getName(), "x")

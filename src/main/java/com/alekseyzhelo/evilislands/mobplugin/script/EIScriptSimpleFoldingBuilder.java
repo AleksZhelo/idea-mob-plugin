@@ -31,9 +31,8 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
 
     @Nullable
     @Override
-    // TODO: improve?
     public String getPlaceholderText(@NotNull ASTNode node) {
-        return "\u2026";
+        return "...";
     }
 
     @Override
@@ -51,7 +50,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
                             globals.getTextRange().getEndOffset()), null) {
                 @Override
                 public String getPlaceholderText() {
-                    return "(" + variablesCount + " " + EIMessages.message("folding.globalVarDeclarations") + ")";
+                    return "(" + EIMessages.message("folding.globalVarDeclarations", variablesCount) + ")";
                 }
             });
         }
@@ -61,7 +60,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIDeclarations declarations = PsiTreeUtil.getChildOfType(root, EIDeclarations.class);
         if (declarations != null) {
             final int declarationsCount = declarations.getScriptDeclarationList().size();
-            foldWholeElement(descriptors, declarations, "{" + declarationsCount + " " + EIMessages.message("folding.scriptDeclarations") + "}");
+            foldWholeElement(descriptors, declarations, "{" + EIMessages.message("folding.scriptDeclarations", declarationsCount) + "}");
         }
     }
 
@@ -69,7 +68,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIScripts scripts = PsiTreeUtil.getChildOfType(root, EIScripts.class);
         if (scripts != null) {
             final int implementationsCount = scripts.getScriptImplementationList().size();
-            foldWholeElement(descriptors, scripts, "{" + implementationsCount + " " + EIMessages.message("folding.scriptImplementations") + "}");
+            foldWholeElement(descriptors, scripts, "{" + EIMessages.message("folding.scriptImplementations", implementationsCount) + "}");
             for (EIScriptImplementation scriptImplementation : scripts.getScriptImplementationList()) {
                 processScriptImplementation(scriptImplementation, descriptors);
             }
@@ -128,7 +127,7 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
                             element.getTextRange().getEndOffset()), null) {
                 @Override
                 public String getPlaceholderText() {
-                    return "(\u2026)";
+                    return "(...)";
                 }
             });
         }

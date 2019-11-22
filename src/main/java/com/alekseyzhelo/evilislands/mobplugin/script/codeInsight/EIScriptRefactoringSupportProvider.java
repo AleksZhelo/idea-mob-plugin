@@ -11,12 +11,12 @@ public class EIScriptRefactoringSupportProvider extends RefactoringSupportProvid
     @Override
     public boolean isInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {
         return element instanceof EIScriptNamedElementMixin
-                && !(element instanceof EIFunctionCall || element instanceof EIFunctionDeclaration);
+                && !(element instanceof EIFunctionDeclaration);
     }
 
     @Override
     public boolean isMemberInplaceRenameAvailable(@NotNull PsiElement element, PsiElement context) {
         return element instanceof EIScriptNamedElementMixin
-                && !(element instanceof EIFunctionCall || element instanceof EIFunctionDeclaration);
+                && !(element instanceof EIFunctionDeclaration);
     }
 }
