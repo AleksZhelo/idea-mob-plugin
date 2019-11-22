@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EICommonUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.AutoPopupController;
 import com.intellij.codeInsight.completion.InsertionContext;
@@ -46,7 +47,7 @@ public class EICallableTemplateLookupElement extends LiveTemplateLookupElementIm
 
         TemplateImpl template = new TemplateImpl(name, "");
         template.setString(templateText);
-        template.setDescription(String.join(", ", params.stream().map(PsiElement::getText).toArray(String[]::new)));
+        template.setDescription(EICommonUtil.getParamsString(params));
 
         for (EIFormalParameter parameter : params) {
             template.addVariable(

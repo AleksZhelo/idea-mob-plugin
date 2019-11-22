@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templateSet group="EIScript">
+    <template name="DeclareScript" value="DeclareScript $NAME$ (this : object$END$)" description="Declare a script" toReformat="true">
+        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI_SCRIPT_DECLARATION_ALLOWED" value="true" />
+        </context>
+    </template>
+
     <template name="Script" value="Script $NAME$( if (&#10;$END$&#10;)  then (&#10;KillScript()&#10;))"
               description="New script" toReformat="true">
         <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>

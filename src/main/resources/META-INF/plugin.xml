@@ -74,6 +74,7 @@
                 enabledByDefault="true"/>
 
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$EIGeneric" />
+        <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptDeclarationAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptBlockAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$ScriptExpressionAllowed" />

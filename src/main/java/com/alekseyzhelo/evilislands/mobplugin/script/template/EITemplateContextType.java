@@ -45,6 +45,19 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
     protected abstract boolean isInContext(@NotNull PsiElement element);
 
+    private static PsiElement getParentSkipError(@NotNull PsiElement element) {
+        PsiElement parent = element.getParent();
+        if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
+            parent = parent.getParent();
+        }
+        return parent;
+    }
+
+    private static boolean isAfterNodeClosingParenthesis(int elementOffset, ASTNode node) {
+        ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
+        return rParen != null && elementOffset > rParen.getTextRange().getEndOffset();
+    }
+
     public static class EIGeneric extends EITemplateContextType {
 
         public EIGeneric() {
@@ -54,6 +67,39 @@ public abstract class EITemplateContextType extends TemplateContextType {
         @Override
         protected boolean isInContext(@NotNull PsiElement element) {
             return true;
+        }
+    }
+
+    public static class ScriptDeclarationAllowed extends EITemplateContextType {
+
+        public ScriptDeclarationAllowed() {
+            super("EI_SCRIPT_DECLARATION_ALLOWED",
+                    EIMessages.message("templates.context.script.declaration.allowed"), EIGeneric.class);
+        }
+
+        @Override
+        protected boolean isInContext(@NotNull PsiElement element) {
+            ScriptPsiFile file = (ScriptPsiFile) element.getContainingFile();
+            PsiElement parent = getParentSkipError(element);
+            int elementOffset = element.getTextOffset();
+
+            EIScripts scripts = file.findChildByClass(EIScripts.class);
+            EIWorldScript worldScript = file.findChildByClass(EIWorldScript.class);
+            final boolean topLevel = parent instanceof EIDeclarations || parent instanceof ScriptPsiFile;
+            final boolean beforeScriptsAndWorldScript =
+                    (scripts == null && (worldScript == null || elementOffset < worldScript.getTextOffset()))
+                            || (scripts != null && elementOffset < scripts.getTextOffset());
+
+            if (!beforeScriptsAndWorldScript) {
+                return false;
+            }
+            if (topLevel) {
+                EIGlobalVars globalVars = file.findChildByClass(EIGlobalVars.class);
+                return globalVars == null || elementOffset > globalVars.getTextRange().getEndOffset();
+            } else if (parent instanceof EIScriptDeclaration) {
+                return isAfterNodeClosingParenthesis(elementOffset, parent.getNode());
+            }
+            return false;
         }
     }
 
@@ -67,10 +113,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
         @Override
         protected boolean isInContext(@NotNull PsiElement element) {
             ScriptPsiFile file = (ScriptPsiFile) element.getContainingFile();
-            PsiElement parent = element.getParent();
-            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
-                parent = parent.getParent();
-            }
+            PsiElement parent = getParentSkipError(element);
             int elementOffset = element.getTextOffset();
 
             EIDeclarations declarations = file.findChildByClass(EIDeclarations.class);
@@ -92,8 +135,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
             } else if (parent instanceof EIScriptDeclaration) {
                 assert declarations != null;
                 if (declarations.getLastChild() == parent) {
-                    ASTNode rParen = parent.getNode().findChildByType(ScriptTypes.RPAREN);
-                    return rParen != null && elementOffset > rParen.getTextRange().getEndOffset();
+                    return isAfterNodeClosingParenthesis(elementOffset, parent.getNode());
                 }
             }
             return false;
@@ -102,8 +144,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
         private boolean afterScriptImplClosingParenth(PsiElement correctedParent, int elementOffset) {
             if (correctedParent instanceof EIScriptImplementation) {
                 ASTNode node = correctedParent.getNode();
-                ASTNode rParen = node.findChildByType(ScriptTypes.RPAREN);
-                return rParen != null && elementOffset > rParen.getTextRange().getEndOffset();
+                return isAfterNodeClosingParenthesis(elementOffset, node);
             }
             return false;
         }
@@ -118,10 +159,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
         @Override
         protected boolean isInContext(@NotNull PsiElement element) {
-            PsiElement parent = element.getParent();
-            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
-                parent = parent.getParent();
-            }
+            PsiElement parent = getParentSkipError(element);
 
             if (parent instanceof EIScriptImplementation) {
                 ASTNode node = parent.getNode();
@@ -152,10 +190,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
         @Override
         protected boolean isInContext(@NotNull PsiElement element) {
-            PsiElement parent = element.getParent();
-            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
-                parent = parent.getParent();
-            }
+            PsiElement parent = getParentSkipError(element);
             if (parent instanceof EIVariableAccess) {
                 parent = parent.getParent().getParent(); // skip access and assignment
             }
@@ -180,10 +215,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
 
         @Override
         protected boolean isInContext(@NotNull PsiElement element) {
-            PsiElement parent = element.getParent();
-            if (parent instanceof PsiErrorElement) {  // skip IntellijIdeaRulezzz error element
-                parent = parent.getParent();
-            }
+            PsiElement parent = getParentSkipError(element);
             if (parent instanceof EIVariableAccess) {
                 parent = parent.getParent();
             }

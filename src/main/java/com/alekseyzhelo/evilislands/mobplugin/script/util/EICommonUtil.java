@@ -1,5 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,5 +23,15 @@ public final class EICommonUtil {
         }
 //        return list.stream().collect(Collectors.toMap(PsiNamedElement::getName, Function.identity()));
         return map;
+    }
+
+    @NotNull
+    public static String getParenthesisedParamsString(List<EIFormalParameter> params) {
+        return "(" + getParamsString(params) + ")";
+    }
+
+    @NotNull
+    public static String getParamsString(List<EIFormalParameter> params) {
+        return String.join(", ", params.stream().map(PsiElement::getText).toArray(String[]::new));
     }
 }
