@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO v2: these ones should be project-wide? Especially in read/write counts?
+// TODO v2: implement as module/project-wide PSI elements; completion via references instead of contributor
 public class EIGSVar extends EIExtraVarBase<String> {
 
     @SuppressWarnings("SpellCheckingInspection")

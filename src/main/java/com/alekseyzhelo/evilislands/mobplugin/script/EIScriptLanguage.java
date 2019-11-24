@@ -4,7 +4,6 @@ import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
-// TODO: LineMarkerProvider?
 // TODO: thread-safety everywhere, Read/Write-Actions?
 public class EIScriptLanguage extends Language {
     public static final EIScriptLanguage INSTANCE = new EIScriptLanguage();

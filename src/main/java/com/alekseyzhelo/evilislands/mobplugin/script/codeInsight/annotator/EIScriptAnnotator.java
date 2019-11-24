@@ -300,6 +300,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitLiteral(literal);
 
         PsiReference reference = literal.getReference();
+        // TODO: also warn about GetObject not working with 10-digit IDs!
         if (reference instanceof MobObjectReferenceBase && reference.resolve() == null) {
             AnnotatorUtil.markAsWarning(myHolder, literal,
                     ((MobObjectReferenceBase) reference).getErrorMessage(), true);

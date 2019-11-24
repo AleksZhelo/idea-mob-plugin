@@ -136,8 +136,6 @@ public class EICallableLookupElement extends LookupItem<EICallableDeclaration> i
         return false;
     }
 
-    // TODO: equals and hashCode?
-
     @NotNull
     public EITypeToken getType() {
         return getObject().getCallableType();

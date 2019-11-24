@@ -59,35 +59,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                         }
                     }
                 });
-
-        // TODO: rework?
-//        extend(CompletionType.BASIC,
-//                PlatformPatterns
-//                        .psiElement(ScriptTypes.IDENTIFIER)
-//                        .withParent(PsiErrorElement.class)
-//                        .withLanguage(EIScriptLanguage.INSTANCE),
-//                new CompletionProvider<CompletionParameters>() {
-//                    @Override
-//                    protected void addCompletions(@NotNull CompletionParameters parameters,
-//                                                  @NotNull ProcessingContext context,
-//                                                  @NotNull CompletionResultSet result) {
-//                        PsiElement element = parameters.getOriginalPosition().getParent();
-//                        PsiElement parent = UsefulPsiTreeUtil.getParentByPattern(parameters.getOriginalPosition(), hasErrorChild);
-//                        if (!(element instanceof PsiErrorElement)) {  // TODO: makes sense to check the original pos first?
-//                            // check if non-original has 'dummy' and expected?
-//                            if (parent != null) {
-//                                PsiErrorElement[] errors = UsefulPsiTreeUtil.getChildrenOfType(parent, PsiErrorElement.class, null);
-//                                if (errors != null && errors.length > 0) {
-//                                    element = errors[0];
-//                                }
-//                            }
-//                        }
-//                        if (element instanceof PsiErrorElement) {
-//                            String errorDescription = ((PsiErrorElement) element).getErrorDescription();
-//                            fillSuggestedTokens(result, parent, errorDescription);
-//                        }
-//                    }
-//                });
         if (EIScriptLanguage.GS_VARS_ENABLED) {
             extend(CompletionType.BASIC, PlatformPatterns
                             .psiElement(ScriptTypes.CHARACTER_STRING)
@@ -96,7 +67,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                     .psiElement(EIFunctionCall.class)
                                     .withName(StandardPatterns.string().oneOfIgnoreCase(EIGSVar.relevantFunctions.toArray(new String[0])))
                             )
-                            // TODO: could optimize by checking argument position first? (would need to improve ArgumentPositionPatternCondition)
                             .with(ArgumentPositionPatternCondition.SECOND_ARGUMENT),
                     new CompletionProvider<CompletionParameters>() {
                         @Override
@@ -123,8 +93,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                     }
             );
         }
-//        // TODO: try GetObject completion here? also areas
-//        // TODO: wonky, fix grammar and dummy and try again
         if (EIScriptLanguage.AREAS_ENABLED) {
             // TODO: as far as I remember this doesn't work anyway  | try again, should work now
 //            extend(CompletionType.BASIC, PlatformPatterns
@@ -241,9 +209,8 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     // TODO: fix
     private void suggestToken(CompletionResultSet result, String token) {
-        PrefixMatcher matcher = result.getPrefixMatcher();
         String lookupString = shouldPrefixToken(token)
-                ? matcher.getPrefix() + token
+                ? result.getPrefixMatcher().getPrefix() + token
                 : token;
         result.addElement(EILookupElementFactory.createForToken(lookupString));
     }
