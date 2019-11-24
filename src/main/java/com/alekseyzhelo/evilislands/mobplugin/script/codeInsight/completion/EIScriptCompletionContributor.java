@@ -1,55 +1,64 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptIfBlock;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
+import org.apache.commons.compress.utils.Sets;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
-// TODO: insertHandler-s for script declarations
 public class EIScriptCompletionContributor extends CompletionContributor {
+
+    private static final TokenSet ROLL_BACK_TO_FLOAT = TokenSet.create(ScriptTypes.RPAREN, ScriptTypes.COMMA);
 
     // TODO: DUMMY_IDENTIFIER_TRIMMED?
     public EIScriptCompletionContributor() {
         // TODO: rework?
         // TODO: basically always triggers, as the error is produced by the IntellijIdeaRulezzz dummy identifier, fix!
         //  so far changed the position to originalPosition (in the PSI tree without the dummy and the fake error)
-//        extend(CompletionType.BASIC,
-//                PlatformPatterns
-//                        .psiElement()
-//                        .withTreeParent(hasErrorChild)
-//                        .withLanguage(EIScriptLanguage.INSTANCE),
-//                new CompletionProvider<CompletionParameters>() {
-//                    @Override
-//                    protected void addCompletions(@NotNull CompletionParameters parameters,
-//                                                  @NotNull ProcessingContext context,
-//                                                  @NotNull CompletionResultSet result) {
-//                        PsiElement parent = UsefulPsiTreeUtil.getParentByPattern(parameters.getOriginalPosition(), hasErrorChild);
-//                        PsiErrorElement[] errors = UsefulPsiTreeUtil.getChildrenOfType(parent, PsiErrorElement.class, null);
-//                        if (errors != null && errors.length > 0) {
-//                            String errorDescription = errors[0].getErrorDescription();
-//                            fillSuggestedTokens(result, parent, errorDescription);
-//                        }
-//                    }
-//                });
+        extend(CompletionType.BASIC,
+                PlatformPatterns
+                        .psiElement()
+                        .withTreeParent(StandardPatterns.or(
+                                UsefulPsiTreeUtil.HAS_ERROR_CHILD,
+                                StandardPatterns.instanceOf(PsiErrorElement.class)
+                        ))
+                        .withLanguage(EIScriptLanguage.INSTANCE),
+                new CompletionProvider<CompletionParameters>() {
+                    @Override
+                    protected void addCompletions(@NotNull CompletionParameters parameters,
+                                                  @NotNull ProcessingContext context,
+                                                  @NotNull CompletionResultSet result) {
+                        PsiElement parent = PsiTreeUtil.findFirstParent(
+                                parameters.getOriginalPosition(),
+                                psiElement -> psiElement instanceof PsiErrorElement
+                                        || UsefulPsiTreeUtil.HAS_ERROR_CHILD.accepts(psiElement)
+                        );
+                        PsiErrorElement error = parent instanceof PsiErrorElement
+                                ? (PsiErrorElement) parent
+                                : PsiTreeUtil.getChildOfType(parent, PsiErrorElement.class);
+                        if (error != null) {
+                            fillSuggestedTokens(result, parent, error.getErrorDescription());
+                        }
+                    }
+                });
 
         // TODO: rework?
 //        extend(CompletionType.BASIC,
@@ -117,7 +126,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //        // TODO: try GetObject completion here? also areas
 //        // TODO: wonky, fix grammar and dummy and try again
         if (EIScriptLanguage.AREAS_ENABLED) {
-            // TODO: as far as I remember this doesn't work anyway
+            // TODO: as far as I remember this doesn't work anyway  | try again, should work now
 //            extend(CompletionType.BASIC, PlatformPatterns
 //                            .psiElement()
 //                            .withLanguage(EIScriptLanguage.INSTANCE)
@@ -157,29 +166,29 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 //                    }
 //            );
         }
-        extend(CompletionType.BASIC,
-                PlatformPatterns
-                        .psiElement(ScriptTypes.IDENTIFIER)
-                        .withParent(PlatformPatterns
-                                .psiElement(PsiErrorElement.class)
-                                .inside(EIScriptIfBlock.class)),
-                new CompletionProvider<CompletionParameters>() {
-                    public void addCompletions(@NotNull CompletionParameters parameters,
-                                               @NotNull ProcessingContext context,
-                                               @NotNull CompletionResultSet resultSet) {
-                        // TODO: check that we are inside the if block parentheses
-                        //  (need to modify grammar first, apparently)
-                        EIFunctionsService service = EIFunctionsService.getInstance(parameters.getOriginalFile().getProject());
-                        resultSet.addAllElements(service.getFunctionLookupElements(EITypeToken.FLOAT));
-                    }
-                }
-        );
+    }
+
+    @Override
+    public void beforeCompletion(@NotNull CompletionInitializationContext context) {
+        super.beforeCompletion(context);
+        tryRollBackToFloatAndFixDummy(context);
     }
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet
             result) {
         super.fillCompletionVariants(parameters, result);
+    }
+
+    // TODO v2: better way?
+    private void tryRollBackToFloatAndFixDummy(@NotNull CompletionInitializationContext context) {
+        PsiElement element = context.getFile().findElementAt(context.getCaret().getOffset());
+        if (element != null && ROLL_BACK_TO_FLOAT.contains(element.getNode().getElementType())) {
+            element = context.getFile().findElementAt(context.getCaret().getOffset() - 1);
+        }
+        if (element != null && element.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
+            context.setDummyIdentifier("1337");
+        }
     }
 
     private void fillSuggestedTokens(@NotNull CompletionResultSet result, PsiElement parent, String
@@ -221,25 +230,29 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                 suggestToken(result, token);
             }
         }
+        if (parent instanceof EIGlobalVar || parent instanceof EIFormalParameter) {
+            suggestToken(result, ",");
+        }
     }
 
     private void suggestString(CompletionResultSet result, String suggestion) {
         result.addElement(LookupElementBuilder.create(suggestion));
     }
-    
+
+    // TODO: fix
     private void suggestToken(CompletionResultSet result, String token) {
         PrefixMatcher matcher = result.getPrefixMatcher();
-        LookupElement element = matcher.prefixMatches(token)
-                ? LookupElementBuilder.create(token)
-                : prefixedToken(matcher.getPrefix(), token, spaceForToken(token));
-        result.addElement(element);
+        String lookupString = shouldPrefixToken(token)
+                ? matcher.getPrefix() + token
+                : token;
+        result.addElement(EILookupElementFactory.createForToken(lookupString));
     }
 
-    private LookupElementBuilder prefixedToken(String prefix, String token, boolean withWhitespace) {
-        return LookupElementBuilder.create(prefix + (withWhitespace ? " " : "") + token);
-    }
+    private static Set<String> TO_PREFIX = Collections.unmodifiableSet(Sets.newHashSet(
+            ",", "(", ")"
+    ));
 
-    private boolean spaceForToken(String suggestedToken) {
-        return !(",".equals(suggestedToken) || "(".equals(suggestedToken) || ")".equals(suggestedToken));
+    private boolean shouldPrefixToken(String token) {
+        return TO_PREFIX.contains(token);
     }
 }

@@ -44,15 +44,18 @@ public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
         EIGlobalVars globals = PsiTreeUtil.getChildOfType(root, EIGlobalVars.class);
         if (globals != null) {
             final int variablesCount = globals.getGlobalVarList().size();
-            @SuppressWarnings("ConstantConditions") final int lParenOffset = globals.getNode().findChildByType(ScriptTypes.LPAREN).getStartOffset();
-            descriptors.add(new FoldingDescriptor(globals.getNode(),
-                    new TextRange(lParenOffset,
-                            globals.getTextRange().getEndOffset()), null) {
-                @Override
-                public String getPlaceholderText() {
-                    return "(" + EIMessages.message("folding.globalVarDeclarations", variablesCount) + ")";
-                }
-            });
+            final ASTNode lParen = globals.getNode().findChildByType(ScriptTypes.LPAREN);
+            if (lParen != null) {
+                final int lParenOffset = lParen.getStartOffset();
+                descriptors.add(new FoldingDescriptor(globals.getNode(),
+                        new TextRange(lParenOffset,
+                                globals.getTextRange().getEndOffset()), null) {
+                    @Override
+                    public String getPlaceholderText() {
+                        return "(" + EIMessages.message("folding.globalVarDeclarations", variablesCount) + ")";
+                    }
+                });
+            }
         }
     }
 

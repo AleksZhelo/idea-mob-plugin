@@ -203,6 +203,14 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
+    public void visitIncompleteCall(@NotNull EIIncompleteCall incompleteCall) {
+        super.visitIncompleteCall(incompleteCall);
+
+        AnnotatorUtil.markAsError(myHolder, incompleteCall,
+                EIMessages.message("error.incomplete.call", incompleteCall.getText()), true);
+    }
+
+    @Override
     public void visitFunctionCall(@NotNull EIFunctionCall call) {
         super.visitFunctionCall(call);
 

@@ -20,6 +20,7 @@
 //utility---------------
 //                     |
 //                    \|/
+// TODO: recover from errors before and in-between of these elements?
 scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldScript?
 // apparently this structure is not enforced by game.exe,
 // declarations and implementations can be interspersed through the script text
@@ -53,6 +54,7 @@ private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAR
 formalParameter ::= IDENTIFIER COLON type
 {
   pin=1
+  recoverWhile=formalParamRecover
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
 }
@@ -99,9 +101,16 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
 
 scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
 
-scriptIfBlock ::= IF LPAREN functionCall* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
+scriptIfBlock ::= IF LPAREN (functionCall | incomplete_call)* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scriptThenBlockRecover methods=[toString]}
+
+// TODO v2: bit of a cop-out?
+incomplete_call ::= IDENTIFIER
+{
+  consumeTokenMethod="consumeTokenFast"
+  methods=[getReference]
+}
 
 private scriptThenBody ::= scriptStatement*
 
@@ -192,8 +201,10 @@ type ::= FLOAT | STRING | OBJECT | GROUP
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"
 }
 
-private globalVarRecover ::= !(IDENTIFIER | COMMA | RPAREN)
-private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT)
+// TODO: combine into one?
+private globalVarRecover ::= !(COMMA | RPAREN | DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
+private formalParamRecover ::= !(COMMA | RPAREN | DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
+private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
 private scriptImplRecover ::= !(SCRIPT | WORLDSCRIPT | <<eof>>)
 private scriptBlockRecover ::= !(IF | IDENTIFIER | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)
 private scriptIfBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)

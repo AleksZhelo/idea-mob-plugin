@@ -246,7 +246,7 @@ public class ScriptPsiFile extends PsiFileBase {
         @Override
         public Result<PsiMobFile> compute() {
             final Project project = getProject();
-            final VirtualFile vFile = getViewProvider().getVirtualFile();
+            VirtualFile vFile = getOriginalFile().getViewProvider().getVirtualFile();
 
             final VirtualFile mob = vFile.findFileByRelativePath("../" + vFile.getNameWithoutExtension() + ".mob");
             PsiFile psiFile = mob != null ? PsiManager.getInstance(project).findFile(mob) : null;

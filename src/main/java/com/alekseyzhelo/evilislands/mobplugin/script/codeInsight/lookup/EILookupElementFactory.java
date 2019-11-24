@@ -72,6 +72,13 @@ public final class EILookupElementFactory {
     }
 
     @NotNull
+    public static LookupElement createForToken(String lookupString){
+        return LookupElementBuilder.create(lookupString)
+                .withCaseSensitivity(false)
+                .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE);
+    }
+
+    @NotNull
     private static LookupElement create(PsiMobEntityBase entity, String lookupString) {
         return LookupElementBuilder
                 .create(lookupString)

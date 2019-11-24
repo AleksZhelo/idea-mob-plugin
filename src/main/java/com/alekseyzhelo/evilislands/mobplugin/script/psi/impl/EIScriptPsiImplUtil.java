@@ -21,12 +21,6 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class EIScriptPsiImplUtil {
 
-//    @NotNull
-//    public static PsiReference getReference(EIAssignment assignment) {
-//        EIScriptIdentifier identifier = assignment.getScriptIdentifier();
-//        return new VariableReference(assignment, TextRange.create(0, identifier.getTextLength()));
-//    }
-
     @NotNull
     // TODO v2: cache for getReference as well?
     public static PsiReference getReference(EIFunctionCall call) {
@@ -69,6 +63,11 @@ public class EIScriptPsiImplUtil {
         }
 
         return null;
+    }
+
+    @NotNull
+    public static PsiReference getReference(EIIncompleteCall call) {
+        return new IncompleteCallReference(call, TextRange.create(0, call.getTextLength()));
     }
 
     @NotNull
