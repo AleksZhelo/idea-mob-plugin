@@ -41,7 +41,7 @@
         <lang.psiStructureViewFactory language="EIScriptLanguage"
                                       implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.structureView.EIScriptStructureViewBuilderFactory"/>
         <lang.formatter language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.formatting.EIFormattingModelBuilder"/>
-        <langCodeStyleSettingsProvider implementation="com.alekseyzhelo.evilislands.mobplugin.script.codeStyle.EICodeStyleSettingsProvider" />
+        <langCodeStyleSettingsProvider implementation="com.alekseyzhelo.evilislands.mobplugin.script.formatting.codeStyle.EICodeStyleSettingsProvider" />
         <lang.commenter language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.commenter.EICommenter" />
         <lang.braceMatcher language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.misc.EIPairedBraceMatcher" />
         <lang.quoteHandler language="EIScriptLanguage" implementationClass="com.alekseyzhelo.evilislands.mobplugin.script.misc.EIQuoteHandler" />

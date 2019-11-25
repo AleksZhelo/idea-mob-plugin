@@ -6,6 +6,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclarat
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -122,5 +123,9 @@ public final class EIScriptTypingUtil {
 
     public static boolean matchingType(EITypeToken lType, EITypeToken rType) {
         return lType != null && lType.equals(rType);
+    }
+
+    public static boolean isAssignable(@Nullable EITypeToken type) {
+        return type != null && type != EITypeToken.VOID && type != EITypeToken.ANY;
     }
 }

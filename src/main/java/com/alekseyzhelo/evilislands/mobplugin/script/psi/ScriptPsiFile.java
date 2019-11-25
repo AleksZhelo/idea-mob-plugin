@@ -45,7 +45,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @Override
     public String toString() {
-        return "ScriptFile: " + getName();
+        return "ScriptFile:" + getName();
     }
 
     @NotNull

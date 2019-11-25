@@ -1,4 +1,4 @@
-package com.alekseyzhelo.evilislands.mobplugin.script.codeStyle;
+package com.alekseyzhelo.evilislands.mobplugin.script.formatting.codeStyle;
 
 import com.intellij.application.options.TabbedLanguageCodeStylePanel;
 import com.intellij.lang.Language;

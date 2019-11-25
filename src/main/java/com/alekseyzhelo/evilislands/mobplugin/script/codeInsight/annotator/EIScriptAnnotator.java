@@ -9,6 +9,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclarat
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.InspectionManager;
@@ -159,8 +160,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                     AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
 
             PsiElement target = left.getReference().resolve();
-            // TODO: don't like the numerous VOID checks
-            if (lType != null && rType != null && target != null && rType != EITypeToken.VOID) {
+            // TODO: extract type-related fix construction logic?
+            if (lType != null && EIScriptTypingUtil.isAssignable(rType) && target != null) {
                 // TODO: move to local quick fix provider in reference?  | seems like I can't, really
                 InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
                 LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
@@ -264,8 +265,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                 if (resolvedTo instanceof EIScriptDeclaration) {
                     EIFormalParameter parameter = errorDetector.getFirstWrongParameter();
                     EIExpression expression = errorDetector.getFirstWrongArgument();
-                    // TODO: don't like the numerous VOID checks
-                    if (parameter != null && expression != null && expression.getType() != EITypeToken.VOID) {
+                    if (parameter != null && expression != null && EIScriptTypingUtil.isAssignable(expression.getType())) {
                         InspectionManager inspectionManager = InspectionManager.getInstance(resolvedTo.getProject());
                         LocalQuickFix fix = new ChangeLvalueTypeFix(parameter, expression.getType());
                         ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
