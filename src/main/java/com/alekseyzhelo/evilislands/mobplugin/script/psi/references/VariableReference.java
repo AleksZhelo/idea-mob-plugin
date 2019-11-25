@@ -103,8 +103,8 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
     @Override
     public LocalQuickFix[] getQuickFixes() {
         List<LocalQuickFix> fixes = new ArrayList<>();
-        // inside a script impl
         if (PsiTreeUtil.getParentOfType(myElement, EIScriptImplementation.class, true, EIWorldScript.class) != null) {
+            // inside a script impl
             fixes.add(new AddScriptParamFix(myElement));
         }
         fixes.add(new DeclareGlobalVarFix(myElement));

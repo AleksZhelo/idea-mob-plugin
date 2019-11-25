@@ -58,6 +58,7 @@ public enum TokenCompletionHelper {
                 .getDefaultTemplate(new TemplateImpl(name, "EIScriptHidden"));
         // TODO v2: check template context?  | TemplateManagerImpl.getApplicableContextTypes() ?
         if (templateImpl != null) {
+            // TODO: try sudden=true
             element = new EITemplateLookupElement(templateImpl, false);
         } else {
             element = EILookupElementFactory.createForToken(shouldPrefix() ? prefix + name : name);
