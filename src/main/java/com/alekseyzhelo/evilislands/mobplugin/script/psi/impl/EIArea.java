@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
+import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExtraVarBase;
 import com.intellij.psi.PsiElement;
@@ -7,6 +8,7 @@ import org.apache.commons.compress.utils.Sets;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -47,6 +49,11 @@ public class EIArea extends EIExtraVarBase<Integer> {
 
     public EIArea(int value) {
         super(value);
+    }
+
+    @Override
+    public Icon getIcon(int flags) {
+        return Icons.AREA;
     }
 
     @Override

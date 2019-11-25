@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptFileStructureViewElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptImplStructureViewElement;
@@ -15,6 +16,9 @@ import com.intellij.ide.util.treeView.smartTree.Grouper;
 import com.intellij.ide.util.treeView.smartTree.Sorter;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EIScriptFileStructureViewModel extends TextEditorBasedStructureViewModel implements StructureViewModel.ElementInfoProvider {
 
@@ -47,7 +51,16 @@ public class EIScriptFileStructureViewModel extends TextEditorBasedStructureView
     @NotNull
     @Override
     public Filter[] getFilters() {
-        return new Filter[]{new ScriptsFilter(), new GlobalVarsFilter(), new GSVarsFilter(), new AreasFilter()};
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new ScriptsFilter());
+        filters.add(new GlobalVarsFilter());
+        if (EIScriptLanguage.GS_VARS_ENABLED) {
+            filters.add(new GSVarsFilter());
+        }
+        if (EIScriptLanguage.AREAS_ENABLED) {
+            filters.add(new AreasFilter());
+        }
+        return filters.toArray(Filter.EMPTY_ARRAY);
     }
 
     @NotNull

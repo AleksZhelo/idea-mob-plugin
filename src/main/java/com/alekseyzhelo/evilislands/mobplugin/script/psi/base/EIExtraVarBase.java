@@ -1,9 +1,10 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.base;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
+import com.intellij.openapi.util.Iconable;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class EIExtraVarBase<T> {
+public abstract class EIExtraVarBase<T> implements Iconable {
 
     protected final T variable;
     private int reads = 0;

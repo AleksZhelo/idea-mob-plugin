@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExtraVarBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.intellij.codeInsight.completion.InsertHandler;
 import com.intellij.codeInsight.completion.InsertionContext;
@@ -62,20 +63,29 @@ public final class EILookupElementFactory {
     }
 
     @NotNull
+    public static LookupElement createForToken(String lookupString){
+        return LookupElementBuilder.create(lookupString)
+                .withCaseSensitivity(false)
+                .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE);
+    }
+
+    @NotNull
+    public static LookupElement create(EIExtraVarBase var){
+        return LookupElementBuilder.create(var.toString())
+                .withCaseSensitivity(false)
+                .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE)
+                .withIcon(var.getIcon(0));
+    }
+
+    @NotNull
     public static LookupElement create(PsiMobEntityBase entity) {
+        // TODO?: icons for units, levers, etc?
         return create(entity, entity.getText());
     }
 
     @NotNull
     public static LookupElement createByName(PsiMobEntityBase entity) {
         return create(entity, entity.getName());
-    }
-
-    @NotNull
-    public static LookupElement createForToken(String lookupString){
-        return LookupElementBuilder.create(lookupString)
-                .withCaseSensitivity(false)
-                .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE);
     }
 
     @NotNull

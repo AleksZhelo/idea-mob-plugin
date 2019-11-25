@@ -1,17 +1,18 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.completion.*;
-import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.patterns.StandardPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
@@ -78,34 +79,29 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                         || (!isRead && (myVar.getWrites() == 1 && myVar.getReads() == 0)))) {
                                     continue;
                                 }
-                                // TODO: proper lookup element with icon and everything
-                                result.addElement(LookupElementBuilder.create(gsVar.toString()));
+                                result.addElement(EILookupElementFactory.create(gsVar));
                             }
                         }
                     }
             );
         }
         if (EIScriptLanguage.AREAS_ENABLED) {
-            // TODO: test
+            // TODO?: generalize with the above?
             extend(CompletionType.BASIC, PlatformPatterns
                             .psiElement()
                             .withLanguage(EIScriptLanguage.INSTANCE)
                             .withSuperParent(3, PlatformPatterns
                                     .psiElement(EIFunctionCall.class)
                                     .withName(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
-                            ),
+                            )
+                            .with(ArgumentPositionPatternCondition.FIRST_ARGUMENT),
                     new CompletionProvider<CompletionParameters>() {
                         @Override
                         protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
                             Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
-                            PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
-                            if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
-                                return;
-                            }
-
+                            PsiElement element = parameters.getOriginalPosition();
                             EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
 
-                            assert element != null;
                             assert call != null;
                             try {
                                 int areaId = Integer.parseInt(element.getText());
@@ -117,8 +113,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                             || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
                                         continue;
                                     }
-                                    // TODO: proper lookup element with icon and everything
-                                    result.addElement(LookupElementBuilder.create(area.toString()));
+                                    result.addElement(EILookupElementFactory.create(area));
                                 }
                             } catch (NumberFormatException ignored) {
                                 // whatewz
@@ -146,6 +141,9 @@ public class EIScriptCompletionContributor extends CompletionContributor {
         PsiElement element = context.getFile().findElementAt(context.getCaret().getOffset());
         if (element != null && ROLL_BACK_TO_FLOAT.contains(element.getNode().getElementType())) {
             element = context.getFile().findElementAt(context.getCaret().getOffset() - 1);
+        }
+        if (element instanceof PsiWhiteSpace && element.getPrevSibling() != null) {
+            element = element.getPrevSibling().getFirstChild();
         }
         if (element != null && element.getNode().getElementType() == ScriptTypes.FLOATNUMBER) {
             context.setDummyIdentifier("1337");
