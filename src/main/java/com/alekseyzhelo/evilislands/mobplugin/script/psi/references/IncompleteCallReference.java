@@ -1,14 +1,12 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIIncompleteCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
-import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

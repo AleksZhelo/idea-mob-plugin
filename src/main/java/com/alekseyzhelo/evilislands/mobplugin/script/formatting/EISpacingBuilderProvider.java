@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.formatting;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptTypes;
-import com.alekseyzhelo.evilislands.mobplugin.script.formatting.codeStyle.EICodeStyleSettings;
 import com.intellij.formatting.SpacingBuilder;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.tree.TokenSet;
@@ -12,9 +11,7 @@ final class EISpacingBuilderProvider {
     private EISpacingBuilderProvider() {
     }
 
-    // TODO: bother with custom settings?
     static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
-//        EICodeStyleSettings eiSettings = settings.getCustomSettings(EICodeStyleSettings.class);
         return new SpacingBuilder(settings, EIScriptLanguage.INSTANCE)
                 .around(TokenSet.create(ScriptTypes.COLON, ScriptTypes.EQUALS)).spaces(1)
                 .before(ScriptTypes.COMMA).spaces(0)

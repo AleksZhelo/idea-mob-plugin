@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templateSet group="EIScriptHidden">
+    <template name="GlobalVars" value="GlobalVars (&#10;$END$&#10;)" description="" toReformat="true">
+    </template>
+
+    <template name="DeclareScript" value="DeclareScript $NAME$ (this : object$END$)" description="Declare a script" toReformat="true">
+        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI_SCRIPT_DECLARATION_ALLOWED" value="true" />
+        </context>
+    </template>
+
+    <template name="Script" value="Script $NAME$( if (&#10;$END$&#10;)  then (&#10;KillScript()&#10;))"
+              description="New script" toReformat="true">
+        <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true"/>
+        <context>
+            <option name="EI_SCRIPT_ALLOWED" value="true"/>
+        </context>
+    </template>
+
+    <template name="if" value="if&#10;(&#10;  $END$&#10;)&#10;then&#10;(&#10;  &#10;)" description="Script block" toReformat="true">
+        <context>
+            <option name="EI_SCRIPT_BLOCK_ALLOWED" value="true" />
+        </context>
+    </template>
+
+    <template name="then" value="then&#10;(&#10;  &#10;)" description="Script then block" toReformat="true">
+        <context>
+            <option name="EI_SCRIPT_BLOCK_ALLOWED" value="true" />
+        </context>
+    </template>
+
+    <template name="For" value="For($I$, $GROUP$)&#10;(&#10;  $END$&#10;)" description="For block" toReformat="true">
+        <variable name="I" expression="" defaultValue="i" alwaysStopAt="true" />
+        <variable name="GROUP" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="true" />
+        </context>
+    </template>
+
+    <template name="WorldScript" value="WorldScript (&#10;$END$&#10;)" description="" toReformat="true">
+    </template>
+</templateSet>

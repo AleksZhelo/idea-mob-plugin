@@ -23,7 +23,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2.1'
+    version '2019.2.4'
     type 'IC'
     plugins 'java', 'PsiViewer:192-SNAPSHOT'
 }

@@ -5,7 +5,6 @@ import com.intellij.lang.Language;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: finish
 class EICodeStylePanel extends TabbedLanguageCodeStylePanel {
 
     EICodeStylePanel(@Nullable Language language, CodeStyleSettings currentSettings, CodeStyleSettings settings) {
@@ -14,6 +13,6 @@ class EICodeStylePanel extends TabbedLanguageCodeStylePanel {
 
     @Override
     protected void initTabs(CodeStyleSettings settings) {
-        super.initTabs(settings);
+        addIndentOptionsTab(settings);
     }
 }

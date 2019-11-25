@@ -4,10 +4,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 public final class EIScriptNamingUtil {
 
     public static final String VOID = "void";
@@ -20,9 +16,9 @@ public final class EIScriptNamingUtil {
     public static final String GLOBALVARS = "GlobalVars";
     public static final String DECLARESCRIPT = "DeclareScript";
     public static final String SCRIPT = "Script";
-    public static final String IF = "IF";
-    public static final String THEN = "THEN";
-    public static final String FOR = "FOR";
+    public static final String IF = "if";
+    public static final String THEN = "then";
+    public static final String FOR = "For";
     public static final String WORLDSCRIPT = "WorldScript";
 
     public static final String EQUALS = "=";
@@ -30,9 +26,6 @@ public final class EIScriptNamingUtil {
     public static final String RPAREN = ")";
     public static final String COMMA = ",";
     public static final String COLON = ":";
-
-
-    public static final Map<String, String> tokenMap;
 
 //    public static final String NAME_IDENTIFIER = "Identifier:";
     public static final String NAME_TYPE = "Type:";
@@ -53,28 +46,6 @@ public final class EIScriptNamingUtil {
     public static final String NAME_DECLARATIONS = "Declarations";
     public static final String NAME_SCRIPTS = "Scripts";
     public static final String NAME_WORLDSCRIPT = "WorldScript";
-
-    static {
-        Map<String, String> tmpMap = new HashMap<>();
-        tmpMap.put("FLOAT", FLOAT);
-        tmpMap.put("STRING", STRING);
-        tmpMap.put("OBJECT", OBJECT);
-        tmpMap.put("GROUP", GROUP);
-        tmpMap.put("GLOBALVARS", GLOBALVARS);
-        tmpMap.put("DECLARESCRIPT", DECLARESCRIPT);
-        tmpMap.put("SCRIPT", SCRIPT);
-        tmpMap.put("IF", IF);
-        tmpMap.put("THEN", THEN);
-        tmpMap.put("FOR", FOR);
-        tmpMap.put("WORLDSCRIPT", WORLDSCRIPT);
-
-        tmpMap.put("EQUALS", EQUALS);
-        tmpMap.put("LPAREN", LPAREN);
-        tmpMap.put("RPAREN", RPAREN);
-        tmpMap.put("COMMA", COMMA);
-        tmpMap.put("COLON", COLON);
-        tokenMap = Collections.unmodifiableMap(tmpMap);
-    }
 
     private EIScriptNamingUtil() {
 

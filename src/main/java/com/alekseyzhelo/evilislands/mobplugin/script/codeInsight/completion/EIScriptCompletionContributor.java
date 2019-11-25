@@ -1,11 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
-import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.completion.*;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -16,13 +14,10 @@ import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.ProcessingContext;
-import org.apache.commons.compress.utils.Sets;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public class EIScriptCompletionContributor extends CompletionContributor {
 
@@ -87,7 +82,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
                                     continue;
                                 }
                                 // TODO: proper lookup element with icon and everything
-                                suggestString(result, gsVar.toString());
+                                result.addElement(LookupElementBuilder.create(gsVar.toString()));
                             }
                         }
                     }
@@ -170,8 +165,6 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     private void suggestExpectedTerms(@NotNull CompletionResultSet result, PsiElement parent, String
             errorDescription) {
-        // TODO: if parent is a ThenBlock or WorldScript, then we can also suggest global variables, functions or scripts
-        // (or equals?); also check right-hand side of assignments? (or is this done automatically?)
         int indexOfSuggestion = errorDescription.indexOf(" expected, got ");
         if (indexOfSuggestion >= 0) {
             errorDescription = errorDescription.substring(0, indexOfSuggestion);
@@ -179,12 +172,12 @@ public class EIScriptCompletionContributor extends CompletionContributor {
             String[] suggestedTokens = errorDescription.split("(, )|( or )");
             for (String suggestedToken : suggestedTokens) {
                 if ("<type>".equals(suggestedToken)) {
-                    suggestToken(result, EIScriptNamingUtil.FLOAT);
-                    suggestToken(result, EIScriptNamingUtil.STRING);
-                    suggestToken(result, EIScriptNamingUtil.OBJECT);
-                    suggestToken(result, EIScriptNamingUtil.GROUP);
-                } else if (EIScriptNamingUtil.tokenMap.get(suggestedToken) != null) {
-                    suggestToken(result, EIScriptNamingUtil.tokenMap.get(suggestedToken));
+                    suggestToken(result, TokenCompletionHelper.FLOAT);
+                    suggestToken(result, TokenCompletionHelper.STRING);
+                    suggestToken(result, TokenCompletionHelper.OBJECT);
+                    suggestToken(result, TokenCompletionHelper.GROUP);
+                } else {
+                    suggestToken(result, TokenCompletionHelper.fromString(suggestedToken));
                 }
             }
         }
@@ -192,34 +185,20 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     private void suggestUnexpected(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
         String unexpectedTerm = errorDescription.split("'")[1];
-        // TODO: should be parent-dependent
-        for (String token : EIScriptNamingUtil.tokenMap.values()) {
-            if (token.toLowerCase(Locale.ENGLISH).startsWith(unexpectedTerm.toLowerCase(Locale.ENGLISH))) {
+        // TODO: should be parent-dependent | complete?
+        for (TokenCompletionHelper token : TokenCompletionHelper.values()) {
+            if (token.valueStartsWith(unexpectedTerm)) {
                 suggestToken(result, token);
             }
         }
         if (parent instanceof EIGlobalVar || parent instanceof EIFormalParameter) {
-            suggestToken(result, ",");
+            suggestToken(result, TokenCompletionHelper.COMMA);
         }
     }
 
-    private void suggestString(CompletionResultSet result, String suggestion) {
-        result.addElement(LookupElementBuilder.create(suggestion));
-    }
-
-    // TODO: fix
-    private void suggestToken(CompletionResultSet result, String token) {
-        String lookupString = shouldPrefixToken(token)
-                ? result.getPrefixMatcher().getPrefix() + token
-                : token;
-        result.addElement(EILookupElementFactory.createForToken(lookupString));
-    }
-
-    private static Set<String> TO_PREFIX = Collections.unmodifiableSet(Sets.newHashSet(
-            ",", "(", ")"
-    ));
-
-    private boolean shouldPrefixToken(String token) {
-        return TO_PREFIX.contains(token);
+    private void suggestToken(CompletionResultSet result, @Nullable TokenCompletionHelper token) {
+        if (token != null) {
+            result.addElement(token.getLookupElement(result.getPrefixMatcher().getPrefix()));
+        }
     }
 }

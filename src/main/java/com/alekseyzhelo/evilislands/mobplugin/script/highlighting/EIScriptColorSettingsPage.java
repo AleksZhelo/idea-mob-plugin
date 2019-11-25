@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.highlighting;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.IOUtil;
-import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.options.colors.AttributesDescriptor;

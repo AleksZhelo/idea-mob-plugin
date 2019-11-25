@@ -6,14 +6,14 @@ import com.intellij.application.options.CodeStyleAbstractConfigurable;
 import com.intellij.application.options.CodeStyleAbstractPanel;
 import com.intellij.application.options.IndentOptionsEditor;
 import com.intellij.lang.Language;
-import com.intellij.psi.codeStyle.*;
+import com.intellij.psi.codeStyle.CodeStyleConfigurable;
+import com.intellij.psi.codeStyle.CodeStyleSettings;
+import com.intellij.psi.codeStyle.CommonCodeStyleSettings;
+import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
 
-
-// TODO: finish: spaces, blank lines, etc
 public class EICodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvider {
     @Nullable
     @Override
@@ -47,27 +47,7 @@ public class EICodeStyleSettingsProvider extends LanguageCodeStyleSettingsProvid
 
     @Nullable
     @Override
-    public CustomCodeStyleSettings createCustomSettings(CodeStyleSettings settings) {
-        return super.createCustomSettings(settings);
-    }
-
-    @Nullable
-    @Override
     public IndentOptionsEditor getIndentOptionsEditor() {
-        // TODO: remove "use tab character"
-        return new IndentOptionsEditor();
-    }
-
-    @Override
-    public Set<String> getSupportedFields() {
-        Set<String> supported = super.getSupportedFields();
-        supported.remove(CodeStyleSettingsCustomizable.IndentOption.USE_TAB_CHARACTER.toString());
-        return supported;
-    }
-
-    @Override
-    public Set<String> getSupportedFields(SettingsType type) {
-        Set<String> supported = super.getSupportedFields(type);
-        return supported;
+        return new EIIndentOptionsEditor();
     }
 }

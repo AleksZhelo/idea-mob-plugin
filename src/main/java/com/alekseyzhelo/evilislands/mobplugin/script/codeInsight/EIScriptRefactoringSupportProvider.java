@@ -1,6 +1,5 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionCall;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFunctionDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
 import com.intellij.lang.refactoring.RefactoringSupportProvider;
