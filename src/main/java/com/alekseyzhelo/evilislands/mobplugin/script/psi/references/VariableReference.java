@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion.TokenCompletionHelper;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScriptParamFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
@@ -68,7 +69,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         }
 
         PsiElement parent = myElement.getParent();
-        // incomplete assignment -> may be a void function or a script
+        // incomplete assignment -> may be a void function or a script, or a For
         if (parent instanceof EIAssignment) {
             if (!((EIAssignment) parent).isComplete() || HAS_ERROR_CHILD.accepts(parent)) {
                 suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
@@ -87,6 +88,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
         List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
         variants.addAll(scriptsLookup);
+        variants.add(TokenCompletionHelper.FOR.getLookupElement(""));
     }
 
     private void suggestFunctionsOfType(Project project, List<LookupElement> variants, EITypeToken expectedType) {

@@ -177,7 +177,6 @@ variableAccess ::= IDENTIFIER
   consumeTokenMethod="consumeTokenFast"
 }
 
-// TODO: incomplete call (no LPAREN) breaks following calls in an ifBlock - is that a problem?
 functionCall ::= IDENTIFIER params
 {
   extends=expression

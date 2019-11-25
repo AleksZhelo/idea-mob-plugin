@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIArea;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIGSVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.ArgumentPositionPatternCondition;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
@@ -23,11 +24,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     private static final TokenSet ROLL_BACK_TO_FLOAT = TokenSet.create(ScriptTypes.RPAREN, ScriptTypes.COMMA);
 
-    // TODO: DUMMY_IDENTIFIER_TRIMMED?
     public EIScriptCompletionContributor() {
-        // TODO: rework?
-        // TODO: basically always triggers, as the error is produced by the IntellijIdeaRulezzz dummy identifier, fix!
-        //  so far changed the position to originalPosition (in the PSI tree without the dummy and the fake error)
         extend(CompletionType.BASIC,
                 PlatformPatterns
                         .psiElement()
@@ -89,45 +86,46 @@ public class EIScriptCompletionContributor extends CompletionContributor {
             );
         }
         if (EIScriptLanguage.AREAS_ENABLED) {
-            // TODO: as far as I remember this doesn't work anyway  | try again, should work now
-//            extend(CompletionType.BASIC, PlatformPatterns
-//                            .psiElement()
-//                            .withLanguage(EIScriptLanguage.INSTANCE)
-//                            .withSuperParent(3, PlatformPatterns
-//                                    .psiElement(EIFunctionCall.class)
-//                                    .withName(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
-//                            ),
-//                    new CompletionProvider<CompletionParameters>() {
-//                        @Override
-//                        protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
-//                            Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
-//                            PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
-//                            if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
-//                                return;
-//                            }
-//
-//                            EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
-//
-//                            assert element != null;
-//                            assert call != null;
-//                            try {
-//                                int areaId = Integer.parseInt(element.getText());
-//                                boolean isRead = EIArea.isAreaRead(call);
-//                                EIArea myArea = areas.get(areaId);
-//
-//                                for (EIArea area : areas.values()) {
-//                                    if (area == myArea && ((isRead && (myArea.getReads() == 1 && myArea.getWrites() == 0))
-//                                            || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
-//                                        continue;
-//                                    }
-//                                    suggestToken(result, area.toString());
-//                                }
-//                            } catch (NumberFormatException ignored) {
-//                                // whatewz
-//                            }
-//                        }
-//                    }
-//            );
+            // TODO: test
+            extend(CompletionType.BASIC, PlatformPatterns
+                            .psiElement()
+                            .withLanguage(EIScriptLanguage.INSTANCE)
+                            .withSuperParent(3, PlatformPatterns
+                                    .psiElement(EIFunctionCall.class)
+                                    .withName(StandardPatterns.string().oneOfIgnoreCase(EIArea.relevantFunctions.toArray(new String[0])))
+                            ),
+                    new CompletionProvider<CompletionParameters>() {
+                        @Override
+                        protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+                            Map<Integer, EIArea> areas = ((ScriptPsiFile) parameters.getOriginalFile()).findAreas();
+                            PsiElement element = parameters.getOriginalPosition().getPrevSibling().getLastChild();
+                            if (!ArgumentPositionPatternCondition.FIRST_ARGUMENT.accepts(element, context)) {
+                                return;
+                            }
+
+                            EIFunctionCall call = PsiTreeUtil.getParentOfType(element, EIFunctionCall.class);
+
+                            assert element != null;
+                            assert call != null;
+                            try {
+                                int areaId = Integer.parseInt(element.getText());
+                                boolean isRead = EIArea.isAreaRead(call);
+                                EIArea myArea = areas.get(areaId);
+
+                                for (EIArea area : areas.values()) {
+                                    if (area == myArea && ((isRead && (myArea.getReads() == 1 && myArea.getWrites() == 0))
+                                            || (!isRead && (myArea.getWrites() == 1 && myArea.getReads() == 0)))) {
+                                        continue;
+                                    }
+                                    // TODO: proper lookup element with icon and everything
+                                    result.addElement(LookupElementBuilder.create(area.toString()));
+                                }
+                            } catch (NumberFormatException ignored) {
+                                // whatewz
+                            }
+                        }
+                    }
+            );
         }
     }
 

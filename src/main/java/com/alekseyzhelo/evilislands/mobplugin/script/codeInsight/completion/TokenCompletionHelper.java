@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
-enum TokenCompletionHelper {
+public enum TokenCompletionHelper {
     FLOAT("FLOAT", EIScriptNamingUtil.FLOAT),
     STRING("STRING", EIScriptNamingUtil.STRING),
     OBJECT("OBJECT", EIScriptNamingUtil.OBJECT),

@@ -17,14 +17,6 @@
         </context>
     </template>
 
-    <template name="For" value="For($I$, $GROUP$)&#10;(&#10;  $END$&#10;)" description="For block" toReformat="true">
-        <variable name="I" expression="" defaultValue="i" alwaysStopAt="true" />
-        <variable name="GROUP" expression="" defaultValue="" alwaysStopAt="true" />
-        <context>
-            <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="true" />
-        </context>
-    </template>
-
     <template name="gxy" value="GetX($OBJ$), GetY($OBJ$)$END$" description="Get X, Y coords" toReformat="true" toShortenFQNames="true">
         <variable name="OBJ" expression="" defaultValue="" alwaysStopAt="true" />
         <context>
