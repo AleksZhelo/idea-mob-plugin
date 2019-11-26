@@ -54,12 +54,13 @@ public class EIScriptFileStructureViewModel extends TextEditorBasedStructureView
         List<Filter> filters = new ArrayList<>();
         filters.add(new ScriptsFilter());
         filters.add(new GlobalVarsFilter());
-        if (EIScriptLanguage.GS_VARS_ENABLED) {
-            filters.add(new GSVarsFilter());
-        }
-        if (EIScriptLanguage.AREAS_ENABLED) {
-            filters.add(new AreasFilter());
-        }
+        // TODO v2: see EIScriptFileStructureViewElement
+//        if (EIScriptLanguage.GS_VARS_ENABLED) {
+//            filters.add(new GSVarsFilter());
+//        }
+//        if (EIScriptLanguage.AREAS_ENABLED) {
+//            filters.add(new AreasFilter());
+//        }
         return filters.toArray(Filter.EMPTY_ARRAY);
     }
 

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public class EIScriptLanguage extends Language {
     public static final EIScriptLanguage INSTANCE = new EIScriptLanguage();
 
-    // TODO: put into user-modifiable config
+    // TODO v2: put into user-modifiable config
     public static final boolean GS_VARS_ENABLED = true;
     public static final boolean AREAS_ENABLED = true;
 

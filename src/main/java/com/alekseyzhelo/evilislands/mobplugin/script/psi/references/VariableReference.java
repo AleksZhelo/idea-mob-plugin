@@ -72,6 +72,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
 
         PsiElement parent = myElement.getParent();
         // incomplete assignment -> may be a void function or a script, or a For
+        // (global var and param are accounted for above)
         if (parent instanceof EIAssignment) {
             if (!((EIAssignment) parent).isComplete() || HAS_ERROR_CHILD.accepts(parent)) {
                 suggestForIncompleteAssignmentLeftSide(scriptFile, variants);
@@ -97,8 +98,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
 
     private void suggestForIncompleteAssignmentLeftSide(ScriptPsiFile scriptFile, List<LookupElement> variants) {
         suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
-        List<LookupElement> scriptsLookup = scriptFile.getScriptLookupElements();
-        variants.addAll(scriptsLookup);
+        variants.addAll(scriptFile.getScriptLookupElements());
         variants.add(TokenCompletionHelper.FOR.getLookupElement(""));
     }
 

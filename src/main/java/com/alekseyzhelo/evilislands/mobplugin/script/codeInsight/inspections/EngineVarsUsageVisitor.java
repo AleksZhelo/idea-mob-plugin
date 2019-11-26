@@ -61,7 +61,7 @@ public class EngineVarsUsageVisitor extends EIVisitor {
         }
     }
 
-    // TODO: separate inspection?
+    // TODO v2: separate inspection
     private void tryAnnotateAreaUsage(@NotNull EIFunctionCall call) {
         if (EIScriptLanguage.AREAS_ENABLED && EIArea.isReadOrWrite(call)) {
             PsiElement areaIdElement = EIArea.getAreaIdElement(call);

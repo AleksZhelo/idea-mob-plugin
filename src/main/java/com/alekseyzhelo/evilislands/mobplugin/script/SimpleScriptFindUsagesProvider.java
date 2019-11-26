@@ -3,7 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.lexer.EILexer;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase;
 import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
@@ -28,10 +30,8 @@ public class SimpleScriptFindUsagesProvider implements FindUsagesProvider {
 
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-        return psiElement instanceof EIGlobalVar
-                || psiElement instanceof EIScriptDeclaration
-                || psiElement instanceof EIFormalParameter
-                || psiElement instanceof EIFunctionDeclaration;
+        return psiElement instanceof EIVariableBase
+                || psiElement instanceof EICallableDeclaration;
         // TODO v2: doesn't work
 //        || psiElement instanceof PsiMobEntityBase;
     }

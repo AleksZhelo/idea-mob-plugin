@@ -55,8 +55,8 @@ formalParameter ::= IDENTIFIER COLON type
 {
   pin=1
   recoverWhile=formalParamRecover
-  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIVariableBaseImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase"
 }
 
 globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {pin=1 methods=[toString]}
@@ -75,8 +75,8 @@ globalVar ::= IDENTIFIER COLON type
 {
   pin=1
   recoverWhile=globalVarRecover
-  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptNamedElementMixinImpl"
-  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptNamedElementMixin"
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIVariableBaseImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase"
   methods=[toString]
 }
 

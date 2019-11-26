@@ -2,9 +2,9 @@ package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIGlobalVar;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIType;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptElementFactory;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.FileModificationService;
@@ -14,7 +14,6 @@ import com.intellij.openapi.command.undo.UndoUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,7 @@ public class ChangeLvalueTypeFix extends LocalQuickFixOnPsiElement {
     private final EITypeToken newType;
     private final boolean isParameter;
 
-    public ChangeLvalueTypeFix(@NotNull PsiNamedElement element, EITypeToken newType) {
+    public ChangeLvalueTypeFix(@NotNull EIVariableBase element, EITypeToken newType) {
         super(element);
         varName = element.getName();
         this.newType = newType;
@@ -49,24 +48,18 @@ public class ChangeLvalueTypeFix extends LocalQuickFixOnPsiElement {
     @Override
     public void invoke(@NotNull Project project, @NotNull PsiFile file, @NotNull PsiElement startElement, @NotNull PsiElement endElement) {
         ScriptPsiFile psiFile = (ScriptPsiFile) startElement.getContainingFile();
+        EIVariableBase myVar = (EIVariableBase) startElement;
 
         if (!FileModificationService.getInstance().preparePsiElementForWrite(psiFile)) return;
 
-        EIType type = null;
-        if (startElement instanceof EIFormalParameter) {
-            type = ((EIFormalParameter) startElement).getType();
-        } else if (startElement instanceof EIGlobalVar) {
-            type = ((EIGlobalVar) startElement).getType();
-        }
+        EIType type = myVar.getType();
         if (type != null) {
-            EIType finalType = type;
             WriteCommandAction.writeCommandAction(project, file).withName(getText()).run(() -> {
                 try {
                     EIType newEIType = EIScriptElementFactory.createType(psiFile.getProject(), newType);
-                    finalType.replace(newEIType);
+                    type.replace(newEIType);
                     UndoUtil.markPsiFileForUndo(psiFile);
-                }
-                catch (IncorrectOperationException e) {
+                } catch (IncorrectOperationException e) {
                     LOG.error(e);
                 }
             });

@@ -54,7 +54,10 @@ public abstract class EIAssignmentMixinImpl extends EIScriptPsiElementImpl imple
 
     @Override
     public boolean isComplete() {
-        return getEquals() != null && getRightSide() != null;
+        final PsiElement equals = getEquals();
+        final PsiElement rightSide = getRightSide();
+        return equals != null && rightSide != null
+                && equals.getStartOffsetInParent() < rightSide.getStartOffsetInParent();
     }
 
     @Override

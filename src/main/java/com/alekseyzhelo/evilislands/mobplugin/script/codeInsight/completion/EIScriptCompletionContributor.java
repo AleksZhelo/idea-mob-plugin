@@ -86,7 +86,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
             );
         }
         if (EIScriptLanguage.AREAS_ENABLED) {
-            // TODO?: generalize with the above?
+            // TODO v2: generalize with the above?
             extend(CompletionType.BASIC, PlatformPatterns
                             .psiElement()
                             .withLanguage(EIScriptLanguage.INSTANCE)
@@ -181,7 +181,7 @@ public class EIScriptCompletionContributor extends CompletionContributor {
 
     private void suggestUnexpected(@NotNull CompletionResultSet result, PsiElement parent, String errorDescription) {
         String unexpectedTerm = errorDescription.split("'")[1];
-        // TODO: should be parent-dependent | complete?
+        // TODO v2: complete?
         for (TokenCompletionHelper token : TokenCompletionHelper.values()) {
             if (token.valueStartsWith(unexpectedTerm)) {
                 suggestToken(result, token);

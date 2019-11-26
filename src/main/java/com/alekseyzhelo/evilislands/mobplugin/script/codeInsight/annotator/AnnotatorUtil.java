@@ -1,9 +1,11 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.annotator;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
+import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.ChangeLvalueTypeFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgumentErrorDetector;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInspection.*;
@@ -44,6 +46,24 @@ final class AnnotatorUtil {
                     annotation.registerFix(fix, null, null, descriptor);
                 }
             }
+        }
+    }
+
+    static void tryRegisterChangeVariableTypeFix(@Nullable PsiElement variable,
+                                                 @Nullable EITypeToken rType,
+                                                 @NotNull PsiElement errorElement,
+                                                 @NotNull Annotation annotation) {
+        if (EIScriptTypingUtil.isAssignable(rType) && variable instanceof EIVariableBase) {
+            InspectionManager inspectionManager = InspectionManager.getInstance(variable.getProject());
+            LocalQuickFix fix = new ChangeLvalueTypeFix((EIVariableBase) variable, rType);
+            ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
+                    errorElement,
+                    annotation.getMessage(),
+                    fix,
+                    ProblemHighlightType.ERROR,
+                    true
+            );
+            annotation.registerFix(fix, errorElement.getTextRange(), null, descriptor);
         }
     }
 

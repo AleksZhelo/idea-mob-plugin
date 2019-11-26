@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
@@ -113,11 +114,8 @@ public class EIScriptPsiImplUtil {
     public static EITypeToken getType(EIVariableAccess element) {
         PsiElement resolved = element.getReference().resolve();
         EIType type = null;
-        // TODO v2: common interface here as well?
-        if (resolved instanceof EIGlobalVar) {
-            type = ((EIGlobalVar) resolved).getType();
-        } else if (resolved instanceof EIFormalParameter) {
-            type = ((EIFormalParameter) resolved).getType();
+        if (resolved instanceof EIVariableBase) {
+            type = ((EIVariableBase) resolved).getType();
         }
         return type != null ? type.getTypeToken() : null;
     }
@@ -149,7 +147,7 @@ public class EIScriptPsiImplUtil {
         return null;
     }
 
-    @Nullable
+    @NotNull
     public static String getName(EICallStatement element) {
         return element.getFunctionCall().getName();
     }

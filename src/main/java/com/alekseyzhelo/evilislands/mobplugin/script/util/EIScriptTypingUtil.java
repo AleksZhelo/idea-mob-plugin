@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -16,25 +17,6 @@ public final class EIScriptTypingUtil {
 
     private EIScriptTypingUtil() {
 
-    }
-
-    public static EITypeToken getExpectedType(EIExpression expression) {
-        if (expression.getParent() instanceof EIAssignment) {
-            PsiElement resolved = expression.getParent().getReference().resolve();
-            if (resolved instanceof EIFormalParameter) {
-                EIType type = ((EIFormalParameter) resolved).getType();
-                return type.getTypeToken();
-            } else if (resolved instanceof EIGlobalVar) {
-                EIType type = ((EIGlobalVar) resolved).getType();
-                return type != null ? type.getTypeToken() : null;
-            } else {
-                return null;
-            }
-        } else if (expression.getParent() instanceof EIParams) {
-            return getExpectedType((EIParams) expression.getParent(), expression);
-        } else {
-            return null;
-        }
     }
 
     private static EITypeToken getVariableExpectedTypeInner(@NotNull EIVariableAccess variableAccess) {
@@ -82,7 +64,7 @@ public final class EIScriptTypingUtil {
     }
 
     /**
-     * Get the expected type of an expression in a parameters sequence.
+     * Get the expected type of an expression in an arguments sequence.
      *
      * @param paramOwner the parameters containing the expression
      * @param param      the expression to process

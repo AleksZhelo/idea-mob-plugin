@@ -9,7 +9,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclarat
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.InspectionManager;
@@ -22,7 +21,6 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -158,21 +156,8 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         if (lType == null || !lType.equals(rType)) {
             Annotation annotation =
                     AnnotatorUtil.createIncompatibleTypesAnnotation(myHolder, assignment.getTextRange(), lType, rType);
-
-            PsiElement target = left.getReference().resolve();
-            // TODO: extract type-related fix construction logic?
-            if (lType != null && EIScriptTypingUtil.isAssignable(rType) && target != null) {
-                InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
-                LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
-                ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
-                        left,
-                        annotation.getMessage(),
-                        fix,
-                        ProblemHighlightType.ERROR,
-                        true
-                );
-                annotation.registerFix(fix, assignment.getTextRange(), null, descriptor);
-            }
+            AnnotatorUtil.tryRegisterChangeVariableTypeFix(left.getReference().resolve(), rType,
+                    assignment, annotation);
         }
     }
 
@@ -225,8 +210,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                     call.getParent() instanceof EIScriptIfBlock
             );
             if (errorMessage != null) {
-                // TODO: could prompt to create a script here?
-                // TODO: likeUnknownSymbol should be false for known non-float functions in an ifBlock
+                // TODO v2: could prompt to create a script here
                 Annotation annotation = AnnotatorUtil.markAsError(myHolder, callNameElement,
                         errorMessage, resolvedTo == null);
                 annotation.registerFix(
@@ -260,21 +244,12 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                     );
                 }
 
-                // TODO: ugly code in this kind of repetitious LocalQuickFix creation?
                 if (resolvedTo instanceof EIScriptDeclaration) {
                     EIFormalParameter parameter = errorDetector.getFirstWrongParameter();
                     EIExpression expression = errorDetector.getFirstWrongArgument();
-                    if (parameter != null && expression != null && EIScriptTypingUtil.isAssignable(expression.getType())) {
-                        InspectionManager inspectionManager = InspectionManager.getInstance(resolvedTo.getProject());
-                        LocalQuickFix fix = new ChangeLvalueTypeFix(parameter, expression.getType());
-                        ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(
-                                expression,
-                                annotation.getMessage(),
-                                fix,
-                                ProblemHighlightType.ERROR,
-                                true
-                        );
-                        annotation.registerFix(fix, expression.getTextRange(), null, descriptor);
+                    if (expression != null) {
+                        AnnotatorUtil.tryRegisterChangeVariableTypeFix(parameter, expression.getType(),
+                                expression, annotation);
                     }
                 }
             }
@@ -299,10 +274,14 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         super.visitLiteral(literal);
 
         PsiReference reference = literal.getReference();
-        // TODO: also warn about GetObject not working with 10-digit IDs!
-        if (reference instanceof MobObjectReferenceBase && reference.resolve() == null) {
-            AnnotatorUtil.markAsWarning(myHolder, literal,
-                    ((MobObjectReferenceBase) reference).getErrorMessage(), true);
+        if (reference instanceof MobObjectReferenceBase) {
+            if (reference.resolve() == null) {
+                AnnotatorUtil.markAsWarning(myHolder, literal,
+                        ((MobObjectReferenceBase) reference).getErrorMessage(), true);
+            } else if (EITypeToken.FLOAT.equals(literal.getType()) && literal.getTextLength() >= 10) {
+                AnnotatorUtil.markAsWarning(myHolder, literal,
+                        EIMessages.message("warn.getObject.does.not.support.long.ids"));
+            }
         }
     }
 }
