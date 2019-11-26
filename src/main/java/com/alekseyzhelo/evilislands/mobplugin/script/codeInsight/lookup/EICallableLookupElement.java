@@ -32,8 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 // see JavaMethodCallElement
-// TODO v2: param name boxes? (probably JavaInlayHintsProvider, uses setCompletionMode)
-// TODO: InlayParameterHintsProvider?
+// TODO v2: param name boxes? (see JavaInlayHintsProvider, uses setCompletionMode), also InlayParameterHintsProvider
 public class EICallableLookupElement extends LookupItem<EICallableDeclaration> implements EITypedLookupItem {
 
     private final boolean forScript;

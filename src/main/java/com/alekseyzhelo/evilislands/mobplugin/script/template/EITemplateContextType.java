@@ -243,7 +243,7 @@ public abstract class EITemplateContextType extends TemplateContextType {
             return false;
         }
 
-        // TODO: two contexts, separate for xy and xyz, and detect exact matches?
+        // TODO v2: two contexts, separate for xy and xyz, and detect exact matches?
         private boolean hasXParam(@NotNull EICallableDeclaration declaration) {
             for (EIFormalParameter parameter : declaration.getCallableParams()) {
                 if (StringUtil.equalsIgnoreCase(parameter.getName(), "x")

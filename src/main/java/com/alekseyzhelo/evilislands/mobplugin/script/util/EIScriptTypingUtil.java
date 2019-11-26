@@ -112,7 +112,7 @@ public final class EIScriptTypingUtil {
         EITypeToken expectedType = EIScriptTypingUtil.getExpectedTypeInner(paramOwner, param);
         return expectedType != null && expectedType != EITypeToken.VOID
                 ? expectedType
-                : EITypeToken.ANY;
+                : EITypeToken.ANY; // TODO v2: ASSIGNABLE type instead of ANY?
     }
 
     public static boolean matchingType(EIFormalParameter parameter, EIExpression expression) {

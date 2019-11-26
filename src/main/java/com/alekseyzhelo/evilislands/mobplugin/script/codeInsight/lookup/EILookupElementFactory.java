@@ -63,14 +63,14 @@ public final class EILookupElementFactory {
     }
 
     @NotNull
-    public static LookupElement createForToken(String lookupString){
+    public static LookupElement createForToken(String lookupString) {
         return LookupElementBuilder.create(lookupString)
                 .withCaseSensitivity(false)
                 .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE);
     }
 
     @NotNull
-    public static LookupElement create(EIExtraVarBase var){
+    public static LookupElement create(EIExtraVarBase var) {
         return LookupElementBuilder.create(var.toString())
                 .withCaseSensitivity(false)
                 .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE)
@@ -79,7 +79,6 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(PsiMobEntityBase entity) {
-        // TODO?: icons for units, levers, etc?
         return create(entity, entity.getText());
     }
 
@@ -93,7 +92,8 @@ public final class EILookupElementFactory {
         return LookupElementBuilder
                 .create(lookupString)
                 .withTypeText(entity.getObjectKind())
-                .withPresentableText(lookupText(entity));
+                .withPresentableText(lookupText(entity))
+                .withIcon(entity.getIcon(0));
     }
 
     private static String lookupText(PsiMobEntityBase entity) {

@@ -162,7 +162,6 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             PsiElement target = left.getReference().resolve();
             // TODO: extract type-related fix construction logic?
             if (lType != null && EIScriptTypingUtil.isAssignable(rType) && target != null) {
-                // TODO: move to local quick fix provider in reference?  | seems like I can't, really
                 InspectionManager inspectionManager = InspectionManager.getInstance(assignment.getProject());
                 LocalQuickFix fix = new ChangeLvalueTypeFix((PsiNamedElement) target, rType);
                 ProblemDescriptor descriptor = inspectionManager.createProblemDescriptor(

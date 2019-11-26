@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.completion.TokenCompletionHelper;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScriptParamFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil.HAS_ERROR_CHILD;
@@ -78,7 +80,16 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
         if (!(parent instanceof EIAssignment && ((EIAssignment) parent).indexOf(myElement) == 0) &&
                 !(parent instanceof EIForBlock && (((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0))) {
-            suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
+            // TODO v2: remove hack
+            if (parent instanceof EIParams
+                    && ((EIFunctionCall) parent.getParent()).getName().equalsIgnoreCase("getobject") ) {
+                PsiMobObjectsBlock block = scriptFile.getCompanionMobObjectsBlock();
+                if (block != null) {
+                    Collections.addAll(variants, block.getObjectByIdLookupElements());
+                }
+            } else {
+                suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
+            }
         }
 
         return variants.toArray();

@@ -3,9 +3,13 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 import com.alekseyzhelo.eimob.objects.MobParticle;
 import com.alekseyzhelo.eimob.util.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
+import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.swing.*;
 
 public class PsiMobParticle extends PsiMobEntityBase {
 
@@ -20,6 +24,12 @@ public class PsiMobParticle extends PsiMobEntityBase {
     @NotNull
     public String getObjectKind() {
         return EIMessages.message("mob.particle");
+    }
+
+    @Nullable
+    @Override
+    public Icon getIcon(int flags) {
+        return Icons.Objects.PARTICLE;
     }
 
     @Override

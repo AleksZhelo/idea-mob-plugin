@@ -56,19 +56,20 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
         List<LookupElement> variants = new ArrayList<>();
         EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
 
-        if (parent instanceof EIScriptIfBlock) {
-            variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
-        } else if (parent instanceof EIForBlock) {
-            variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
-        } else if (parent instanceof EIParams) {
+        if (parent instanceof EIParams) {
             EITypeToken expectedType = EIScriptTypingUtil.getExpectedType((EIParams) parent, myElement);
-            if (expectedType == EITypeToken.VOID || expectedType == EITypeToken.ANY) {
-                variants.addAll(file.getScriptLookupElements());
-            }
             variants.addAll(service.getFunctionLookupElements(expectedType));
         } else if (parent instanceof EICallStatement) {
             variants.addAll(file.getScriptLookupElements());
             variants.addAll(service.getFunctionLookupElements(EITypeToken.VOID));
+        } else if (parent instanceof EIScriptIfBlock) {
+            variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
+        } else if (parent instanceof EIAssignment) {
+            EITypeToken expectedType = ((EIAssignment) parent).getLeftSide().getType();
+            // TODO v2: ASSIGNABLE type instead of ANY?
+            variants.addAll(service.getFunctionLookupElements(expectedType != null ? expectedType : EITypeToken.ANY));
+        } else if (parent instanceof EIForBlock) {
+            variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
         }
 
         return variants.toArray();
