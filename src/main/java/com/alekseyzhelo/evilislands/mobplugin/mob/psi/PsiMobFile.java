@@ -3,6 +3,9 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 import com.alekseyzhelo.eimob.MobException;
 import com.alekseyzhelo.eimob.MobFile;
 import com.alekseyzhelo.eimob.MobVisitor;
+import com.alekseyzhelo.eimob.Mob_utilKt;
+import com.alekseyzhelo.eimob.blocks.EncryptedScriptBlock;
+import com.alekseyzhelo.eimob.blocks.ScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.mob.EIMobLanguage;
 import com.intellij.lang.Language;
 import com.intellij.openapi.application.ApplicationManager;
@@ -40,7 +43,10 @@ public class PsiMobFile extends PsiBinaryFileImpl {
     }
 
     public byte[] getScriptBytes() {
-        return getMobFile().getScriptBytes();
+        ScriptBlock scriptBlock = getMobFile().getScriptBlock();
+        return scriptBlock != null
+                ? Mob_utilKt.encodeMobString(scriptBlock.getScript())
+                : new byte[0];
     }
 
     public void setScriptBytes(byte[] bytes) {
@@ -49,7 +55,14 @@ public class PsiMobFile extends PsiBinaryFileImpl {
             LOG.error("Mob file is null for " + toString());
             return;
         }
-        mobFile.setScriptBytes(bytes);
+
+        ScriptBlock scriptBlock = mobFile.getScriptBlock();
+        if (scriptBlock == null) {
+            scriptBlock = EncryptedScriptBlock.Companion.createWithKey(117637889);
+            mobFile.getBlocks().add(0, scriptBlock);
+        }
+        scriptBlock.setScript(Mob_utilKt.decodeMobString(bytes));
+
         ApplicationManager.getApplication().runWriteAction(() -> {
             final VirtualFile virtualFile = getViewProvider().getVirtualFile();
             try (OutputStream out = virtualFile.getOutputStream(PsiMobFile.this)) {

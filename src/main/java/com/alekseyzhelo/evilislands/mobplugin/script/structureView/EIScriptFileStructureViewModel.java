@@ -1,11 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.structureView;
 
-import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptFileStructureViewElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.elements.EIScriptImplStructureViewElement;
-import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.AreasFilter;
-import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.GSVarsFilter;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.GlobalVarsFilter;
 import com.alekseyzhelo.evilislands.mobplugin.script.structureView.filters.ScriptsFilter;
 import com.intellij.ide.structureView.StructureViewModel;

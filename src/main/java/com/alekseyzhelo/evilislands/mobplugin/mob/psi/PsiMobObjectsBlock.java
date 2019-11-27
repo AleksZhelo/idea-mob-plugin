@@ -1,8 +1,10 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobObject;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.intellij.codeInsight.lookup.LookupElement;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +16,8 @@ import java.util.Map;
 
 // CachedValue/CachedValuesManager?
 public class PsiMobObjectsBlock extends PsiMobElement {
+
+    private static final Logger LOG = Logger.getInstance(PsiMobObjectsBlock.class);
 
     private Map<Integer, PsiMobEntityBase> childrenMap;
     private Map<String, PsiMobEntityBase> childrenByNameMap;
@@ -37,7 +41,10 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         for (PsiMobEntityBase entity : elements.values()) {
             final String name = entity.getName();
             if (!StringUtil.isEmpty(name)) {
-                // TODO: warn about non-unique object names - somewhere in EIMob, actually
+                // excluding objects due to too much warning spam
+                if (initByName.containsKey(name) && !(entity instanceof PsiMobObject)) {
+                    LOG.warn(String.format("Non-unique unit name %s in mob file %s", name, getParent()));
+                }
                 initByName.putIfAbsent(name, entity);
             }
         }
