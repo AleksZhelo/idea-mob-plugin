@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 // TODO v2: investigate stubs?
+// TODO: line markers for objects?
 public class ScriptPsiFile extends PsiFileBase {
 
     private static final Logger LOG = Logger.getInstance(ScriptPsiFile.class);

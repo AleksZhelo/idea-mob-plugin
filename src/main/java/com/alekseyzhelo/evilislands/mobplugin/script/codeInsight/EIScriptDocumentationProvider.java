@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight;
 
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
-import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -52,8 +52,8 @@ public class EIScriptDocumentationProvider extends AbstractDocumentationProvider
             return getFunctionDoc(EIFunctionsService.getInstance(element.getProject()),
                     (EIFunctionDeclaration) element);
         }
-        if (element instanceof PsiMobEntityBase) {
-            return ((PsiMobEntityBase) element).getDoc();
+        if (element instanceof PsiMobMapEntity) {
+            return ((PsiMobMapEntity) element).getDoc();
         }
         if (element instanceof EIScriptDeclaration) {
             return getScriptDeclarationDoc((EIScriptDeclaration) element);

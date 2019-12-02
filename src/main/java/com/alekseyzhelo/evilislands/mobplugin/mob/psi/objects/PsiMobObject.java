@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class PsiMobObject extends PsiMobObjectDataHolder<MobObject> {
+public class PsiMobObject extends PsiMobObjectBase<MobObject> {
 
     public PsiMobObject(PsiElement parent, MobObject object) {
         super(parent, object);

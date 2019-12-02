@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
-import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EILiteral;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.openapi.util.TextRange;
@@ -29,7 +29,7 @@ public class MobObjectReferenceByName extends MobObjectReferenceBase<String> {
 
     @Nullable
     @Override
-    protected PsiMobEntityBase findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock) {
+    protected PsiMobMapEntity findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock) {
         return objectsBlock.getChild(getElementId());
     }
 }

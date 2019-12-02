@@ -1,15 +1,19 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
-import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.eimob.objects.MobMapEntity;
+import com.alekseyzhelo.eimob.types.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class PsiMobEntityBase extends PsiMobElement {
+public abstract class PsiMobMapEntity<T extends MobMapEntity> extends PsiMobElement {
 
-    PsiMobEntityBase(PsiElement parent) {
+    protected final T value;
+
+    PsiMobMapEntity(PsiElement parent, T value) {
         super(parent);
+        this.value = value;
     }
 
     @NotNull
@@ -20,14 +24,27 @@ public abstract class PsiMobEntityBase extends PsiMobElement {
     // TODO: move field names to EIMessages
     protected abstract String getDocContent();
 
-    public abstract int getId();
+    public final String getName() {
+        return value.getName();
+    }
+
+    public final int getId() {
+        return value.getId();
+    }
 
     @NotNull
-    public abstract Float3 getLocation();
+    public final Float3 getLocation() {
+        return value.getLocation();
+    }
 
     @NotNull
     public final String getDoc() {
         return DocumentationFormatter.wrapDefinition(getDocHeader()) +
                 DocumentationFormatter.wrapContent(getDocContent());
+    }
+
+    @Override
+    public String getText() {
+        return String.valueOf(getId());
     }
 }

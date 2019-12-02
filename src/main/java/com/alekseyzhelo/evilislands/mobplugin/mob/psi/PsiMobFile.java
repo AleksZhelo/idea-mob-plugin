@@ -3,7 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 import com.alekseyzhelo.eimob.MobException;
 import com.alekseyzhelo.eimob.MobFile;
 import com.alekseyzhelo.eimob.MobVisitor;
-import com.alekseyzhelo.eimob.Mob_utilKt;
+import com.alekseyzhelo.eimob.Mob_ioKt;
 import com.alekseyzhelo.eimob.blocks.EncryptedScriptBlock;
 import com.alekseyzhelo.eimob.blocks.ScriptBlock;
 import com.alekseyzhelo.evilislands.mobplugin.mob.EIMobLanguage;
@@ -32,6 +32,7 @@ public class PsiMobFile extends PsiBinaryFileImpl {
         super(manager, viewProvider);
     }
 
+    @Nullable
     public MobFile getMobFile() {
         final VirtualFile virtualFile = getViewProvider().getVirtualFile();
         return CachedValuesManager.getCachedValue(this,
@@ -39,17 +40,28 @@ public class PsiMobFile extends PsiBinaryFileImpl {
     }
 
     public void acceptMobVisitor(MobVisitor visitor) {
-        getMobFile().accept(visitor);
+        final MobFile mobFile = getMobFile();
+        if (mobFile != null) {
+            mobFile.accept(visitor);
+        } else {
+            LOG.error("Mob file is null for " + this + ", cannot accept visitor!");
+        }
     }
 
     public byte[] getScriptBytes() {
-        ScriptBlock scriptBlock = getMobFile().getScriptBlock();
+        final MobFile mobFile = getMobFile();
+        if (mobFile == null) {
+            LOG.error("Asked for script bytes for " + this + " with a NULL mob file!");
+            return new byte[0];
+        }
+        final ScriptBlock scriptBlock = mobFile.getScriptBlock();
         return scriptBlock != null
-                ? Mob_utilKt.encodeMobString(scriptBlock.getScript())
+                ? Mob_ioKt.encodeMobString(scriptBlock.getScript())
                 : new byte[0];
     }
 
     public void setScriptBytes(byte[] bytes) {
+        // TODO: test EIMob on linux, possibly fix LittleEndian for streams?
         final MobFile mobFile = getMobFile();
         if (mobFile == null) {
             LOG.error("Mob file is null for " + toString());
@@ -59,9 +71,9 @@ public class PsiMobFile extends PsiBinaryFileImpl {
         ScriptBlock scriptBlock = mobFile.getScriptBlock();
         if (scriptBlock == null) {
             scriptBlock = EncryptedScriptBlock.Companion.createWithKey(117637889);
-            mobFile.getBlocks().add(0, scriptBlock);
+            mobFile.addBlock(scriptBlock,0);
         }
-        scriptBlock.setScript(Mob_utilKt.decodeMobString(bytes));
+        scriptBlock.setScript(Mob_ioKt.decodeMobString(bytes));
 
         ApplicationManager.getApplication().runWriteAction(() -> {
             final VirtualFile virtualFile = getViewProvider().getVirtualFile();

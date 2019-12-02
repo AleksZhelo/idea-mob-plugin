@@ -20,7 +20,7 @@
 //utility---------------
 //                     |
 //                    \|/
-// TODO: recover from errors before and in-between of these elements?
+// TODO v2: recover from errors before and in-between of these elements?
 scriptFile ::= functionDeclaration+ | globalVars? declarations? scripts? worldScript?
 // apparently this structure is not enforced by game.exe,
 // declarations and implementations can be interspersed through the script text
@@ -48,13 +48,12 @@ functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 }
 // utility end
 
-// TODO: recover for list here?
 private formalParams ::= LPAREN <<comma_separated_list (formalParameter)>>? RPAREN {pin=1}
 
 formalParameter ::= IDENTIFIER COLON type
 {
   pin=1
-  recoverWhile=formalParamRecover
+  recoverWhile=listVarRecover
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIVariableBaseImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase"
 }
@@ -67,14 +66,13 @@ scripts ::= scriptImplementation+  {methods=[toString]}
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=1 recoverWhile=worldScriptRecover methods=[toString]}
 
-// TODO: recover for list here?
 //  or: (external rule like com.intellij.lang.java.parser.ExpressionParser.parseArgumentList)?
 private globalVarsDefs ::= <<comma_separated_list (globalVar)>>
 
 globalVar ::= IDENTIFIER COLON type
 {
   pin=1
-  recoverWhile=globalVarRecover
+  recoverWhile=listVarRecover
   mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIVariableBaseImpl"
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIVariableBase"
   methods=[toString]
@@ -122,7 +120,6 @@ scriptStatement ::= plain_statement
 
 private plain_statement ::= callStatement | assignment
 
-// TODO: figure out how to collapse this one as well?
 callStatement ::= functionCall
 {
   extends=scriptStatement
@@ -200,9 +197,7 @@ type ::= FLOAT | STRING | OBJECT | GROUP
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EITypeMixin"
 }
 
-// TODO: combine into one?
-private globalVarRecover ::= !(COMMA | RPAREN | DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
-private formalParamRecover ::= !(COMMA | RPAREN | DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
+private listVarRecover ::= !(COMMA | RPAREN | DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
 private scriptDeclarationRecover ::= !(DECLARESCRIPT | SCRIPT | WORLDSCRIPT)
 private scriptImplRecover ::= !(SCRIPT | WORLDSCRIPT | <<eof>>)
 private scriptBlockRecover ::= !(IF | IDENTIFIER | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)

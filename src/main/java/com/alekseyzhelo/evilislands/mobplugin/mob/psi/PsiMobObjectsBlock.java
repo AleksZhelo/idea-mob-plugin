@@ -1,6 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
-import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobEntityBase;
+import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobObject;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -19,8 +19,8 @@ public class PsiMobObjectsBlock extends PsiMobElement {
 
     private static final Logger LOG = Logger.getInstance(PsiMobObjectsBlock.class);
 
-    private Map<Integer, PsiMobEntityBase> childrenMap;
-    private Map<String, PsiMobEntityBase> childrenByNameMap;
+    private Map<Integer, PsiMobMapEntity> childrenMap;
+    private Map<String, PsiMobMapEntity> childrenByNameMap;
     private PsiElement[] children;
     private volatile LookupElement[] objectByIdLookupElements = null;
     private volatile LookupElement[] objectByNameLookupElements = null;
@@ -29,16 +29,16 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         super(parent);
     }
 
-    void setElements(Map<Integer, PsiMobEntityBase> elements) {
+    void setElements(Map<Integer, PsiMobMapEntity> elements) {
         childrenMap = Collections.unmodifiableMap(elements);
         childrenByNameMap = Collections.unmodifiableMap(initByNameMap(elements));
         children = childrenMap.values().toArray(PsiElement.EMPTY_ARRAY);
     }
 
     @NotNull
-    private Map<String, PsiMobEntityBase> initByNameMap(Map<Integer, PsiMobEntityBase> elements) {
-        Map<String, PsiMobEntityBase> initByName = new HashMap<>();
-        for (PsiMobEntityBase entity : elements.values()) {
+    private Map<String, PsiMobMapEntity> initByNameMap(Map<Integer, PsiMobMapEntity> elements) {
+        Map<String, PsiMobMapEntity> initByName = new HashMap<>();
+        for (PsiMobMapEntity entity : elements.values()) {
             final String name = entity.getName();
             if (!StringUtil.isEmpty(name)) {
                 // excluding objects due to too much warning spam
@@ -58,12 +58,12 @@ public class PsiMobObjectsBlock extends PsiMobElement {
     }
 
     @Nullable
-    public PsiMobEntityBase getChild(int id) {
+    public PsiMobMapEntity getChild(int id) {
         return childrenMap.get(id);
     }
 
     @Nullable
-    public PsiMobEntityBase getChild(@NotNull String name) {
+    public PsiMobMapEntity getChild(@NotNull String name) {
         return childrenByNameMap.get(name);
     }
 

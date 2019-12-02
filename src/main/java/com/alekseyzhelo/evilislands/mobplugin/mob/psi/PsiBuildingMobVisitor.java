@@ -1,7 +1,8 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
+import com.alekseyzhelo.eimob.MobFile;
 import com.alekseyzhelo.eimob.MobVisitor;
-import com.alekseyzhelo.eimob.blocks.*;
+import com.alekseyzhelo.eimob.blocks.ObjectsBlock;
 import com.alekseyzhelo.eimob.objects.*;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.*;
 import com.intellij.openapi.diagnostic.Logger;
@@ -11,13 +12,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class PsiBuildingMobVisitor implements MobVisitor {
+public class PsiBuildingMobVisitor extends MobVisitor {
 
     private static final Logger LOG = Logger.getInstance(PsiBuildingMobVisitor.class);
 
     private final PsiMobFile myFile;
     private final PsiMobObjectsBlock objectsBlock;
-    private final Map<Integer, PsiMobEntityBase> elementMap = new HashMap<>();
+    private final Map<Integer, PsiMobMapEntity> elementMap;
 
     static PsiMobObjectsBlock createPsiMobObjectsBlock(PsiMobFile file) {
         PsiBuildingMobVisitor visitor = new PsiBuildingMobVisitor(file);
@@ -28,10 +29,16 @@ public class PsiBuildingMobVisitor implements MobVisitor {
 
     private PsiBuildingMobVisitor(PsiMobFile file) {
         myFile = file;
-        objectsBlock = new PsiMobObjectsBlock(file);
+        final MobFile mobFile = file.getMobFile();
+        if (mobFile != null && mobFile.getObjectsBlock() != null) {
+            elementMap = new HashMap<>(mobFile.getObjectsBlock().objectCount());
+        } else {
+            elementMap = new HashMap<>();
+        }
+        this.objectsBlock = new PsiMobObjectsBlock(file);
     }
 
-    private void putChecked(int id, PsiMobEntityBase element) {
+    private void putChecked(int id, PsiMobMapEntity element) {
         PsiMobElement old = elementMap.put(id, element);
         if (old != null) {
             LOG.error(String.format("ID %d is not unique in %s!", id, myFile.getVirtualFile().getPath()));
@@ -39,28 +46,8 @@ public class PsiBuildingMobVisitor implements MobVisitor {
     }
 
     @Override
-    public void visitDiplomacyBlock(@NotNull DiplomacyBlock value) {
-        // ignored
-    }
-
-    @Override
     public void visitObjectsBlock(@NotNull ObjectsBlock value) {
         value.acceptChildren(this);
-    }
-
-    @Override
-    public void visitScriptBlock(@NotNull ScriptBlock value) {
-        // ignored
-    }
-
-    @Override
-    public void visitUnknownBlock(@NotNull UnknownBlock value) {
-        // ignored
-    }
-
-    @Override
-    public void visitWorldSetBlock(@NotNull WorldSetBlock value) {
-        // ignored
     }
 
     @Override

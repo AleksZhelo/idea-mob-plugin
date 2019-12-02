@@ -1,39 +1,14 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
-import com.alekseyzhelo.eimob.objects.MobObjectDataHolder;
-import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.eimob.objects.MobObjectBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-abstract class PsiMobObjectDataHolder<T extends MobObjectDataHolder> extends PsiMobEntityBase {
+abstract class PsiMobObjectBase<T extends MobObjectBase> extends PsiMobMapEntity<T> {
 
-    protected final T value;
-
-    PsiMobObjectDataHolder(PsiElement parent, T object) {
-        super(parent);
-        value = object;
-    }
-
-    @Override
-    public String getName() {
-        return value.getName();
-    }
-
-    @Override
-    public int getId() {
-        return value.getId();
-    }
-
-    @NotNull
-    @Override
-    public Float3 getLocation() {
-        return value.getLocation();
-    }
-
-    @Override
-    public String getText() {
-        return String.valueOf(value.getId());
+    PsiMobObjectBase(PsiElement parent, T object) {
+        super(parent, object);
     }
 
     @Override

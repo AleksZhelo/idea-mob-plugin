@@ -1,7 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobLight;
-import com.alekseyzhelo.eimob.util.Float3;
+import com.alekseyzhelo.eimob.types.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;
@@ -11,13 +11,10 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class PsiMobLight extends PsiMobEntityBase {
-
-    private final MobLight value;
+public class PsiMobLight extends PsiMobMapEntity<MobLight> {
 
     public PsiMobLight(PsiElement parent, MobLight light) {
-        super(parent);
-        value = light;
+        super(parent, light);
     }
 
     @Override
@@ -30,27 +27,6 @@ public class PsiMobLight extends PsiMobEntityBase {
     @Override
     public Icon getIcon(int flags) {
         return Icons.Objects.LIGHT;
-    }
-
-    @Override
-    public String getName() {
-        return value.getName();
-    }
-
-    @Override
-    public int getId() {
-        return value.getId();
-    }
-
-    @NotNull
-    @Override
-    public Float3 getLocation() {
-        return value.getLocation();
-    }
-
-    @Override
-    public String getText() {
-        return String.valueOf(value.getId());
     }
 
     @Override
