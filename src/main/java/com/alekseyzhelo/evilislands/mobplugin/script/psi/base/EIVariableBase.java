@@ -5,5 +5,5 @@ import org.jetbrains.annotations.Nullable;
 
 public interface EIVariableBase extends EIScriptNamedElementMixin {
     @Nullable
-    public EIType getType();
+    EIType getType();
 }

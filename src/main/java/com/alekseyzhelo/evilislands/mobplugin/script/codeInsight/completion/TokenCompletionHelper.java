@@ -34,14 +34,14 @@ public enum TokenCompletionHelper {
     COMMA("COMMA", EIScriptNamingUtil.COMMA),
     COLON("COLON", EIScriptNamingUtil.COLON);
 
-    private static Set<TokenCompletionHelper> TO_PREFIX = Collections.unmodifiableSet(Sets.newHashSet(
+    private static final Set<TokenCompletionHelper> TO_PREFIX = Collections.unmodifiableSet(Sets.newHashSet(
             COMMA, LPAREN, RPAREN
     ));
 
     @NotNull
-    private String key;
+    private final String key;
     @NotNull
-    private String name;
+    private final String name;
 
     TokenCompletionHelper(@NotNull String tokenText, @NotNull String lookupString) {
         key = tokenText;

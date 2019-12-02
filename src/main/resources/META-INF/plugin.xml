@@ -4,10 +4,9 @@
     <version>1.0</version>
     <vendor email="alekseyzhelo@yandex.ru" url="http://gipatgroup.org">GipatGroup</vendor>
 
-    <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
-    ]]></description>
+    <description>
+        Evil Islands map objects (.mob) format support.
+    </description>
 
     <change-notes><![CDATA[
       Add change notes here.<br>
@@ -16,7 +15,7 @@
     </change-notes>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="131"/>
+    <idea-version since-build="192"/>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->

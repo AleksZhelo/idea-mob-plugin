@@ -5,11 +5,6 @@ import com.intellij.application.options.IndentOptionsEditor;
 class EIIndentOptionsEditor extends IndentOptionsEditor {
 
     @Override
-    public void showAllStandardOptions() {
-        super.showAllStandardOptions();
-    }
-
-    @Override
     public void showStandardOptions(String... optionNames) {
         super.showStandardOptions(optionNames);
         myCbUseTab.setEnabled(false);

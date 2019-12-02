@@ -1,7 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects;
 
 import com.alekseyzhelo.eimob.objects.MobSound;
-import com.alekseyzhelo.eimob.types.Float3;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.DocumentationFormatter;

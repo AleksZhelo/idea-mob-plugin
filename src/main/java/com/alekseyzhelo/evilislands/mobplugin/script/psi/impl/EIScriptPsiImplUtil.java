@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "SameReturnValue"})
 public class EIScriptPsiImplUtil {
 
     @NotNull

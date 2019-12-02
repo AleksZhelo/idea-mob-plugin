@@ -24,6 +24,7 @@ import java.util.List;
 
 import static com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptNamingUtil.getName;
 
+@SuppressWarnings("UnusedReturnValue")
 final class AnnotatorUtil {
 
     private AnnotatorUtil() {

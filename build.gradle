@@ -23,15 +23,16 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2.4'
+    version '2019.3'
     type 'IC'
-    plugins 'java', 'PsiViewer:192-SNAPSHOT'
+    plugins 'java', 'PsiViewer:193-SNAPSHOT'
 }
 patchPluginXml {
     // TODO: since version
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
+    sinceBuild '192'
 }
 
 //test {

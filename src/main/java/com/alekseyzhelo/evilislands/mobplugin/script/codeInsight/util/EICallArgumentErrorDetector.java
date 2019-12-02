@@ -10,8 +10,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class EICallArgumentErrorDetector {
-    private List<EIFormalParameter> formalParameters;
-    private List<EIExpression> actualArguments;
+    private final List<EIFormalParameter> formalParameters;
+    private final List<EIExpression> actualArguments;
     private int numErrors = 0;
     private int firstWrong = Integer.MAX_VALUE;
 
