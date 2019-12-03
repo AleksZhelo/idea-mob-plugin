@@ -34,8 +34,7 @@ public abstract class EIScriptNamedElementMixinImpl extends EIScriptPsiElementIm
         ASTNode nameNode = getNameNode();
         if (nameNode != null) {
             PsiElement identifier = EIScriptElementFactory.createIdentifier(getProject(), newName);
-            ASTNode newNameNode = identifier.getNode();
-            getNode().replaceChild(nameNode, newNameNode);
+            getNode().replaceChild(nameNode, identifier.getNode());
         }
         return this;
     }

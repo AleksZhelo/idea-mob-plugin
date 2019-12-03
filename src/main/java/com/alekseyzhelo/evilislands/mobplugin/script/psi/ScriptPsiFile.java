@@ -51,12 +51,15 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public Map<String, EIGlobalVar> findGlobalVars() {
-        final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIGlobalVars.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(
-                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class)),
-                        globalVars != null ? globalVars : this
-                )
+                () -> {
+                    final EIGlobalVars globalVars = PsiTreeUtil.getChildOfType(ScriptPsiFile.this,
+                            EIGlobalVars.class);
+                    return CachedValueProvider.Result.create(
+                            EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(globalVars, EIGlobalVar.class)),
+                            this
+                    );
+                }
         );
     }
 
@@ -67,12 +70,16 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public Map<String, EIScriptDeclaration> findScriptDeclarations() {
-        final EIDeclarations declarations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this, EIDeclarations.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(
-                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(declarations, EIScriptDeclaration.class)),
-                        declarations != null ? declarations : this
-                )
+                () -> {
+                    final EIDeclarations declarations = PsiTreeUtil.getChildOfType(ScriptPsiFile.this,
+                            EIDeclarations.class);
+                    return CachedValueProvider.Result.create(
+                            EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(declarations,
+                                    EIScriptDeclaration.class)),
+                            this
+                    );
+                }
         );
     }
 
@@ -83,12 +90,16 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public Map<String, EIScriptImplementation> findScriptImplementations() {
-        final EIScripts implementations = PsiTreeUtil.getChildOfType(this, EIScripts.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(
-                        EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(implementations, EIScriptImplementation.class)),
-                        implementations != null ? implementations : this
-                )
+                () -> {
+                    final EIScripts implementations = PsiTreeUtil.getChildOfType(this, EIScripts.class);
+                    LOG.warn("findScriptImplementations");
+                    return CachedValueProvider.Result.create(
+                            EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(implementations,
+                                    EIScriptImplementation.class)),
+                            this
+                    );
+                }
         );
     }
 
@@ -99,36 +110,37 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @NotNull
     public Map<EITypeToken, List<LookupElement>> getGlobalVarLookupElements() {
-        EIGlobalVars globalVars = findChildByClass(EIGlobalVars.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(getGlobalVarLookupElementsInner(),
-                        globalVars != null ? globalVars : this));
+                () -> CachedValueProvider.Result.create(getGlobalVarLookupElementsInner(), this)
+        );
     }
 
     @NotNull
     public List<LookupElement> getScriptLookupElements() {
-        final EIDeclarations declarations = PsiTreeUtil.getChildOfType(this, EIDeclarations.class);
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(getScriptLookupElementsInner(),
-                        declarations != null ? declarations : this));
+                () -> CachedValueProvider.Result.create(getScriptLookupElementsInner(), this)
+        );
     }
 
     @NotNull
     public Map<String, EIGSVar> findGSVars() {
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(findGSVarsInner(), this));
+                () -> CachedValueProvider.Result.create(findGSVarsInner(), this)
+        );
     }
 
     @NotNull
     public Map<Integer, EIArea> findAreas() {
         return CachedValuesManager.getCachedValue(this,
-                () -> CachedValueProvider.Result.create(findAreasInner(), this));
+                () -> CachedValueProvider.Result.create(findAreasInner(), this)
+        );
     }
 
     @Nullable
     public PsiMobFile getCompanionMobFile() {
         // TODO v2: proper use of tracking?
-        return CachedValuesManager.getManager(getProject()).getCachedValue(this, KEY_PSI_MOB_FILE, new CachedCompanionPsiMobFileProvider(), true);
+        return CachedValuesManager.getManager(getProject()).getCachedValue(this, KEY_PSI_MOB_FILE,
+                new CachedCompanionPsiMobFileProvider(), true);
     }
 
     @Nullable
@@ -226,7 +238,7 @@ public class ScriptPsiFile extends PsiFileBase {
                                 result.put(areaId, stats);
                             }
                         } catch (NumberFormatException ignored) {
-                            //don't really care
+                            // don't really care
                         }
                     }
                 }

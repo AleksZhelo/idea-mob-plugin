@@ -6,7 +6,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScript
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
@@ -19,7 +18,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,16 +28,12 @@ import java.util.List;
 import static com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil.HAS_ERROR_CHILD;
 
 public class VariableReference extends PsiReferenceBase<EIVariableAccess> implements LocalQuickFixProvider {
+
     private final String name;
 
     public VariableReference(@NotNull EIVariableAccess element, TextRange textRange) {
         super(element, textRange);
         name = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
-    }
-
-    @Override
-    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        return EIScriptRenameUtil.renameElement(myElement, newElementName);
     }
 
     @Nullable

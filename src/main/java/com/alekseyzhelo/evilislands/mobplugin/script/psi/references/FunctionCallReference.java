@@ -2,7 +2,6 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -21,12 +20,10 @@ import java.util.List;
 public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
     private final String name;
-    private final ScriptPsiFile file;
 
     public FunctionCallReference(@NotNull EIFunctionCall element, TextRange textRange) {
         super(element, textRange);
         name = element.getName();
-        file = (ScriptPsiFile) element.getContainingFile();
     }
 
     @Override
@@ -34,14 +31,15 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
         PsiElement element = resolve();
         if (element instanceof EIFunctionDeclaration) {
             throw new IncorrectOperationException();
+        } else {
+            return myElement;
         }
-        return EIScriptRenameUtil.renameElement(myElement, newElementName);
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        return ResolveCache.getInstance(file.getProject()).resolveWithCaching(
+        return ResolveCache.getInstance(myElement.getProject()).resolveWithCaching(
                 this,
                 MyResolver.INSTANCE,
                 true,
@@ -52,6 +50,10 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
     @NotNull
     @Override
     public Object[] getVariants() {
+        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
+//        if (file == null) {
+//            return new Object[0];
+//        }
         PsiElement parent = myElement.getParent();
         List<LookupElement> variants = new ArrayList<>();
         EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
@@ -80,9 +82,10 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
 
         @Override
         public PsiElement resolve(@NotNull FunctionCallReference ref, boolean incompleteCode) {
-            EIFunctionsService service = EIFunctionsService.getInstance(ref.file.getProject());
+            ScriptPsiFile file = (ScriptPsiFile) ref.myElement.getContainingFile();
+            EIFunctionsService service = EIFunctionsService.getInstance(file.getProject());
             EIFunctionDeclaration function = service.getFunctionDeclaration(ref.name);
-            return function != null ? function : ref.file.findScriptDeclaration(ref.name);
+            return function != null ? function : file.findScriptDeclaration(ref.name);
         }
     }
 }

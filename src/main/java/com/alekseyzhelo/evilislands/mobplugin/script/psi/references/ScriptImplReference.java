@@ -5,7 +5,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookup
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIScriptImplementation;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.ScriptPsiFile;
-import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptRenameUtil;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInspection.LocalQuickFix;
 import com.intellij.codeInspection.LocalQuickFixProvider;
@@ -13,7 +12,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.impl.source.resolve.ResolveCache;
-import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,23 +21,16 @@ import java.util.List;
 public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation> implements LocalQuickFixProvider {
 
     private final String name;
-    private final ScriptPsiFile file;
 
     public ScriptImplReference(@NotNull EIScriptImplementation element, TextRange textRange) {
         super(element, textRange);
         name = element.getName();
-        file = (ScriptPsiFile) element.getContainingFile();
-    }
-
-    @Override
-    public PsiElement handleElementRename(@NotNull String newElementName) throws IncorrectOperationException {
-        return EIScriptRenameUtil.renameElement(myElement, newElementName);
     }
 
     @Nullable
     @Override
     public PsiElement resolve() {
-        return ResolveCache.getInstance(file.getProject()).resolveWithCaching(
+        return ResolveCache.getInstance(myElement.getProject()).resolveWithCaching(
                 this,
                 MyResolver.INSTANCE,
                 true,
@@ -47,10 +38,16 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
         );
     }
 
+    @Override
+    public boolean isReferenceTo(@NotNull PsiElement element) {
+        return super.isReferenceTo(element);
+    }
+
     @NotNull
     @Override
     // TODO v2: cache?
     public Object[] getVariants() {
+        ScriptPsiFile file = (ScriptPsiFile) myElement.getContainingFile();
         List<LookupElement> variants = new ArrayList<>(file.getScriptLookupElements());
         return variants.stream()
                 .map((x) -> EILookupElementFactory.asScriptImplVariant(file, x))
@@ -71,7 +68,8 @@ public class ScriptImplReference extends PsiReferenceBase<EIScriptImplementation
 
         @Override
         public PsiElement resolve(@NotNull ScriptImplReference reference, boolean incompleteCode) {
-            return reference.file.findScriptDeclaration(reference.name);
+            ScriptPsiFile file = (ScriptPsiFile) reference.myElement.getContainingFile();
+            return file.findScriptDeclaration(reference.name);
         }
     }
 }

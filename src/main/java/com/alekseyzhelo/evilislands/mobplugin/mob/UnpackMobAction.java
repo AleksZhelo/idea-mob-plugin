@@ -14,10 +14,12 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiFileSystemItem;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtilCore;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,19 +35,57 @@ public class UnpackMobAction extends AnAction {
         if (psiFile instanceof PsiMobFile) {
             final PsiMobFile mobFile = (PsiMobFile) psiFile;
             if (isPacked(mobFile)) {
-                unpack(mobFile);
+                unpack(mobFile, false);
             } else {
                 pack(mobFile);
+            }
+        } else {
+            VirtualFile vFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
+            Project project = e.getData(PlatformDataKeys.PROJECT);
+            if (vFile != null && vFile.isDirectory() && project != null) {
+                PsiDirectory directory = PsiManager.getInstance(project).findDirectory(vFile);
+                if (directory != null) {
+                    final PsiElement[] children = directory.getChildren();
+                    if (children.length > 0) {
+                        ProgressManager.getInstance().run(new Task.Backgroundable(project,
+                                EIMessages.message("action.unpack.all.scripts")) {
+
+                            @Override
+                            public void run(@NotNull ProgressIndicator indicator) {
+                                for (int i = 0; i < children.length; i++) {
+                                    final PsiElement child = children[i];
+                                    if (child instanceof PsiMobFile) {
+                                        indicator.checkCanceled();
+                                        ApplicationManager.getApplication().invokeAndWait(() -> {
+                                            if (isPacked((PsiMobFile) child)) {
+                                                unpack((PsiMobFile) child, true);
+                                            }
+                                        });
+                                        indicator.setFraction((i + 1d) / children.length);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
             }
         }
     }
 
     @Override
     public void update(AnActionEvent e) {
-        VirtualFile vFile = e.getData(PlatformDataKeys.VIRTUAL_FILE);
-        if (vFile != null && vFile.getFileType() == MobFileType.INSTANCE) {
-            e.getPresentation().setEnabledAndVisible(true);
-            e.getPresentation().setText(EIMessages.message(isPacked(vFile) ? "action.unpack.script" : "action.pack.script"));
+        VirtualFile[] vFiles = e.getData(PlatformDataKeys.VIRTUAL_FILE_ARRAY);
+        if (vFiles != null && vFiles.length == 1) {
+            VirtualFile vFile = vFiles[0];
+            if (vFile.getFileType() == MobFileType.INSTANCE) {
+                e.getPresentation().setEnabledAndVisible(true);
+                e.getPresentation().setText(EIMessages.message(isPacked(vFile) ? "action.unpack.script" : "action.pack.script"));
+            } else if (vFile.isDirectory()) {
+                e.getPresentation().setEnabledAndVisible(true);
+                e.getPresentation().setText(EIMessages.message("action.unpack.all.scripts"));
+            } else {
+                e.getPresentation().setEnabledAndVisible(false);
+            }
         } else {
             e.getPresentation().setEnabledAndVisible(false);
         }
@@ -69,20 +109,22 @@ public class UnpackMobAction extends AnAction {
         return file.getNameWithoutExtension() + "." + ScriptFileType.INSTANCE.getDefaultExtension();
     }
 
-    private void unpack(@NotNull PsiMobFile mobFile) {
+    private void unpack(@NotNull PsiMobFile mobFile, boolean silent) {
         final VirtualFile virtualFile = mobFile.getVirtualFile();
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 final Project project = mobFile.getProject();
                 final VirtualFile script = virtualFile.getParent().createChildData(UnpackMobAction.this, getScriptName(virtualFile));
                 script.setBinaryContent(mobFile.getScriptBytes());
-                FileEditorManager.getInstance(project).openFile(script, true);
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    PsiFileSystemItem scriptFSItem = PsiUtilCore.findFileSystemItem(project, script);
-                    if (scriptFSItem != null) {
-                        ProjectView.getInstance(project).selectPsiElement(scriptFSItem, false);
-                    }
-                });
+                if (!silent) {
+                    FileEditorManager.getInstance(project).openFile(script, true);
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        PsiFileSystemItem scriptFSItem = PsiUtilCore.findFileSystemItem(project, script);
+                        if (scriptFSItem != null) {
+                            ProjectView.getInstance(project).selectPsiElement(scriptFSItem, false);
+                        }
+                    });
+                }
             } catch (IOException e) {
                 final String errorText =
                         EIMessages.message("notification.error.cannot.unpack.mob.text", virtualFile.getPath());
