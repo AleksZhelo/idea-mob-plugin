@@ -61,7 +61,6 @@ public class PsiMobFile extends PsiBinaryFileImpl {
     }
 
     public void setScriptBytes(byte[] bytes) {
-        // TODO: test EIMob on linux, possibly fix LittleEndian for streams?
         final MobFile mobFile = getMobFile();
         if (mobFile == null) {
             LOG.error("Mob file is null for " + toString());

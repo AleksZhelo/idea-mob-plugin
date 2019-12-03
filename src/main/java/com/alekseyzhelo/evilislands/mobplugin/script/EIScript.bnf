@@ -78,7 +78,6 @@ globalVar ::= IDENTIFIER COLON type
   methods=[toString]
 }
 
-// TODO: do script params shadow global vars?
 scriptDeclaration ::= DECLARESCRIPT IDENTIFIER formalParams
 {
   pin=1

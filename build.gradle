@@ -9,7 +9,7 @@ version '1.0'
 sourceCompatibility = 1.8
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
-// TODO: add tasks to generate lexer and parser when needed
+// TODO v2: add tasks to generate lexer and parser  | https://github.com/JetBrains/gradle-grammar-kit-plugin
 sourceSets.main.java.srcDirs = ['src/main/java', 'src/main/gen']
 
 repositories {
