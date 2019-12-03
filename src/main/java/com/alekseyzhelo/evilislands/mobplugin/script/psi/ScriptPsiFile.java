@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 // TODO v2: investigate stubs?
-// TODO: line markers for objects?
+// TODO v2: line markers for objects?
 public class ScriptPsiFile extends PsiFileBase {
 
     private static final Logger LOG = Logger.getInstance(ScriptPsiFile.class);
@@ -200,7 +200,7 @@ public class ScriptPsiFile extends PsiFileBase {
                 }
             }
         });
-        LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findGSVarsInner");
+        LOG.debug(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findGSVarsInner");
         return result;
     }
 
@@ -238,7 +238,7 @@ public class ScriptPsiFile extends PsiFileBase {
                 element.acceptChildren(this);
             }
         });
-        LOG.warn(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findAreasInner");
+        LOG.debug(watch.stop().elapsed(TimeUnit.MILLISECONDS) + " findAreasInner");
         return result;
     }
 
@@ -251,7 +251,6 @@ public class ScriptPsiFile extends PsiFileBase {
 
             final VirtualFile mob = vFile.findFileByRelativePath("../" + vFile.getNameWithoutExtension() + ".mob");
             PsiFile psiFile = mob != null ? PsiManager.getInstance(project).findFile(mob) : null;
-            LOG.info("CachedCompanionPsiMobFileProvider");
             return new Result<>((PsiMobFile) psiFile, PsiModificationTracker.NEVER_CHANGED);
         }
     }

@@ -28,7 +28,6 @@ intellij {
     plugins 'java', 'PsiViewer:193-SNAPSHOT'
 }
 patchPluginXml {
-    // TODO: since version
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""

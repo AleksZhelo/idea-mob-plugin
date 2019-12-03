@@ -21,7 +21,7 @@ public abstract class PsiMobMapEntity<T extends MobMapEntity> extends PsiMobElem
 
     protected abstract String getDocHeader();
 
-    // TODO: move field names to EIMessages
+    // TODO v2: finalize doc fields, move field names to EIMessages
     protected abstract String getDocContent();
 
     public final String getName() {

@@ -13,37 +13,36 @@ import java.util.List;
 
 public abstract class EIAssignmentMixinImpl extends EIScriptPsiElementImpl implements EIAssignmentMixin {
 
-    // TODO: is concurrent access a concern?
     private volatile List<EIExpression> expressionCache;
 
     EIAssignmentMixinImpl(ASTNode node) {
         super(node);
     }
 
-    private void updateCache() {
-        if (expressionCache == null) {
-            expressionCache = getExpressionList();
+    private List<EIExpression>  getExpressionsCached() {
+        List<EIExpression> expressions = expressionCache;
+        if (expressions == null) {
+            expressionCache = expressions = getExpressionList();
         }
+        return expressions;
     }
 
     @NotNull
     @Override
     public EIVariableAccess getLeftSide() {
-        updateCache();
-        return (EIVariableAccess) expressionCache.get(0);
+        return (EIVariableAccess) getExpressionsCached().get(0);
     }
 
     @Nullable
     @Override
     public EIExpression getRightSide() {
-        updateCache();
-        return expressionCache.size() > 1 ? expressionCache.get(1) : null;
+        List<EIExpression> expressions = getExpressionsCached();
+        return expressions.size() > 1 ? expressions.get(1) : null;
     }
 
     @Override
     public int indexOf(EIExpression expression) {
-        updateCache();
-        return expressionCache.indexOf(expression);
+        return getExpressionsCached().indexOf(expression);
     }
 
     @Nullable
