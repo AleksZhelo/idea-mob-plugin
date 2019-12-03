@@ -93,7 +93,6 @@ public class ScriptPsiFile extends PsiFileBase {
         return CachedValuesManager.getCachedValue(this,
                 () -> {
                     final EIScripts implementations = PsiTreeUtil.getChildOfType(this, EIScripts.class);
-                    LOG.warn("findScriptImplementations");
                     return CachedValueProvider.Result.create(
                             EICommonUtil.toNameMap(PsiTreeUtil.getChildrenOfTypeAsList(implementations,
                                     EIScriptImplementation.class)),
