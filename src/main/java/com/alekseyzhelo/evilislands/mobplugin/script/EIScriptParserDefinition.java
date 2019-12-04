@@ -33,6 +33,7 @@ public class EIScriptParserDefinition implements ParserDefinition {
             ScriptTypes.IF,
             ScriptTypes.THEN,
             ScriptTypes.FOR,
+            ScriptTypes.FOR_IF,
             ScriptTypes.WORLDSCRIPT
     );
     public static final TokenSet TYPES = TokenSet.create(

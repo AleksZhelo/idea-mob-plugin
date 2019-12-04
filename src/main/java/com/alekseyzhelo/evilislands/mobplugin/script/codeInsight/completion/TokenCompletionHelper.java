@@ -26,6 +26,7 @@ public enum TokenCompletionHelper {
     IF("IF", EIScriptNamingUtil.IF),
     THEN("THEN", EIScriptNamingUtil.THEN),
     FOR("FOR", EIScriptNamingUtil.FOR),
+    FOR_IF("FOR_IF", EIScriptNamingUtil.FOR_IF),
     WORLDSCRIPT("WORLDSCRIPT", EIScriptNamingUtil.WORLDSCRIPT),
 
     EQUALS("EQUALS", EIScriptNamingUtil.EQUALS),

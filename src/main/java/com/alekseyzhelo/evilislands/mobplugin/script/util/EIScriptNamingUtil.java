@@ -19,6 +19,7 @@ public final class EIScriptNamingUtil {
     public static final String IF = "if";
     public static final String THEN = "then";
     public static final String FOR = "For";
+    public static final String FOR_IF = "ForIf";
     public static final String WORLDSCRIPT = "WorldScript";
 
     public static final String EQUALS = "=";
@@ -38,6 +39,7 @@ public final class EIScriptNamingUtil {
     public static final String NAME_ASSIGNMENT = "Assignment:";
     public static final String NAME_CALL_STATEMENT = "CallStatement:";
     public static final String NAME_FOR_BLOCK = "ForBlock";
+    public static final String NAME_FOR_IF_BLOCK = "ForIfBlock";
     public static final String NAME_SCRIPT_BLOCK = "ScriptBlock";
     public static final String NAME_SCRIPT_IF_BLOCK = "IfBlock";
     public static final String NAME_SCRIPT_THEN_BLOCK = "ThenBlock";

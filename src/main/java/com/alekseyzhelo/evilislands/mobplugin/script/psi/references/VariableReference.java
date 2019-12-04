@@ -6,6 +6,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.AddScript
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.fixes.DeclareGlobalVarFix;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptResolveUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
@@ -74,7 +75,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         }
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
         if (!(parent instanceof EIAssignment && ((EIAssignment) parent).indexOf(myElement) == 0) &&
-                !(parent instanceof EIForBlock && (((EIForBlock) parent).getExpressionList().indexOf(myElement) == 0))) {
+                !(parent instanceof EIForBlockBase && (((EIForBlockBase) parent).indexOfArgument(myElement) == 0))) {
             // TODO v2: remove hack
             if (parent instanceof EIParams
                     && ((EIFunctionCall) parent.getParent()).getName().equalsIgnoreCase("getobject") ) {
@@ -94,6 +95,7 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
         suggestFunctionsOfType(scriptFile.getProject(), variants, EITypeToken.VOID);
         variants.addAll(scriptFile.getScriptLookupElements());
         variants.add(TokenCompletionHelper.FOR.getLookupElement(""));
+        variants.add(TokenCompletionHelper.FOR_IF.getLookupElement(""));
     }
 
     private void suggestFunctionsOfType(Project project, List<LookupElement> variants, EITypeToken expectedType) {

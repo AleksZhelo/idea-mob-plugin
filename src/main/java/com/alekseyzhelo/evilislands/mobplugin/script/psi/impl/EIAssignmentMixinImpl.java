@@ -19,14 +19,6 @@ public abstract class EIAssignmentMixinImpl extends EIScriptPsiElementImpl imple
         super(node);
     }
 
-    private List<EIExpression>  getExpressionsCached() {
-        List<EIExpression> expressions = expressionCache;
-        if (expressions == null) {
-            expressionCache = expressions = getExpressionList();
-        }
-        return expressions;
-    }
-
     @NotNull
     @Override
     public EIVariableAccess getLeftSide() {
@@ -63,5 +55,13 @@ public abstract class EIAssignmentMixinImpl extends EIScriptPsiElementImpl imple
     public void subtreeChanged() {
         super.subtreeChanged();
         expressionCache = null;
+    }
+
+    private List<EIExpression>  getExpressionsCached() {
+        List<EIExpression> expressions = expressionCache;
+        if (expressions == null) {
+            expressionCache = expressions = getExpressionList();
+        }
+        return expressions;
     }
 }

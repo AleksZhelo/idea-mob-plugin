@@ -35,8 +35,9 @@ SCRIPT = "script"
 IF = "if"
 THEN = "then"
 FOR = "for"
+FOR_IF = "forif"
 WORLDSCRIPT = "worldscript"
-IDENTIFIER = [#a-zA-Z]([#_a-zA-Z0-9-])*
+IDENTIFIER = [#_a-zA-Z]([#_a-zA-Z0-9-])*
 FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
 
 %state STRING
@@ -55,6 +56,7 @@ FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
     {IF}                                         { return ScriptTypes.IF; }
     {THEN}                                       { return ScriptTypes.THEN; }
     {FOR}                                        { return ScriptTypes.FOR; }
+    {FOR_IF}                                     { return ScriptTypes.FOR_IF; }
     {IDENTIFIER}                                 { return ScriptTypes.IDENTIFIER; }
     {FLOATNUMBER}                                { return ScriptTypes.FLOATNUMBER; }
     "="                                          { return ScriptTypes.EQUALS; }

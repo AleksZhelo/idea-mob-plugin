@@ -162,18 +162,17 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
+    // TODO: generalize with forIf
     public void visitForBlock(@NotNull EIForBlock forBlock) {
         super.visitForBlock(forBlock);
 
-        List<EIExpression> expressions = forBlock.getExpressionList();
+        List<EIExpression> expressions = forBlock.getArguments();
         if (expressions.size() == 2) {
             EIExpression firstArg = expressions.get(0);
-            PsiElement secondArg = expressions.get(1);
+            EIExpression secondArg = expressions.get(1);
             if (firstArg != null && secondArg != null) {
                 EITypeToken typeFirst = firstArg.getType();
-                EITypeToken typeSecond = secondArg instanceof EIFunctionCall
-                        ? ((EIFunctionCall) secondArg).getType()
-                        : ((EIVariableAccess) secondArg).getType();
+                EITypeToken typeSecond = secondArg.getType();
                 if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP) {
                     AnnotatorUtil.createBadForArgumentsAnnotation(
                             myHolder,
@@ -181,6 +180,34 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                                     secondArg.getTextOffset() + secondArg.getTextLength()),
                             typeFirst,
                             typeSecond
+                    );
+                }
+            }
+        }
+    }
+
+    @Override
+    public void visitForIfBlock(@NotNull EIForIfBlock forIfBlock) {
+        super.visitForIfBlock(forIfBlock);
+
+        List<EIExpression> expressions = forIfBlock.getArguments();
+        if (expressions.size() == 3) {
+            EIExpression firstArg = expressions.get(0);
+            EIExpression secondArg = expressions.get(1);
+            EIExpression thirdArg = expressions.get(2);
+            if (firstArg != null && secondArg != null && thirdArg != null) {
+                EITypeToken typeFirst = firstArg.getType();
+                EITypeToken typeSecond = secondArg.getType();
+                EITypeToken typeThird = thirdArg.getType();
+                if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP
+                        || typeThird != EITypeToken.FLOAT) {
+                    AnnotatorUtil.createBadForIfArgumentsAnnotation(
+                            myHolder,
+                            TextRange.create(firstArg.getTextOffset(),
+                                    thirdArg.getTextOffset() + thirdArg.getTextLength()),
+                            typeFirst,
+                            typeSecond,
+                            typeThird
                     );
                 }
             }

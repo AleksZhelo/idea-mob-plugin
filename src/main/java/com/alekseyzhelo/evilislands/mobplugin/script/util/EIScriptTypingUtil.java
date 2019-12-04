@@ -3,6 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -21,12 +22,14 @@ public final class EIScriptTypingUtil {
     private static EITypeToken getVariableExpectedTypeInner(@NotNull EIVariableAccess variableAccess) {
         PsiElement parent = variableAccess.getParent();
 
-        if (parent instanceof EIForBlock) {
-            int myIndex = ((EIForBlock) parent).getExpressionList().indexOf(variableAccess);
+        if (parent instanceof EIForBlockBase) {
+            int myIndex = ((EIForBlockBase) parent).indexOfArgument(variableAccess);
             if (myIndex == 0) {
                 return EITypeToken.OBJECT;
             } else if (myIndex == 1) {
                 return EITypeToken.GROUP;
+            } else if (myIndex == 2) { // TODO: can't actually happen, as the third element is strictly a functionCall in grammar
+                return EITypeToken.FLOAT;
             } else {
                 return null;
             }

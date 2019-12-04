@@ -2,6 +2,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.intellij.EIFunctionsService;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -70,8 +71,13 @@ public class FunctionCallReference extends PsiReferenceBase<EIFunctionCall> {
             EITypeToken expectedType = ((EIAssignment) parent).getLeftSide().getType();
             // TODO v2: ASSIGNABLE type instead of ANY?
             variants.addAll(service.getFunctionLookupElements(expectedType != null ? expectedType : EITypeToken.ANY));
-        } else if (parent instanceof EIForBlock) {
-            variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
+        } else if (parent instanceof EIForBlockBase) {
+            int myIdx = ((EIForBlockBase) parent).indexOfArgument(myElement);
+            if (myIdx == 1) {
+                variants.addAll(service.getFunctionLookupElements(EITypeToken.GROUP));
+            } else if (myIdx == 2) {
+                variants.addAll(service.getFunctionLookupElements(EITypeToken.FLOAT));
+            }
         }
 
         return variants.toArray();

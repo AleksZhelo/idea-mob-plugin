@@ -18,7 +18,8 @@ final class EIIndentProcessor {
             WORLDSCRIPT,
             IF,
             THEN,
-            FOR
+            FOR,
+            FOR_IF
     );
     private static final TokenSet BLOCKS = TokenSet.create(
             GLOBAL_VARS,
@@ -27,6 +28,7 @@ final class EIIndentProcessor {
             SCRIPT_THEN_BLOCK,
             WORLD_SCRIPT,
             FOR_BLOCK,
+            FOR_IF_BLOCK,
             PARAMS
     );
     private static final TokenSet NO_INDENT_BLOCKS = TokenSet.create(

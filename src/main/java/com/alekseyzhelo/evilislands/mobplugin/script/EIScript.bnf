@@ -105,19 +105,20 @@ scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scrip
 // TODO v2: bit of a cop-out?
 incomplete_call ::= IDENTIFIER
 {
+//  extends=expression
   consumeTokenMethod="consumeTokenFast"
   methods=[getReference]
 }
 
 private scriptThenBody ::= scriptStatement*
 
-scriptStatement ::= plain_statement
+scriptStatement ::= callStatement
+                  | assignment
                   | forBlock
+                  | forIfBlock
 {
   consumeTokenMethod="consumeTokenFast"
 }
-
-private plain_statement ::= callStatement | assignment
 
 callStatement ::= functionCall
 {
@@ -138,10 +139,22 @@ assignment ::= variableAccess EQUALS expression
 }
 
 // TODO v2: Sum and ForIf?
-forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN plain_statement* RPAREN
+forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN scriptStatement* RPAREN
 {
   pin=1
   extends=scriptStatement
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIForBlockBaseImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase"
+  methods=[toString]
+  consumeTokenMethod="consumeTokenFast"
+}
+
+forIfBlock ::= FOR_IF LPAREN variableAccess COMMA reference_expression COMMA functionCall RPAREN LPAREN scriptStatement* RPAREN
+{
+  pin=1
+  extends=scriptStatement
+  mixin="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIForBlockBaseImpl"
+  implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase"
   methods=[toString]
   consumeTokenMethod="consumeTokenFast"
 }
@@ -202,6 +215,6 @@ private scriptImplRecover ::= !(SCRIPT | WORLDSCRIPT | <<eof>>)
 private scriptBlockRecover ::= !(IF | IDENTIFIER | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)
 private scriptIfBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | RPAREN !RPAREN)
 private scriptThenBlockRecover ::= !(IF | THEN | SCRIPT | WORLDSCRIPT | IDENTIFIER RPAREN | RPAREN !RPAREN)
-private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER | FOR)
+private scriptAssignmentRecover ::= !(RPAREN | IDENTIFIER | FOR | FOR_IF)
 private worldScriptRecover ::= !(<<eof>>)
-private non_empty_params_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR)
+private non_empty_params_recover ::= !(RPAREN | IDENTIFIER LPAREN | FOR | FOR_IF)

@@ -91,30 +91,51 @@ final class AnnotatorUtil {
     }
 
     @NotNull
+    // TODO: generalize with forIf
     static Annotation createBadForArgumentsAnnotation(@NotNull AnnotationHolder holder,
                                                       @NotNull TextRange textRange,
                                                       EITypeToken firstArgType,
                                                       EITypeToken secondArgType) {
-
         EITypeToken[] expected = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP};
         EITypeToken[] actual = new EITypeToken[]{firstArgType, secondArgType};
         StringBuilder ms = new StringBuilder();
         for (int i = 0; i < expected.length; i++) {
-            boolean assignable = EIScriptTypingUtil.matchingType(expected[i], actual[i]);
-            String mismatchColor = assignable ? null : getFittingRed();
-            ms.append("<td> " + "<b><nobr>");
-            ms.append(i == 0 ? "(" : "");
-            ms.append("<font ");
-            if (!assignable) ms.append("color=").append(mismatchColor);
-            ms.append(">");
-            ms.append(XmlStringUtil.escapeString(getName(actual[i])));
-            ms.append("</font>");
-            ms.append(i == expected.length - 1 ? ")" : ",");
-            ms.append("</nobr></b></td>");
+            fillForArgMismatchLine(expected, actual, ms, i);
         }
         Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message("error.call.bad.for.args"));
         annotation.setTooltip(EIMessages.message("for.block.argument.mismatch.html.tooltip", ms.toString()));
         return annotation;
+    }
+
+    @NotNull
+    static Annotation createBadForIfArgumentsAnnotation(@NotNull AnnotationHolder holder,
+                                                        @NotNull TextRange textRange,
+                                                        EITypeToken firstArgType,
+                                                        EITypeToken secondArgType,
+                                                        EITypeToken thirdArgType) {
+        EITypeToken[] expected = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP, EITypeToken.FLOAT};
+        EITypeToken[] actual = new EITypeToken[]{firstArgType, secondArgType, thirdArgType};
+        StringBuilder ms = new StringBuilder();
+        for (int i = 0; i < expected.length; i++) {
+            fillForArgMismatchLine(expected, actual, ms, i);
+        }
+        Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message("error.call.bad.forIf.args"));
+        annotation.setTooltip(EIMessages.message("forIf.block.argument.mismatch.html.tooltip", ms.toString()));
+        return annotation;
+    }
+
+    private static void fillForArgMismatchLine(EITypeToken[] expected, EITypeToken[] actual, StringBuilder ms, int i) {
+        boolean assignable = EIScriptTypingUtil.matchingType(expected[i], actual[i]);
+        String mismatchColor = assignable ? null : getFittingRed();
+        ms.append("<td> " + "<b><nobr>");
+        ms.append(i == 0 ? "(" : "");
+        ms.append("<font ");
+        if (!assignable) ms.append("color=").append(mismatchColor);
+        ms.append(">");
+        ms.append(XmlStringUtil.escapeString(getName(actual[i])));
+        ms.append("</font>");
+        ms.append(i == expected.length - 1 ? ")" : ",");
+        ms.append("</nobr></b></td>");
     }
 
     @NotNull

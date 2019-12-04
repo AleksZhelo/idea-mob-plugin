@@ -189,6 +189,10 @@ public class EIScriptPsiImplUtil {
         return EIScriptNamingUtil.NAME_FOR_BLOCK;
     }
 
+    public static String toString(EIForIfBlock forIfBlock) {
+        return EIScriptNamingUtil.NAME_FOR_IF_BLOCK;
+    }
+
     public static String toString(EIScriptBlock scriptBlock) {
         return EIScriptNamingUtil.NAME_SCRIPT_BLOCK;
     }

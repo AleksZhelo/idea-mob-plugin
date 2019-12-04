@@ -38,6 +38,15 @@
         </context>
     </template>
 
+    <template name="ForIf" value="ForIf($I$, $GROUP$, $CONDITION$)&#10;(&#10;  $END$&#10;)" description="ForIf block" toReformat="true">
+        <variable name="I" expression="" defaultValue="i" alwaysStopAt="true" />
+        <variable name="GROUP" expression="" defaultValue="" alwaysStopAt="true" />
+        <variable name="CONDITION" expression="" defaultValue="" alwaysStopAt="true" />
+        <context>
+            <option name="EI_SCRIPT_EXPRESSION_ALLOWED" value="true" />
+        </context>
+    </template>
+
     <template name="WorldScript" value="WorldScript (&#10;$END$&#10;)" description="" toReformat="true">
     </template>
 </templateSet>
