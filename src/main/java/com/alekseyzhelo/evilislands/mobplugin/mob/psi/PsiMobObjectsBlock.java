@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.mob.psi;
 
+import com.alekseyzhelo.eimob.objects.MobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobObject;
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup.EILookupElementFactory;
@@ -19,8 +20,8 @@ public class PsiMobObjectsBlock extends PsiMobElement {
 
     private static final Logger LOG = Logger.getInstance(PsiMobObjectsBlock.class);
 
-    private Map<Integer, PsiMobMapEntity> childrenMap;
-    private Map<String, PsiMobMapEntity> childrenByNameMap;
+    private Map<Integer, PsiMobMapEntity<? extends MobMapEntity>> childrenMap;
+    private Map<String, PsiMobMapEntity<? extends MobMapEntity>> childrenByNameMap;
     private PsiElement[] children;
     private volatile LookupElement[] objectByIdLookupElements = null;
     private volatile LookupElement[] objectByNameLookupElements = null;
@@ -29,21 +30,24 @@ public class PsiMobObjectsBlock extends PsiMobElement {
         super(parent);
     }
 
-    void setElements(Map<Integer, PsiMobMapEntity> elements) {
+    void setElements(Map<Integer, PsiMobMapEntity<? extends MobMapEntity>> elements) {
         childrenMap = Collections.unmodifiableMap(elements);
         childrenByNameMap = Collections.unmodifiableMap(initByNameMap(elements));
         children = childrenMap.values().toArray(PsiElement.EMPTY_ARRAY);
     }
 
     @NotNull
-    private Map<String, PsiMobMapEntity> initByNameMap(Map<Integer, PsiMobMapEntity> elements) {
-        Map<String, PsiMobMapEntity> initByName = new HashMap<>();
-        for (PsiMobMapEntity entity : elements.values()) {
-            final String name = entity.getName();
-            if (!StringUtil.isEmpty(name)) {
+    private Map<String, PsiMobMapEntity<? extends MobMapEntity>> initByNameMap(
+            Map<Integer, PsiMobMapEntity<? extends MobMapEntity>> elements
+    ) {
+        Map<String, PsiMobMapEntity<? extends MobMapEntity>> initByName = new HashMap<>();
+        for (PsiMobMapEntity<? extends MobMapEntity> entity : elements.values()) {
+            final String nameOrig = entity.getName();
+            if (!StringUtil.isEmpty(nameOrig)) {
+                final String name = nameOrig.toLowerCase();
                 // excluding objects due to too much warning spam
                 if (initByName.containsKey(name) && !(entity instanceof PsiMobObject)) {
-                    LOG.warn(String.format("Non-unique unit name %s in mob file %s", name, getParent()));
+                    LOG.warn(String.format("Non-unique unit name %s in mob file %s", nameOrig, getParent()));
                 }
                 initByName.putIfAbsent(name, entity);
             }
@@ -58,13 +62,13 @@ public class PsiMobObjectsBlock extends PsiMobElement {
     }
 
     @Nullable
-    public PsiMobMapEntity getChild(int id) {
+    public PsiMobMapEntity<? extends MobMapEntity> getChild(int id) {
         return childrenMap.get(id);
     }
 
     @Nullable
-    public PsiMobMapEntity getChild(@NotNull String name) {
-        return childrenByNameMap.get(name);
+    public PsiMobMapEntity<? extends MobMapEntity> getChild(@NotNull String name) {
+        return childrenByNameMap.get(name.toLowerCase());
     }
 
     @NotNull

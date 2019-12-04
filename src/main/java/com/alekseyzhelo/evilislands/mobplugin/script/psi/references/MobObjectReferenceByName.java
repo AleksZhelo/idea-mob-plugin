@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.eimob.objects.MobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EILiteral;
@@ -29,7 +30,7 @@ public class MobObjectReferenceByName extends MobObjectReferenceBase<String> {
 
     @Nullable
     @Override
-    protected PsiMobMapEntity findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock) {
+    protected PsiMobMapEntity<? extends MobMapEntity> findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock) {
         return objectsBlock.getChild(getElementId());
     }
 }

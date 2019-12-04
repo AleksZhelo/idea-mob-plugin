@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.lookup;
 
+import com.alekseyzhelo.eimob.objects.MobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.icon.Icons;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
@@ -69,6 +70,7 @@ public final class EILookupElementFactory {
                 .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE);
     }
 
+    @SuppressWarnings("rawtypes")
     @NotNull
     public static LookupElement create(EIExtraVarBase var) {
         return LookupElementBuilder.create(var.toString())
@@ -78,17 +80,17 @@ public final class EILookupElementFactory {
     }
 
     @NotNull
-    public static LookupElement create(PsiMobMapEntity entity) {
+    public static LookupElement create(PsiMobMapEntity<? extends MobMapEntity> entity) {
         return create(entity, entity.getText());
     }
 
     @NotNull
-    public static LookupElement createByName(PsiMobMapEntity entity) {
+    public static LookupElement createByName(PsiMobMapEntity<? extends MobMapEntity> entity) {
         return create(entity, entity.getName());
     }
 
     @NotNull
-    private static LookupElement create(PsiMobMapEntity entity, String lookupString) {
+    private static LookupElement create(PsiMobMapEntity<? extends MobMapEntity> entity, String lookupString) {
         return LookupElementBuilder
                 .create(lookupString)
                 .withTypeText(entity.getObjectKind())
@@ -96,7 +98,7 @@ public final class EILookupElementFactory {
                 .withIcon(entity.getIcon(0));
     }
 
-    private static String lookupText(PsiMobMapEntity entity) {
+    private static String lookupText(PsiMobMapEntity<? extends MobMapEntity> entity) {
 //        Float3 location = entity.getLocation();
 //        return String.format("%-10d %s at (%.2f, %.2f, %.2f)", entity.getId(), entity.getName(),
 //                location.getX(), location.getY(), location.getZ());

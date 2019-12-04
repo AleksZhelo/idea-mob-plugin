@@ -296,6 +296,7 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void visitLiteral(@NotNull EILiteral literal) {
         super.visitLiteral(literal);

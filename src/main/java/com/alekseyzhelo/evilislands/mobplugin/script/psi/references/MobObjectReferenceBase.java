@@ -1,5 +1,6 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.references;
 
+import com.alekseyzhelo.eimob.objects.MobMapEntity;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.PsiMobObjectsBlock;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.PsiMobMapEntity;
@@ -61,8 +62,9 @@ public abstract class MobObjectReferenceBase<ID> extends PsiReferenceBase<EILite
     protected abstract LookupElement[] getObjectLookupElements(@NotNull PsiMobObjectsBlock objectsBlock);
 
     @Nullable
-    protected abstract PsiMobMapEntity findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock);
+    protected abstract PsiMobMapEntity<? extends MobMapEntity> findMobEntity(@NotNull PsiMobObjectsBlock objectsBlock);
 
+    @SuppressWarnings("rawtypes")
     private static class MyResolver implements ResolveCache.AbstractResolver<MobObjectReferenceBase, PsiElement> {
         static final MyResolver INSTANCE = new MyResolver();
 
