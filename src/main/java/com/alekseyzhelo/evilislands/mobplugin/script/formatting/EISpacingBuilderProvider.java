@@ -18,6 +18,9 @@ final class EISpacingBuilderProvider {
                 .after(ScriptTypes.COMMA).spaces(1)
                 .after(ScriptTypes.LPAREN).spaces(0)
                 .before(ScriptTypes.RPAREN).spaces(0)
+                .after(TokenSet.create(ScriptTypes.FOR, ScriptTypes.FOR_IF)).spaces(0)
+                .afterInside(ScriptTypes.IDENTIFIER,
+                        TokenSet.create(ScriptTypes.FUNCTION_CALL)).spaces(0)
                 .beforeInside(ScriptTypes.LPAREN,
                         TokenSet.create(ScriptTypes.SCRIPT_DECLARATION, ScriptTypes.GLOBAL_VARS)).spaces(1)
                 .before(ScriptTypes.DECLARATIONS).blankLines(1)
