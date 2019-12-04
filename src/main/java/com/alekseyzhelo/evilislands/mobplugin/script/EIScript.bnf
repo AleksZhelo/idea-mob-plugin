@@ -139,7 +139,6 @@ assignment ::= variableAccess EQUALS expression
   consumeTokenMethod="consumeTokenFast"
 }
 
-// TODO v2: Sum and ForIf?
 forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN scriptStatement* RPAREN
 {
   pin=1

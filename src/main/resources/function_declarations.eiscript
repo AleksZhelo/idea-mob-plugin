@@ -97,6 +97,7 @@ SleepUntilIdle( Unit : object )
 Stand( Unit : object )
 StartAnimation( Unit : object , PathAnimation : string )
 Sub( A : float , B : float ) : float
+Sum( i : object, grp : group, operation : float ) : float
 BlockUnit( Unit : object , Block : float )
 SwitchLeverState( Lever : object , State : float )
 SwitchLeverStateEx( Lever : object , State : float , Delay : float )
