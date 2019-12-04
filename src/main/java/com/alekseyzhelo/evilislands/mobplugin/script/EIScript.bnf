@@ -98,16 +98,17 @@ scriptImplementation ::= SCRIPT IDENTIFIER LPAREN scriptBlock+ RPAREN  // or *?
 
 scriptBlock ::= scriptIfBlock scriptThenBlock {pin=1 recoverWhile=scriptBlockRecover methods=[toString]}
 
-scriptIfBlock ::= IF LPAREN (functionCall | incomplete_call)* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
+scriptIfBlock ::= IF LPAREN callOnly* RPAREN {pin=1 recoverWhile=scriptIfBlockRecover methods=[toString]}
 
 scriptThenBlock ::= THEN LPAREN scriptThenBody RPAREN  {pin=1 recoverWhile=scriptThenBlockRecover methods=[toString]}
 
+private callOnly ::= functionCall | incompleteCall
 // TODO v2: bit of a cop-out?
-incomplete_call ::= IDENTIFIER
+incompleteCall ::= IDENTIFIER
 {
-//  extends=expression
+  extends=expression
   consumeTokenMethod="consumeTokenFast"
-  methods=[getReference]
+  methods=[getType getReference]
 }
 
 private scriptThenBody ::= scriptStatement*
@@ -149,7 +150,7 @@ forBlock ::= FOR LPAREN variableAccess COMMA reference_expression RPAREN LPAREN 
   consumeTokenMethod="consumeTokenFast"
 }
 
-forIfBlock ::= FOR_IF LPAREN variableAccess COMMA reference_expression COMMA functionCall RPAREN LPAREN scriptStatement* RPAREN
+forIfBlock ::= FOR_IF LPAREN variableAccess COMMA reference_expression COMMA callOnly RPAREN LPAREN scriptStatement* RPAREN
 {
   pin=1
   extends=scriptStatement

@@ -111,6 +111,11 @@ public class EIScriptPsiImplUtil {
     }
 
     @Nullable
+    public static EITypeToken getType(EIIncompleteCall element) {
+        return null;
+    }
+
+    @Nullable
     public static EITypeToken getType(EIVariableAccess element) {
         PsiElement resolved = element.getReference().resolve();
         EIType type = null;
