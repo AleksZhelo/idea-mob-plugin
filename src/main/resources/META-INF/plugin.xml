@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.alekseyzhelo.evilislands.mobplugin</id>
-    <name>Evil Islands Mob-file Support</name>
+    <name>Evil Islands Scripting Support</name>
     <version>1.0</version>
     <vendor email="alekseyzhelo@yandex.ru" url="http://gipatgroup.org">Aleksey Zhelo</vendor>
 
@@ -10,6 +10,7 @@
 
     <idea-version since-build="192"/>
 
+    <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
