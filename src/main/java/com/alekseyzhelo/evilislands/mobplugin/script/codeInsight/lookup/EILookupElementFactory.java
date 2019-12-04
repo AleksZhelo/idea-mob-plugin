@@ -81,7 +81,7 @@ public final class EILookupElementFactory {
 
     @NotNull
     public static LookupElement create(PsiMobMapEntity<? extends MobMapEntity> entity) {
-        return create(entity, entity.getText());
+        return create(entity, entity.getText()); // TODO v2: probably shouldn't get the ID via getText
     }
 
     @NotNull
@@ -95,6 +95,8 @@ public final class EILookupElementFactory {
                 .create(lookupString)
                 .withTypeText(entity.getObjectKind())
                 .withPresentableText(lookupText(entity))
+                .withCaseSensitivity(false)
+                .withInsertHandler(CaseCorrectingInsertHandler.INSTANCE)
                 .withIcon(entity.getIcon(0));
     }
 
