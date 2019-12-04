@@ -93,8 +93,11 @@
     </project-components>
 
     <actions>
-        <action id="UnpackMobAction" class="com.alekseyzhelo.evilislands.mobplugin.mob.UnpackMobAction"
+        <action id="UnpackMobAction" class="com.alekseyzhelo.evilislands.mobplugin.actions.UnpackMobAction"
                 text="UnpackMobAction" description="Unpack / pack mob files">
+        </action>
+        <action id="PackAllMobsAction" class="com.alekseyzhelo.evilislands.mobplugin.actions.PackAllMobsAction"
+                text="PackAllMobsAction" description="Pack all mob files in directory">
         </action>
 
         <group id="UnpackPack" text="Unpack/Pack Mob Files"
@@ -104,6 +107,7 @@
             <add-to-group group-id="ConsoleEditorPopupMenu"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
             <reference ref="UnpackMobAction"/>
+            <reference ref="PackAllMobsAction"/>
         </group>
     </actions>
 
