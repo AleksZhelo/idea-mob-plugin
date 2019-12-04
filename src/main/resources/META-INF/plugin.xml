@@ -2,26 +2,15 @@
     <id>com.alekseyzhelo.evilislands.mobplugin</id>
     <name>Evil Islands Mob-file Support</name>
     <version>1.0</version>
-    <vendor email="alekseyzhelo@yandex.ru" url="http://gipatgroup.org">GipatGroup</vendor>
+    <vendor email="alekseyzhelo@yandex.ru" url="http://gipatgroup.org">Aleksey Zhelo</vendor>
 
     <description>
-        Evil Islands map objects (.mob) format support.
+        Evil Islands map objects (.mob) format and scripting language integration for the IntelliJ platform.
     </description>
 
-    <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-    ]]>
-    </change-notes>
-
-    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
     <idea-version since-build="192"/>
 
-    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
     <depends>com.intellij.modules.lang</depends>
-    -->
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="EIScript" extensions="eiscript"
@@ -85,11 +74,11 @@
     </extensions>
 
     <application-components>
-        <!-- Add your application components here -->
+
     </application-components>
 
     <project-components>
-        <!-- Add your project components here -->
+
     </project-components>
 
     <actions>
@@ -110,5 +99,4 @@
             <reference ref="PackAllMobsAction"/>
         </group>
     </actions>
-
 </idea-plugin>

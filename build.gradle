@@ -25,12 +25,22 @@ dependencies {
 intellij {
     version '2019.3'
     type 'IC'
-    plugins 'java', 'PsiViewer:193-SNAPSHOT'
+    plugins 'java' //, 'PsiViewer:193-SNAPSHOT'
 }
 patchPluginXml {
     changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      First release of the plugin. Features:
+      <ul>
+        <li> Syntax checking </li>
+        <li> Type checking </li>
+        <li> Code completion, including object ID/name completion and GSGetVar/GSSetVar variable completion</li>
+        <li> Code formatting </li>
+        <li> Basic code inspections </li>
+        <li> Find usages </li>
+        <li> Customizable syntax highlighting </li>
+        <li> Structure view </li>
+        <li> Live templates </li>
+      </ul>"""
     sinceBuild '192'
 }
 
