@@ -209,3 +209,19 @@ HideObject( Unit : object , Hide : float )
 HP( Unit : object ) : float
 Idle( Unit : object )
 InflictDamage( Unit : object , Amount : float )
+// Added in EIPlugin by Bargest, Demoth
+GetPlayerOfUnit(unit : object) : float
+GetUnitExp(unit : object) : float
+GetArmor(unit : object, part : float, id : float) : float
+GetObjectStringID(obj : object) : string
+FloatToStr(value : float) : string
+StrToFloat(value : string) : float
+StrCat(str1 : string, str2 : string) : string
+StrLen(str : string) : float
+Sin(x : float) : float
+Cos(x : float) : float
+Pow(base : float, pow : float) : float
+DistancePointPoint(x1 : float, y1 : float, x2 : float, y2 : float) : float
+NearestUnit(x : float, y : float, r : float, flags : float) : object
+UnitsNearPoint(x : float, y : float, r : float, flags : float) : group
+InvokeScript(strScript : string, count : float)
