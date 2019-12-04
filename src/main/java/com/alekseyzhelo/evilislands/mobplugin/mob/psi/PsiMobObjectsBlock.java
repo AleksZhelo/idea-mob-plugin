@@ -47,6 +47,7 @@ public class PsiMobObjectsBlock extends PsiMobElement {
                 final String name = nameOrig.toLowerCase();
                 // excluding objects due to too much warning spam
                 if (initByName.containsKey(name) && !(entity instanceof PsiMobObject)) {
+                    // TODO: better solution?
                     LOG.warn(String.format("Non-unique unit name %s in mob file %s", nameOrig, getParent()));
                 }
                 initByName.putIfAbsent(name, entity);

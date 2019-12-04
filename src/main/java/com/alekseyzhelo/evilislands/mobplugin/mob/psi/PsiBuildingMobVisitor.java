@@ -4,7 +4,11 @@ import com.alekseyzhelo.eimob.MobFile;
 import com.alekseyzhelo.eimob.MobVisitor;
 import com.alekseyzhelo.eimob.blocks.ObjectsBlock;
 import com.alekseyzhelo.eimob.objects.*;
+import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.mob.psi.objects.*;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +45,12 @@ public class PsiBuildingMobVisitor extends MobVisitor {
     private void putChecked(int id, PsiMobMapEntity<? extends MobMapEntity> element) {
         PsiMobElement old = elementMap.put(id, element);
         if (old != null) {
-            LOG.error(String.format("ID %d is not unique in %s!", id, myFile.getVirtualFile().getPath()));
+            Notifications.Bus.notify(new Notification(
+                    EIMessages.message("notification.general.group.id"),
+                    EIMessages.message("notification.error.id.not.unique.in.mob.title"),
+                    EIMessages.message("notification.error.id.not.unique.in.mob.text", id, myFile.getVirtualFile().getPath()),
+                    NotificationType.ERROR
+            ));
         }
     }
 
