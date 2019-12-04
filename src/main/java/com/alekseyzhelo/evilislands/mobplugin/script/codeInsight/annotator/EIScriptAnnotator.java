@@ -6,9 +6,11 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgu
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExpressionBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.codeInspection.InspectionManager;
@@ -162,26 +164,22 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
     }
 
     @Override
-    // TODO: generalize with forIf
+    // TODO v2: improve further, don't like expected terms duplication within AnnotatorUtil and text range manual calc
     public void visitForBlock(@NotNull EIForBlock forBlock) {
         super.visitForBlock(forBlock);
 
         List<EIExpression> expressions = forBlock.getArguments();
         if (expressions.size() == 2) {
-            EIExpression firstArg = expressions.get(0);
-            EIExpression secondArg = expressions.get(1);
-            if (firstArg != null && secondArg != null) {
-                EITypeToken typeFirst = firstArg.getType();
-                EITypeToken typeSecond = secondArg.getType();
-                if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP) {
-                    AnnotatorUtil.createBadForArgumentsAnnotation(
-                            myHolder,
-                            TextRange.create(firstArg.getTextOffset(),
-                                    secondArg.getTextOffset() + secondArg.getTextLength()),
-                            typeFirst,
-                            typeSecond
-                    );
-                }
+            EITypeToken[] argTypes = forBlock.getArgumentTypes();
+            if (!EIScriptTypingUtil.matchingTypes(argTypes, EIScriptTypingUtil.FOR_EXPECTED_TYPES)) {
+                EIExpression firstArg = expressions.get(0);
+                EIExpression secondArg = expressions.get(1);
+                AnnotatorUtil.createBadForArgumentsAnnotation(
+                        myHolder,
+                        TextRange.create(firstArg.getTextOffset(),
+                                secondArg.getTextOffset() + secondArg.getTextLength()),
+                        argTypes
+                );
             }
         }
     }
@@ -192,24 +190,16 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
         List<EIExpression> expressions = forIfBlock.getArguments();
         if (expressions.size() == 3) {
-            EIExpression firstArg = expressions.get(0);
-            EIExpression secondArg = expressions.get(1);
-            EIExpression thirdArg = expressions.get(2);
-            if (firstArg != null && secondArg != null && thirdArg != null) {
-                EITypeToken typeFirst = firstArg.getType();
-                EITypeToken typeSecond = secondArg.getType();
-                EITypeToken typeThird = thirdArg.getType();
-                if (typeFirst != EITypeToken.OBJECT || typeSecond != EITypeToken.GROUP
-                        || typeThird != EITypeToken.FLOAT) {
-                    AnnotatorUtil.createBadForIfArgumentsAnnotation(
-                            myHolder,
-                            TextRange.create(firstArg.getTextOffset(),
-                                    thirdArg.getTextOffset() + thirdArg.getTextLength()),
-                            typeFirst,
-                            typeSecond,
-                            typeThird
-                    );
-                }
+            EITypeToken[] argTypes = forIfBlock.getArgumentTypes();
+            if (!EIScriptTypingUtil.matchingTypes(argTypes, EIScriptTypingUtil.FOR_IF_EXPECTED_TYPES)) {
+                EIExpression firstArg = expressions.get(0);
+                EIExpression thirdArg = expressions.get(2);
+                AnnotatorUtil.createBadForIfArgumentsAnnotation(
+                        myHolder,
+                        TextRange.create(firstArg.getTextOffset(),
+                                thirdArg.getTextOffset() + thirdArg.getTextLength()),
+                        argTypes
+                );
             }
         }
     }

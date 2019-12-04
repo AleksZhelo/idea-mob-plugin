@@ -19,6 +19,7 @@ import com.intellij.util.ui.UIUtil;
 import com.intellij.xml.util.XmlStringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.PropertyKey;
 
 import java.util.List;
 
@@ -91,36 +92,38 @@ final class AnnotatorUtil {
     }
 
     @NotNull
-    // TODO: generalize with forIf
     static Annotation createBadForArgumentsAnnotation(@NotNull AnnotationHolder holder,
                                                       @NotNull TextRange textRange,
-                                                      EITypeToken firstArgType,
-                                                      EITypeToken secondArgType) {
-        EITypeToken[] expected = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP};
-        EITypeToken[] actual = new EITypeToken[]{firstArgType, secondArgType};
-        StringBuilder ms = new StringBuilder();
-        for (int i = 0; i < expected.length; i++) {
-            fillForArgMismatchLine(expected, actual, ms, i);
-        }
-        Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message("error.call.bad.for.args"));
-        annotation.setTooltip(EIMessages.message("for.block.argument.mismatch.html.tooltip", ms.toString()));
-        return annotation;
+                                                      EITypeToken[] actual) {
+        EITypeToken[] expected = EIScriptTypingUtil.FOR_EXPECTED_TYPES;
+        return createBadForArgumentsAnnotationInner(holder, textRange, actual, expected,
+                "error.call.bad.for.args", "for.block.argument.mismatch.html.tooltip");
     }
 
     @NotNull
     static Annotation createBadForIfArgumentsAnnotation(@NotNull AnnotationHolder holder,
                                                         @NotNull TextRange textRange,
-                                                        EITypeToken firstArgType,
-                                                        EITypeToken secondArgType,
-                                                        EITypeToken thirdArgType) {
-        EITypeToken[] expected = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP, EITypeToken.FLOAT};
-        EITypeToken[] actual = new EITypeToken[]{firstArgType, secondArgType, thirdArgType};
+                                                        EITypeToken[] actual) {
+        EITypeToken[] expected = EIScriptTypingUtil.FOR_IF_EXPECTED_TYPES;
+        return createBadForArgumentsAnnotationInner(holder, textRange, actual, expected,
+                "error.call.bad.forIf.args", "forIf.block.argument.mismatch.html.tooltip");
+    }
+
+    @NotNull
+    private static Annotation createBadForArgumentsAnnotationInner(
+            @NotNull AnnotationHolder holder,
+            @NotNull TextRange textRange,
+            EITypeToken[] actual,
+            EITypeToken[] expected,
+            @PropertyKey(resourceBundle = EIMessages.BUNDLE) String message,
+            @PropertyKey(resourceBundle = EIMessages.BUNDLE) String tooltip
+    ) {
         StringBuilder ms = new StringBuilder();
         for (int i = 0; i < expected.length; i++) {
             fillForArgMismatchLine(expected, actual, ms, i);
         }
-        Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message("error.call.bad.forIf.args"));
-        annotation.setTooltip(EIMessages.message("forIf.block.argument.mismatch.html.tooltip", ms.toString()));
+        Annotation annotation = holder.createErrorAnnotation(textRange, EIMessages.message(message));
+        annotation.setTooltip(EIMessages.message(tooltip, ms.toString()));
         return annotation;
     }
 

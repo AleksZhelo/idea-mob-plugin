@@ -14,6 +14,10 @@ import java.util.Objects;
 
 public final class EIScriptTypingUtil {
 
+    public static final EITypeToken[] FOR_EXPECTED_TYPES
+            = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP};
+    public static final EITypeToken[] FOR_IF_EXPECTED_TYPES
+            = new EITypeToken[]{EITypeToken.OBJECT, EITypeToken.GROUP, EITypeToken.FLOAT};
 
     private EIScriptTypingUtil() {
 
@@ -28,8 +32,6 @@ public final class EIScriptTypingUtil {
                 return EITypeToken.OBJECT;
             } else if (myIndex == 1) {
                 return EITypeToken.GROUP;
-            } else if (myIndex == 2) { // TODO: can't actually happen, as the third element is strictly a functionCall in grammar
-                return EITypeToken.FLOAT;
             } else {
                 return null;
             }
@@ -107,6 +109,18 @@ public final class EIScriptTypingUtil {
 
     public static boolean matchingType(EITypeToken lType, EITypeToken rType) {
         return lType != null && lType.equals(rType);
+    }
+
+    public static boolean matchingTypes(EITypeToken[] actual, EITypeToken[] expected) {
+        if (actual.length != expected.length) {
+            return false;
+        }
+        for (int i = 0; i < actual.length; i++) {
+            if (actual[i] == null || !actual[i].equals(expected[i])){
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean isAssignable(@Nullable EITypeToken type) {

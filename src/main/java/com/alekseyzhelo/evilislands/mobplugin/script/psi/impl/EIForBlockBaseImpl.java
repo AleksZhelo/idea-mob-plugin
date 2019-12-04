@@ -1,7 +1,9 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.psi.impl;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIExpression;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExpressionBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase;
+import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +27,12 @@ public abstract class EIForBlockBaseImpl extends EIScriptPsiElementImpl implemen
     @Override
     public int indexOfArgument(@NotNull EIExpression expression) {
         return getExpressionsCached().indexOf(expression);
+    }
+
+    @NotNull
+    @Override
+    public EITypeToken[] getArgumentTypes() {
+        return getExpressionsCached().stream().map(EIExpressionBase::getType).toArray(EITypeToken[]::new);
     }
 
     @Override
