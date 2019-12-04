@@ -35,6 +35,9 @@ public class IncompleteCallReference extends PsiReferenceBase<EIIncompleteCall> 
     @Override
     public Object[] getVariants() {
         EIFunctionsService service = EIFunctionsService.getInstance(myElement.getProject());
+        // just so happens that places that only accept function calls (and not var references),
+        // which are the if block and the last argument of ForIf,
+        // also only accept float-valued functions
         List<LookupElement> variants = new ArrayList<>(service.getFunctionLookupElements(EITypeToken.FLOAT));
         return variants.toArray();
     }

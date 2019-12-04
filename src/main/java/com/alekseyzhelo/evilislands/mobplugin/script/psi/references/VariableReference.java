@@ -60,9 +60,9 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
             variants.addAll(globalVars);
         }
 
-        List<EIFormalParameter> params = EIScriptResolveUtil.findEnclosingScriptParams(scriptFile, myElement);
-        if (params != null) {
-            EIScriptResolveUtil.fillParamVariantsOfType(variants, params, expectedType);
+        List<EIFormalParameter> scriptParams = EIScriptResolveUtil.findEnclosingScriptParams(scriptFile, myElement);
+        if (scriptParams != null) {
+            EIScriptResolveUtil.fillParamVariantsOfType(variants, scriptParams, expectedType);
         }
 
         PsiElement parent = myElement.getParent();
@@ -74,14 +74,19 @@ public class VariableReference extends PsiReferenceBase<EIVariableAccess> implem
             }
         }
         // not on the left side of assignment, and not the first var in a For -> may be function of the expected type
+        // also can't be a function at the first argument of Sum
         if (!(parent instanceof EIAssignment && ((EIAssignment) parent).indexOf(myElement) == 0) &&
                 !(parent instanceof EIForBlockBase && (((EIForBlockBase) parent).indexOfArgument(myElement) == 0))) {
-            // TODO v2: remove hack
-            if (parent instanceof EIParams
-                    && ((EIFunctionCall) parent.getParent()).getName().equalsIgnoreCase("getobject") ) {
-                PsiMobObjectsBlock block = scriptFile.getCompanionMobObjectsBlock();
-                if (block != null) {
-                    Collections.addAll(variants, block.getObjectByIdLookupElements());
+            // TODO v2: remove hacks
+            if (parent instanceof EIParams) {
+                final String callName = ((EIFunctionCall) parent.getParent()).getName();
+                if (callName.equalsIgnoreCase("getobject")) {
+                    PsiMobObjectsBlock block = scriptFile.getCompanionMobObjectsBlock();
+                    if (block != null) {
+                        Collections.addAll(variants, block.getObjectByIdLookupElements());
+                    }
+                } else if (!(callName.equalsIgnoreCase("sum") && ((EIParams) parent).getExpressionList().indexOf(myElement) == 0)) {
+                    suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
                 }
             } else {
                 suggestFunctionsOfType(scriptFile.getProject(), variants, expectedType);
