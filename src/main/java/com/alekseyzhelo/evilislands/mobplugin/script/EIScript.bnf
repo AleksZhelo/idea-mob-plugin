@@ -1,5 +1,6 @@
 {
   parserClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParser"
+  parserUtilClass="com.alekseyzhelo.evilislands.mobplugin.script.EIScriptParserUtil"
 
   implements="com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement"
   extends="com.alekseyzhelo.evilislands.mobplugin.script.psi.impl.EIScriptPsiElementImpl"
@@ -60,9 +61,17 @@ formalParameter ::= IDENTIFIER COLON type
 
 globalVars ::= GLOBALVARS LPAREN globalVarsDefs? RPAREN  {pin=1 methods=[toString]}
 
-declarations ::= scriptDeclaration+  {methods=[toString]}
+declarations ::= scriptDeclaration+
+{
+  methods=[toString]
+  hooks=[leftBinder="PRECEDING_COMMENT_BINDER" rightBinder="TRAILING_COMMENT_BINDER"]
+}
 
-scripts ::= scriptImplementation+  {methods=[toString]}
+scripts ::= scriptImplementation+
+{
+  methods=[toString]
+  hooks=[leftBinder="PRECEDING_COMMENT_BINDER" rightBinder="TRAILING_COMMENT_BINDER"]
+}
 
 worldScript ::= WORLDSCRIPT LPAREN scriptThenBody RPAREN {pin=1 recoverWhile=worldScriptRecover methods=[toString]}
 
