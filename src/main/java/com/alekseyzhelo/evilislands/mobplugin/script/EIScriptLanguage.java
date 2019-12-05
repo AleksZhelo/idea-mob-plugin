@@ -4,6 +4,9 @@ import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.intellij.lang.Language;
 import org.jetbrains.annotations.NotNull;
 
+// TODO v2: Rearranger
+// TODO v2: DeclarationRangeHandler?
+// TODO v2: View->ContextInfo?
 public class EIScriptLanguage extends Language {
     public static final EIScriptLanguage INSTANCE = new EIScriptLanguage();
 
