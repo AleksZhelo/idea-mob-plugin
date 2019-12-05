@@ -15,6 +15,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
@@ -65,7 +66,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @Nullable
     public EIGlobalVar findGlobalVar(String varName) {
-        return findGlobalVars().get(varName);
+        return StringUtil.isNotEmpty(varName) ? findGlobalVars().get(varName.toLowerCase()) : null;
     }
 
     @NotNull
@@ -85,7 +86,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @Nullable
     public EIScriptDeclaration findScriptDeclaration(String scriptName) {
-        return findScriptDeclarations().get(scriptName);
+        return StringUtil.isNotEmpty(scriptName) ? findScriptDeclarations().get(scriptName.toLowerCase()) : null;
     }
 
     @NotNull
@@ -104,7 +105,7 @@ public class ScriptPsiFile extends PsiFileBase {
 
     @Nullable
     public EIScriptImplementation findScriptImplementation(String scriptName) {
-        return findScriptImplementations().get(scriptName);
+        return StringUtil.isNotEmpty(scriptName) ? findScriptImplementations().get(scriptName.toLowerCase()) : null;
     }
 
     @NotNull
@@ -155,7 +156,7 @@ public class ScriptPsiFile extends PsiFileBase {
             result.put(type, new ArrayList<>());
         }
         for (final EIGlobalVar globalVar : findGlobalVars().values()) {
-            if (globalVar.getName().length() > 0 && globalVar.getType() != null) {
+            if (StringUtil.isNotEmpty(globalVar.getName()) && globalVar.getType() != null) {
                 LookupElement lookupElement = EILookupElementFactory.create(globalVar);
                 result.get(globalVar.getType().getTypeToken()).add(lookupElement);
                 result.get(EITypeToken.ANY).add(lookupElement);
@@ -171,7 +172,7 @@ public class ScriptPsiFile extends PsiFileBase {
     private List<LookupElement> getScriptLookupElementsInner() {
         List<LookupElement> result = new ArrayList<>();
         for (final EIScriptDeclaration script : findScriptDeclarations().values()) {
-            if (script.getName().length() > 0) {
+            if (StringUtil.isNotEmpty(script.getName())) {
                 result.add(EILookupElementFactory.create(script));
             }
         }

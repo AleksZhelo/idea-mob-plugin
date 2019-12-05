@@ -6,7 +6,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgu
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIExpressionBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;

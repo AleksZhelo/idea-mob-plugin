@@ -1,6 +1,7 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.util;
 
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.EIFormalParameter;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,10 @@ public final class EICommonUtil {
     public static <T extends PsiNamedElement> Map<String, T> toNameMap(@NotNull List<T> list) {
         final Map<String, T> map = new LinkedHashMap<>();
         for (T val : list) {
-            map.putIfAbsent(val.getName(), val);
+            final String name = val.getName();
+            if (StringUtil.isNotEmpty(name)) {
+                map.putIfAbsent(name.toLowerCase(), val);
+            }
         }
 //        return list.stream().collect(Collectors.toMap(PsiNamedElement::getName, Function.identity()));
         return map;
