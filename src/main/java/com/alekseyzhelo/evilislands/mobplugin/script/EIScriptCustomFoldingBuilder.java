@@ -3,7 +3,7 @@ package com.alekseyzhelo.evilislands.mobplugin.script;
 import com.alekseyzhelo.evilislands.mobplugin.EIMessages;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.lang.folding.FoldingBuilderEx;
+import com.intellij.lang.folding.CustomFoldingBuilder;
 import com.intellij.lang.folding.FoldingDescriptor;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
@@ -12,31 +12,26 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // TODO v2: plurals
-public class EIScriptSimpleFoldingBuilder extends FoldingBuilderEx {
+public class EIScriptCustomFoldingBuilder extends CustomFoldingBuilder {
 
-    @NotNull
     @Override
-    public FoldingDescriptor[] buildFoldRegions(@NotNull PsiElement root, @NotNull Document document, boolean quick) {
-        List<FoldingDescriptor> descriptors = new ArrayList<>();
+    protected void buildLanguageFoldRegions(@NotNull List<FoldingDescriptor> descriptors, @NotNull PsiElement root, @NotNull Document document, boolean quick) {
         processGlobals(root, descriptors);
         processScriptDeclarations(root, descriptors);
         processScriptImplementations(root, descriptors);
         processWorldScript(root, descriptors);
-        return descriptors.toArray(new FoldingDescriptor[0]);
     }
 
-    @Nullable
     @Override
-    public String getPlaceholderText(@NotNull ASTNode node) {
+    protected String getLanguagePlaceholderText(@NotNull ASTNode node, @NotNull TextRange range) {
         return "...";
     }
 
     @Override
-    public boolean isCollapsedByDefault(@NotNull ASTNode node) {
+    protected boolean isRegionCollapsedByDefault(@NotNull ASTNode node) {
         return false;
     }
 
