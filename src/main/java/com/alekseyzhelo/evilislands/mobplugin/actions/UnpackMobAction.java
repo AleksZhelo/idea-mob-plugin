@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -20,6 +21,8 @@ import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 
 public class UnpackMobAction extends AnAction {
+
+    private static final Logger LOG = Logger.getInstance(UnpackMobAction.class);
 
     @Override
     public void actionPerformed(AnActionEvent e) {
@@ -55,8 +58,13 @@ public class UnpackMobAction extends AnAction {
                             if (child instanceof PsiMobFile) {
                                 indicator.checkCanceled();
                                 ApplicationManager.getApplication().invokeAndWait(() -> {
-                                    if (MobPackingUtil.isPacked((PsiMobFile) child)) {
-                                        MobPackingUtil.unpack(UnpackMobAction.this, (PsiMobFile) child, true);
+                                    final PsiMobFile childMob = (PsiMobFile) child;
+                                    if (MobPackingUtil.isPacked(childMob)) {
+                                        try {
+                                            MobPackingUtil.unpack(UnpackMobAction.this, childMob, true);
+                                        } catch (Exception e) {
+                                            LOG.error("Failed to unpack mob " + childMob.getName(), e);
+                                        }
                                     }
                                 });
                                 indicator.setFraction((i + 1d) / children.length);

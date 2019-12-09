@@ -48,8 +48,9 @@ public final class MobPackingUtil {
         ApplicationManager.getApplication().runWriteAction(() -> {
             try {
                 final Project project = mobFile.getProject();
+                final byte[] scriptBytes = mobFile.getScriptBytes();
                 final VirtualFile script = virtualFile.getParent().createChildData(requester, getScriptName(virtualFile));
-                script.setBinaryContent(mobFile.getScriptBytes());
+                script.setBinaryContent(scriptBytes);
                 if (!silent) {
                     FileEditorManager.getInstance(project).openFile(script, true);
                     ApplicationManager.getApplication().invokeLater(() -> {

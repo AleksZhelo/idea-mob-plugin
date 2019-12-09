@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -18,6 +19,8 @@ import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.NotNull;
 
 public class PackAllMobsAction extends AnAction {
+
+    private static final Logger LOG = Logger.getInstance(PackAllMobsAction.class);
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
@@ -46,7 +49,11 @@ public class PackAllMobsAction extends AnAction {
                                 ApplicationManager.getApplication().invokeAndWait(() -> {
                                     final PsiMobFile mobFile = (PsiMobFile) child;
                                     if (!MobPackingUtil.isPacked(mobFile)) {
-                                        MobPackingUtil.pack(mobFile);
+                                        try {
+                                            MobPackingUtil.pack(mobFile);
+                                        } catch (Exception e) {
+                                            LOG.error("Failed to pack mob " + mobFile.getName(), e);
+                                        }
                                     }
                                 });
                                 indicator.setFraction((i + 1d) / children.length);

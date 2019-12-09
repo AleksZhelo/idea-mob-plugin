@@ -5,6 +5,7 @@ import com.alekseyzhelo.evilislands.mobplugin.script.EIScriptLanguage;
 import com.alekseyzhelo.evilislands.mobplugin.script.highlighting.EIScriptSyntaxHighlighter;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
+import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIForBlockBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EITypeToken;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.UsefulPsiTreeUtil;
 import com.intellij.codeInsight.template.EverywhereContextType;
@@ -192,10 +193,20 @@ public abstract class EITemplateContextType extends TemplateContextType {
         protected boolean isInContext(@NotNull PsiElement element) {
             PsiElement parent = getParentSkipError(element);
             if (parent instanceof EIVariableAccess) {
-                parent = parent.getParent().getParent(); // skip access and assignment
+                final PsiElement superParent = parent.getParent();
+                if (superParent instanceof EIForBlockBase) { // inside For block arguments
+                    return false;
+                }
+                parent = superParent.getParent(); // skip assignment
             }
 
-            return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;
+            if (parent instanceof EIForBlockBase) {
+                EIForBlockBase forBlock = (EIForBlockBase) parent;
+                ASTNode rParen = forBlock.getNode().findChildByType(ScriptTypes.RPAREN);
+                return rParen != null && element.getTextOffset() > rParen.getStartOffset();
+            } else {
+                return parent instanceof EIScriptThenBlock || parent instanceof EIWorldScript;
+            }
         }
     }
 

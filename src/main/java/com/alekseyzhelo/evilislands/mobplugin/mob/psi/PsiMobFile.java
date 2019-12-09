@@ -48,11 +48,11 @@ public class PsiMobFile extends PsiBinaryFileImpl {
         }
     }
 
-    public byte[] getScriptBytes() {
+    @NotNull
+    public byte[] getScriptBytes() throws IOException {
         final MobFile mobFile = getMobFile();
         if (mobFile == null) {
-            LOG.error("Asked for script bytes for " + this + " with a NULL mob file!");
-            return new byte[0];
+            throw new IOException("Asked for script bytes for " + toString() + " with a NULL mob file!");
         }
         final ScriptBlock scriptBlock = mobFile.getScriptBlock();
         return scriptBlock != null
@@ -60,17 +60,16 @@ public class PsiMobFile extends PsiBinaryFileImpl {
                 : new byte[0];
     }
 
-    public void setScriptBytes(byte[] bytes) {
+    public void setScriptBytes(byte[] bytes) throws IOException {
         final MobFile mobFile = getMobFile();
         if (mobFile == null) {
-            LOG.error("Mob file is null for " + toString());
-            return;
+            throw new IOException("Mob file is null for " + toString());
         }
 
         ScriptBlock scriptBlock = mobFile.getScriptBlock();
         if (scriptBlock == null) {
             scriptBlock = EncryptedScriptBlock.Companion.createWithKey(117637889);
-            mobFile.addBlock(scriptBlock,0);
+            mobFile.addBlock(scriptBlock, 0);
         }
         scriptBlock.setScript(Mob_ioKt.decodeMobString(bytes));
 
