@@ -72,6 +72,8 @@
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$FunctionArgumentAllowed" />
         <liveTemplateContext implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EITemplateContextType$CoordinateArgumentsAllowed" />
         <defaultLiveTemplatesProvider implementation="com.alekseyzhelo.evilislands.mobplugin.script.template.EILiveTemplatesProvider" />
+        <moduleType id="EI_MODULE_TYPE"
+                implementationClass="com.alekseyzhelo.evilislands.mobplugin.project.EIModuleType"/>
     </extensions>
 
     <application-components>
