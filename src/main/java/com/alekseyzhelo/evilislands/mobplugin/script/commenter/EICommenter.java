@@ -1,18 +1,13 @@
 package com.alekseyzhelo.evilislands.mobplugin.script.commenter;
 
-import com.intellij.codeInsight.generation.CommenterDataHolder;
-import com.intellij.codeInsight.generation.SelfManagingCommenter;
 import com.intellij.lang.Commenter;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiFile;
-import com.intellij.util.text.CharArrayUtil;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EICommenter implements Commenter, SelfManagingCommenter<CommenterDataHolder> {
+public class EICommenter implements Commenter {
 
     private static final String COMMENT_PREFIX = "//";
+    private static final String BLOCK_COMMENT_PREFIX = "/*";
+    private static final String BLOCK_COMMENT_SUFFIX = "*/";
 
     @Nullable
     @Override
@@ -23,13 +18,13 @@ public class EICommenter implements Commenter, SelfManagingCommenter<CommenterDa
     @Nullable
     @Override
     public String getBlockCommentPrefix() {
-        return null;
+        return BLOCK_COMMENT_PREFIX;
     }
 
     @Nullable
     @Override
     public String getBlockCommentSuffix() {
-        return null;
+        return BLOCK_COMMENT_SUFFIX;
     }
 
     @Nullable
@@ -42,67 +37,5 @@ public class EICommenter implements Commenter, SelfManagingCommenter<CommenterDa
     @Override
     public String getCommentedBlockCommentSuffix() {
         return null;
-    }
-
-    @Nullable
-    @Override
-    public CommenterDataHolder createLineCommentingState(int startLine, int endLine, @NotNull Document document, @NotNull PsiFile file) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public CommenterDataHolder createBlockCommentingState(int selectionStart, int selectionEnd, @NotNull Document document, @NotNull PsiFile file) {
-        return null;
-    }
-
-    @Override
-    public void commentLine(int line, int offset, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        document.insertString(offset, COMMENT_PREFIX);
-    }
-
-    @Override
-    public void uncommentLine(int line, int offset, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        document.deleteString(offset, offset + COMMENT_PREFIX.length());
-    }
-
-    @Override
-    public boolean isLineCommented(int line, int offset, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        return CharArrayUtil.regionMatches(document.getCharsSequence(), offset, COMMENT_PREFIX);
-    }
-
-    @Nullable
-    @Override
-    public String getCommentPrefix(int line, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        return COMMENT_PREFIX;
-    }
-
-    @Nullable
-    @Override
-    public TextRange getBlockCommentRange(int selectionStart, int selectionEnd, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nullable
-    @Override
-    public String getBlockCommentPrefix(int selectionStart, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public String getBlockCommentSuffix(int selectionEnd, @NotNull Document document, @NotNull CommenterDataHolder data) {
-        return null;
-    }
-
-    @Override
-    public void uncommentBlockComment(int startOffset, int endOffset, Document document, CommenterDataHolder data) {
-        throw new UnsupportedOperationException();
-    }
-
-    @NotNull
-    @Override
-    public TextRange insertBlockComment(int startOffset, int endOffset, Document document, CommenterDataHolder data) {
-        throw new UnsupportedOperationException();
     }
 }
