@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.alekseyzhelo.evilislands'
-version '1.0'
+version '1.1'
 
 sourceCompatibility = 1.8
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
@@ -29,17 +29,10 @@ intellij {
 }
 patchPluginXml {
     changeNotes """
-      First release of the plugin. Features:
       <ul>
-        <li> Syntax checking </li>
-        <li> Type checking </li>
-        <li> Code completion, including object ID/name completion and GSGetVar/GSSetVar variable completion</li>
-        <li> Code formatting </li>
-        <li> Basic code inspections </li>
-        <li> Find usages </li>
-        <li> Customizable syntax highlighting </li>
-        <li> Structure view </li>
-        <li> Live templates </li>
+        <li> Implemented multiline comments </li>
+        <li> Improved non-Java IDE support </li>
+        <li> Error highlighting for unclosed strings/multiline comments </li>
       </ul>"""
     sinceBuild '192'
 }
