@@ -263,7 +263,9 @@ final class AnnotatorUtil {
         return annotation;
     }
 
-    static Annotation markAsWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement element, @NotNull String warningString) {
+    static Annotation markAsWarning(@NotNull AnnotationHolder holder,
+                                    @NotNull PsiElement element,
+                                    @NotNull String warningString) {
         return holder.createWarningAnnotation(element.getTextRange(), warningString);
     }
 
@@ -278,7 +280,9 @@ final class AnnotatorUtil {
         return annotation;
     }
 
-    static void markAsWeakWarning(@NotNull AnnotationHolder holder, @NotNull PsiElement nameElement, @NotNull String warningString) {
+    static void markAsWeakWarning(@NotNull AnnotationHolder holder,
+                                  @NotNull PsiElement nameElement,
+                                  @NotNull String warningString) {
         holder.createWeakWarningAnnotation(nameElement.getTextRange(), warningString).setHighlightType(ProblemHighlightType.WEAK_WARNING);
     }
 

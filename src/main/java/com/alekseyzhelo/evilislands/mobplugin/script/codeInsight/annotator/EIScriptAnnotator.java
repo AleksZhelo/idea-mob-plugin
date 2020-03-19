@@ -300,5 +300,10 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
                         EIMessages.message("warn.getObject.does.not.support.long.ids"));
             }
         }
+
+        if (EITypeToken.STRING.equals(literal.getType()) && !literal.getText().endsWith("\"")) {
+            AnnotatorUtil.markAsError(myHolder, literal,
+                    EIMessages.message("error.string.illegal.line.end"), false);
+        }
     }
 }
