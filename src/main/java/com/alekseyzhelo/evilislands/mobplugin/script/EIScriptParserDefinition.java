@@ -20,7 +20,11 @@ import org.jetbrains.annotations.NotNull;
 public class EIScriptParserDefinition implements ParserDefinition {
     @SuppressWarnings("WeakerAccess")
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet COMMENTS = TokenSet.create(ScriptTypes.WHOLE_LINE_COMMENT, ScriptTypes.COMMENT);
+    public static final TokenSet COMMENTS = TokenSet.create(
+            ScriptTypes.WHOLE_LINE_COMMENT,
+            ScriptTypes.COMMENT,
+            ScriptTypes.MULTILINE_COMMENT
+    );
     public static final TokenSet STRING_LITERALS = TokenSet.create(ScriptTypes.CHARACTER_STRING);
     public static final TokenSet NUMERIC_LITERALS = TokenSet.create(ScriptTypes.FLOATNUMBER);
     public static final TokenSet IDENTIFIERS = TokenSet.create(ScriptTypes.IDENTIFIER);

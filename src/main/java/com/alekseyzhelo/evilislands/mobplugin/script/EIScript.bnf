@@ -39,7 +39,7 @@ private meta comma_separated_list_rec ::= <<comma_separated_list <<param>>>>
 }
 
 //noinspection BnfUnusedRule
-private ignored ::= (WHOLE_LINE_COMMENT COMMENT) // just to generate the ScriptToken
+private ignored ::= (WHOLE_LINE_COMMENT COMMENT MULTILINE_COMMENT) // just to generate the ScriptToken
 
 functionDeclaration ::= IDENTIFIER formalParams (COLON type)?
 {

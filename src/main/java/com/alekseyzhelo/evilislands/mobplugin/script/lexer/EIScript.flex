@@ -40,7 +40,7 @@ WORLDSCRIPT = "worldscript"
 IDENTIFIER = [#_a-zA-Z]([#_a-zA-Z0-9-])*
 FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
 
-%state STRING
+%state STRING, MULTILINE_COMMENT
 
 %%
 // apparently it is very important not to ignore any characters from the input
@@ -68,11 +68,18 @@ FLOATNUMBER = -?[0-9][0-9]*|-?[0-9]+"."[0-9]+
     ^{COMMENT}                                   { return ScriptTypes.WHOLE_LINE_COMMENT; }
     {COMMENT}                                    { return ScriptTypes.COMMENT; }
     \"                                           { yybegin(STRING); }
+    "/*"                                         { yybegin(MULTILINE_COMMENT); }
 }
 
 <STRING> {
      \" | {LINE_TERMINATOR}                      { yybegin(YYINITIAL); return ScriptTypes.CHARACTER_STRING; }
      {STRING_CHARACTER}+                         { }
+}
+
+<MULTILINE_COMMENT> {
+    "*/"                                         { yybegin(YYINITIAL); return ScriptTypes.MULTILINE_COMMENT; }
+    <<EOF>>                                      { yybegin(YYINITIAL); return ScriptTypes.MULTILINE_COMMENT; }
+    [^]                                          { }
 }
 
 [^] { return TokenType.BAD_CHARACTER; }

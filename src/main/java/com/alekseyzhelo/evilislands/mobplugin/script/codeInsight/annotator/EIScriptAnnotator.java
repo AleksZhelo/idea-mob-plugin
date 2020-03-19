@@ -6,7 +6,6 @@ import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICallArgu
 import com.alekseyzhelo.evilislands.mobplugin.script.codeInsight.util.EICodeInsightUtil;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.*;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EICallableDeclaration;
-import com.alekseyzhelo.evilislands.mobplugin.script.psi.base.EIScriptPsiElement;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.FunctionCallReference;
 import com.alekseyzhelo.evilislands.mobplugin.script.psi.references.MobObjectReferenceBase;
 import com.alekseyzhelo.evilislands.mobplugin.script.util.EIScriptTypingUtil;
@@ -19,8 +18,8 @@ import com.intellij.codeInspection.ProblemHighlightType;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.psi.PsiComment;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import org.jetbrains.annotations.NotNull;
@@ -30,19 +29,15 @@ import java.util.Objects;
 
 public class EIScriptAnnotator extends EIVisitor implements Annotator {
 
-    private static final Logger LOG = Logger.getInstance(EIScriptAnnotator.class);
-
     private AnnotationHolder myHolder = null;
 
     @Override
     public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-        if (element instanceof EIScriptPsiElement) {
-            myHolder = holder;
-            try {
-                element.accept(this);
-            } finally {
-                myHolder = null;
-            }
+        myHolder = holder;
+        try {
+            element.accept(this);
+        } finally {
+            myHolder = null;
         }
     }
 
@@ -301,9 +296,24 @@ public class EIScriptAnnotator extends EIVisitor implements Annotator {
             }
         }
 
+
         if (EITypeToken.STRING.equals(literal.getType()) && !literal.getText().endsWith("\"")) {
             AnnotatorUtil.markAsError(myHolder, literal,
                     EIMessages.message("error.string.illegal.line.end"), false);
+        }
+    }
+
+    @Override
+    public void visitComment(PsiComment comment) {
+        super.visitComment(comment);
+
+        if (ScriptTypes.MULTILINE_COMMENT.equals(comment.getTokenType()) &&
+                !comment.getText().endsWith("*/")) {
+            final int start = comment.getTextRange().getEndOffset() - 1;
+            myHolder.createErrorAnnotation(
+                    TextRange.create(start, start + 1),
+                    EIMessages.message("error.unclosed.comment")
+            );
         }
     }
 }
