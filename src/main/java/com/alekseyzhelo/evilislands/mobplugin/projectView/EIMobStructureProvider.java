@@ -19,7 +19,9 @@ import java.util.stream.Collectors;
 public class EIMobStructureProvider implements TreeStructureProvider {
     @NotNull
     @Override
-    public Collection<AbstractTreeNode> modify(@NotNull AbstractTreeNode parent, @NotNull Collection<AbstractTreeNode> children, ViewSettings settings) {
+    public Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent,
+                                                  @NotNull Collection<AbstractTreeNode<?>> children,
+                                                  ViewSettings settings) {
         return children.stream()
                 .map((x) -> convertMobNode(x, children))
                 .filter(Objects::nonNull)
@@ -28,11 +30,12 @@ public class EIMobStructureProvider implements TreeStructureProvider {
 
     @Nullable
     @Override
-    public Object getData(@NotNull Collection<AbstractTreeNode> selected, @NotNull String dataId) {
+    public Object getData(@NotNull Collection<AbstractTreeNode<?>> selected, @NotNull String dataId) {
         return null;
     }
 
-    private AbstractTreeNode<?> convertMobNode(AbstractTreeNode<?> node, Collection<AbstractTreeNode> siblings) {
+    private AbstractTreeNode<?> convertMobNode(AbstractTreeNode<?> node,
+                                               Collection<AbstractTreeNode<?>> siblings) {
         if (node instanceof PsiFileNode) {
             VirtualFile virtualFile = ((PsiFileNode) node).getVirtualFile();
             if (virtualFile != null) {
@@ -63,7 +66,7 @@ public class EIMobStructureProvider implements TreeStructureProvider {
 
     @Nullable
     private PsiFileNode findSameNamedSiblingOfType(
-            Collection<AbstractTreeNode> siblings,
+            Collection<AbstractTreeNode<?>> siblings,
             VirtualFile file,
             FileType fileTypeInstance
     ) {

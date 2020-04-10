@@ -19,9 +19,9 @@ import java.util.Set;
 
 public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithTabActionSupport<EIParams, List<EIFormalParameter>, EIExpression>, DumbAware {
 
-    private static final Set<Class> ourArgumentListAllowedParentClassesSet
+    private static final Set<Class<?>> ourArgumentListAllowedParentClassesSet
             = ContainerUtil.newHashSet(EIFunctionCall.class);
-    private static final Set<Class> ourStopSearch = Collections.singleton(EIScriptBlock.class);
+    private static final Set<Class<?>> ourStopSearch = Collections.singleton(EIScriptBlock.class);
 
     @Override
     public boolean couldShowInLookup() {
@@ -130,13 +130,13 @@ public class EIFunctionParameterInfoHandler implements ParameterInfoHandlerWithT
 
     @NotNull
     @Override
-    public Set<Class> getArgumentListAllowedParentClasses() {
+    public Set<Class<?>> getArgumentListAllowedParentClasses() {
         return ourArgumentListAllowedParentClassesSet;
     }
 
     @NotNull
     @Override
-    public Set<? extends Class> getArgListStopSearchClasses() {
+    public Set<? extends Class<?>> getArgListStopSearchClasses() {
         return ourStopSearch;
     }
 

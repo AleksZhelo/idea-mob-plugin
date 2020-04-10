@@ -14,7 +14,7 @@ import java.util.List;
 
 public class EIMobPsiFileNode extends PsiFileNode {
 
-    private final List<AbstractTreeNode> children;
+    private final List<AbstractTreeNode<?>> children;
 
     EIMobPsiFileNode(Project project, @NotNull PsiFile value, ViewSettings viewSettings, PsiFileNode scriptNode) {
         super(project, value, viewSettings);
@@ -26,7 +26,7 @@ public class EIMobPsiFileNode extends PsiFileNode {
     }
 
     @Override
-    public Collection<AbstractTreeNode> getChildrenImpl() {
+    public Collection<AbstractTreeNode<?>> getChildrenImpl() {
         return children;
     }
 
