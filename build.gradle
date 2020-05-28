@@ -23,6 +23,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+tasks.named('prepareSandbox') {
+    dependsOn gradle.includedBuild('EIMob').task(':jar')
+}
+
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version '2020.1'
