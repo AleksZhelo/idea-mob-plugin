@@ -1,7 +1,10 @@
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.10'
+//    id "org.jetbrains.grammarkit" version "2020.2"
 }
+
+//apply plugin: 'org.jetbrains.grammarkit'
 
 group 'com.alekseyzhelo.evilislands'
 version '1.1.1'
@@ -9,7 +12,6 @@ version '1.1.1'
 sourceCompatibility = 1.8
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 
-// TODO v2: add tasks to generate lexer and parser  | https://github.com/JetBrains/gradle-grammar-kit-plugin
 sourceSets.main.java.srcDirs = ['src/main/java', 'src/main/gen']
 
 repositories {
@@ -55,17 +57,20 @@ patchPluginXml {
     sinceBuild '192'
 }
 
-//test {
-//    maxHeapSize = "2g"
-//    jvmArgs = ['-XX:+UnlockCommercialFeatures', '-XX:+FlightRecorder', '-XX:+UnlockDiagnosticVMOptions', '-XX:+DebugNonSafepoints']
+// TODO v2: uncomment and use if/when the Gradle Grammar-Kit plugin is fixed
+//task generateEILexer(type: org.jetbrains.grammarkit.tasks.GenerateLexer) {
+//    source = "src/main/java/com/alekseyzhelo/evilislands/mobplugin/script/lexer/EIScript.flex"
+//    targetDir = "src/main/gen/com/alekseyzhelo/evilislands/mobplugin/script/lexer/"
+//    targetClass = "EIScriptLexer"
+//    purgeOldFiles = true
+//}
 //
-//    def jfrOptions = [
-//            defaultrecording: true,
-//            dumponexit      : true,
-//            dumponexitpath  : "${project.buildDir}/dumponexit.jfr",
-//            globalbuffersize: '10M',
-//            disk            : true,
-//            settings        : "${System.getProperty("java.home")}/lib/jfr/profile.jfc".toString()
-//    ]
-//    jvmArgs += ["-XX:FlightRecorderOptions=${jfrOptions.collect { k, v -> "$k=$v".toString() }.join(',')}"]
+//task generateEIParser(type: org.jetbrains.grammarkit.tasks.GenerateParser) {
+//    source = "src/main/java/com/alekseyzhelo/evilislands/mobplugin/script/EIScript.bnf"
+//    targetRoot = 'src/main/gen'
+//    // path to a parser file, relative to the targetRoot
+//    pathToParser = 'com/alekseyzhelo/evilislands/mobplugin/script/EIScriptParser.java'
+//    // path to a directory with generated psi files, relative to the targetRoot
+//    pathToPsiRoot = 'com/alekseyzhelo/evilislands/mobplugin/script/psi'
+//    purgeOldFiles = true
 //}

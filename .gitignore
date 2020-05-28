@@ -89,3 +89,7 @@ src/main/gen
 
 # Test data
 src/test/resources/testScripts
+
+# Grammar-Kit
+idea-flex.skeleton
+jflex-*.jar
