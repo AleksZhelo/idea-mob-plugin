@@ -7,7 +7,7 @@ plugins {
 //apply plugin: 'org.jetbrains.grammarkit'
 
 group 'com.alekseyzhelo.evilislands'
-version '1.1.1'
+version '1.1.2'
 
 sourceCompatibility = 1.8
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
@@ -29,12 +29,17 @@ tasks.named('prepareSandbox') {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.1'
+    version '2020.2'
     type 'IC'
     plugins 'java' //, 'PsiViewer:193-SNAPSHOT'
+    updateSinceUntilBuild false
 }
 patchPluginXml {
     changeNotes """
+    Version 1.1.2:
+    <ul>
+        <li> Updated to work with Intellij 2020.2 (and hopefully future versions) </li>
+    </ul>
     Version 1.1.1:
     <ul>
         <li> Updated to work with Intellij 2020.1 </li>
